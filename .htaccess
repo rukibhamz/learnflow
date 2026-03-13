@@ -1,0 +1,11 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Serve Vite build assets from public/build/ (files live in public/build/, URLs use /build/)
+    RewriteRule ^build/(.*)$ public/build/$1 [L]
+
+    # Send all non-file, non-directory requests to the front controller
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ public/index.php [L]
+</IfModule>
