@@ -14,8 +14,11 @@
         <form method="POST" action="{{ route('login') }}" class="space-y-5">
             @csrf
             <div>
-                <label class="block text-[11px] font-bold uppercase tracking-widest text-ink2 mb-2">Email Address</label>
-                <input type="email" name="email" required class="w-full h-9 bg-bg border border-rule rounded-card px-3 font-body text-sm focus:outline-none focus:border-accent transition-colors">
+                <label class="block text-[11px] font-bold uppercase tracking-widest text-ink2 mb-2">Email or Username</label>
+                <input type="text" name="login" value="{{ old('login') }}" required autofocus class="w-full h-9 bg-bg border border-rule rounded-card px-3 font-body text-sm focus:outline-none focus:border-accent transition-colors @error('login') border-red-400 @enderror">
+                @error('login')
+                    <p class="mt-1 text-[11px] text-red-500">{{ $message }}</p>
+                @enderror
             </div>
 
             <div>
@@ -24,6 +27,11 @@
                     <a href="{{ route('password.request') }}" class="text-[11px] font-bold uppercase tracking-widest text-accent hover:underline">Forgot?</a>
                 </div>
                 <input type="password" name="password" required class="w-full h-9 bg-bg border border-rule rounded-card px-3 font-body text-sm focus:outline-none focus:border-accent transition-colors">
+            </div>
+
+            <div class="flex items-center gap-2">
+                <input type="checkbox" name="remember" id="remember" class="rounded border-rule text-accent focus:ring-accent">
+                <label for="remember" class="text-[12px] text-ink2">Remember me</label>
             </div>
 
             <button type="submit" class="w-full h-9 bg-ink text-white font-display font-bold text-[13px] rounded-card hover:opacity-90 transition-opacity mt-4">Log in</button>

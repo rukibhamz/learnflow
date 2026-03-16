@@ -49,6 +49,16 @@ class AuthenticatedSessionController extends Controller
         RateLimiter::clear($throttleKey);
         $request->session()->regenerate();
 
+        $user = Auth::user();
+
+        if ($user->hasRole('admin')) {
+            return redirect()->intended(route('admin.dashboard'));
+        }
+
+        if ($user->hasRole('instructor')) {
+            return redirect()->intended(route('instructor.dashboard'));
+        }
+
         return redirect()->intended(route('dashboard', absolute: false));
     }
 

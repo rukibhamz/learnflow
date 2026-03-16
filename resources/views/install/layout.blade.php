@@ -6,7 +6,7 @@
     <title>@yield('title', 'Install') – LearnFlow</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,400&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,400&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -21,8 +21,8 @@
                         accent: '#1A43E0',
                     },
                     fontFamily: {
-                        display: ['Syne', 'sans-serif'],
-                        body: ['DM Sans', 'sans-serif'],
+                        display: ['Poppins', 'sans-serif'],
+                        body: ['Poppins', 'DM Sans', 'sans-serif'],
                     },
                     borderRadius: {
                         card: '6px',

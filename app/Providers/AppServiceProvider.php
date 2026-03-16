@@ -10,6 +10,7 @@ use App\Policies\CertificatePolicy;
 use App\Policies\CoursePolicy;
 use App\Policies\EnrollmentPolicy;
 use App\Policies\QuizAttemptPolicy;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\URL;
@@ -34,6 +35,10 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Enrollment::class, EnrollmentPolicy::class);
         Gate::policy(QuizAttempt::class, QuizAttemptPolicy::class);
         Gate::policy(Certificate::class, CertificatePolicy::class);
+
+        // Event wiring (Laravel 12 app without EventServiceProvider)
+        Event::listen(\App\Events\CourseCompleted::class, \App\Listeners\QueueIssueCertificate::class);
+        Event::listen(\App\Events\LessonCompleted::class, \App\Listeners\CheckCourseCompletion::class);
 
         // Load settings into config
         if (Schema::hasTable('settings')) {

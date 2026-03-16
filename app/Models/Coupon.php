@@ -14,6 +14,7 @@ class Coupon extends Model
     protected $fillable = [
         'code',
         'name',
+        'stripe_coupon_id',
         'discount_type',
         'amount',
         'max_uses',

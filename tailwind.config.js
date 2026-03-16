@@ -32,9 +32,10 @@ export default {
                 'brand-black': '#0E0E0C',
             },
             fontFamily: {
-                display: ['Lexend', 'Poppins', ...defaultTheme.fontFamily.sans],
-                sans: ['Lexend', 'Poppins', 'DM Sans', ...defaultTheme.fontFamily.sans],
-                body: ['DM Sans', 'sans-serif'],
+                display: ['Poppins', ...defaultTheme.fontFamily.sans],
+                sans: ['Poppins', 'DM Sans', ...defaultTheme.fontFamily.sans],
+                body: ['Poppins', 'DM Sans', 'sans-serif'],
+                poppins: ['Poppins', 'sans-serif'],
             },
             borderRadius: {
                 card: '6px',

@@ -11,6 +11,19 @@
     $isEnrolled = auth()->check() && auth()->user()->enrollments()->where('course_id', $course->id)->exists();
     $totalDuration = $course->lessons->sum('duration_seconds');
     $totalLessons = $course->lessons->count();
+
+    $couponCode = session('coupon_code');
+    $couponValidation = null;
+    $discountAmount = 0.0;
+    if (auth()->check() && $couponCode && $course->price > 0) {
+        $couponValidation = app(\App\Services\CouponService::class)->validate($couponCode, auth()->user(), (float) $course->price);
+        if (! $couponValidation->valid) {
+            session()->forget('coupon_code');
+            $couponValidation = null;
+        } else {
+            $discountAmount = (float) $couponValidation->discount_amount;
+        }
+    }
 @endphp
 
 @section('title', $course->title . ' - LearnFlow')
@@ -116,13 +129,43 @@
                                         Continue Learning
                                     </a>
                                 @else
-                                    <form action="{{ route('enrolments.store') }}" method="POST">
-                                        @csrf
-                                        <input type="hidden" name="course_id" value="{{ $course->id }}">
-                                        <button type="submit" class="w-full py-4 bg-ink text-white font-display font-bold rounded-xl hover:opacity-90 transition-opacity">
-                                            {{ $course->price > 0 ? 'Enrol Now' : 'Enrol for Free' }}
-                                        </button>
-                                    </form>
+                                    @if($course->price > 0)
+                                        <div class="space-y-4">
+                                            @livewire('coupon-field', ['orderAmount' => (float) $course->price], key('coupon-field-'.$course->id))
+
+                                            @if($couponValidation && $discountAmount > 0)
+                                                <div class="text-xs text-ink2 border border-rule rounded-lg p-3 bg-bg">
+                                                    <div class="flex items-center justify-between">
+                                                        <span>Subtotal</span>
+                                                        <span>${{ number_format((float) $course->price, 2) }}</span>
+                                                    </div>
+                                                    <div class="flex items-center justify-between mt-1">
+                                                        <span>Discount ({{ strtoupper($couponValidation->code) }})</span>
+                                                        <span class="text-green-700 font-medium">-${{ number_format($discountAmount, 2) }}</span>
+                                                    </div>
+                                                    <div class="flex items-center justify-between mt-2 pt-2 border-t border-rule">
+                                                        <span class="font-bold">Total</span>
+                                                        <span class="font-bold">${{ number_format(max(0, (float) $course->price - $discountAmount), 2) }}</span>
+                                                    </div>
+                                                </div>
+                                            @endif
+
+                                            <form action="{{ route('checkout.course', $course) }}" method="POST">
+                                                @csrf
+                                                <button type="submit" class="w-full py-4 bg-ink text-white font-display font-bold rounded-xl hover:opacity-90 transition-opacity">
+                                                    Checkout
+                                                </button>
+                                            </form>
+                                        </div>
+                                    @else
+                                        <form action="{{ route('enrolments.store') }}" method="POST">
+                                            @csrf
+                                            <input type="hidden" name="course_id" value="{{ $course->id }}">
+                                            <button type="submit" class="w-full py-4 bg-ink text-white font-display font-bold rounded-xl hover:opacity-90 transition-opacity">
+                                                Enrol for Free
+                                            </button>
+                                        </form>
+                                    @endif
                                 @endif
                             @else
                                 <a href="{{ route('login') }}?redirect={{ urlencode(request()->url()) }}" class="block w-full py-4 bg-ink text-white font-display font-bold text-center rounded-xl hover:opacity-90 transition-opacity">
@@ -166,13 +209,22 @@
                         Continue Learning
                     </a>
                 @else
-                    <form action="{{ route('enrolments.store') }}" method="POST" class="flex-1">
-                        @csrf
-                        <input type="hidden" name="course_id" value="{{ $course->id }}">
-                        <button type="submit" class="w-full py-3 bg-ink text-white font-display font-bold rounded-xl">
-                            {{ $course->price > 0 ? 'Enrol Now' : 'Enrol Free' }}
-                        </button>
-                    </form>
+                    @if($course->price > 0)
+                        <form action="{{ route('checkout.course', $course) }}" method="POST" class="flex-1">
+                            @csrf
+                            <button type="submit" class="w-full py-3 bg-ink text-white font-display font-bold rounded-xl">
+                                Checkout
+                            </button>
+                        </form>
+                    @else
+                        <form action="{{ route('enrolments.store') }}" method="POST" class="flex-1">
+                            @csrf
+                            <input type="hidden" name="course_id" value="{{ $course->id }}">
+                            <button type="submit" class="w-full py-3 bg-ink text-white font-display font-bold rounded-xl">
+                                Enrol Free
+                            </button>
+                        </form>
+                    @endif
                 @endif
             @else
                 <a href="{{ route('login') }}" class="flex-1 py-3 bg-ink text-white font-display font-bold text-center rounded-xl">
