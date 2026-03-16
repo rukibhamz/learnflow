@@ -21,6 +21,7 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail
     /** @use HasFactory<UserFactory> */
     protected $fillable = [
         'name',
+        'username',
         'email',
         'password',
         'google_id',

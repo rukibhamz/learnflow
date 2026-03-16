@@ -1,20 +1,8 @@
 <?php
 
-use App\Livewire\Actions\Logout;
 use Livewire\Volt\Component;
 
-new class extends Component
-{
-    /**
-     * Log the current user out of the application.
-     */
-    public function logout(Logout $logout): void
-    {
-        $logout();
-
-        $this->redirect('/', navigate: true);
-    }
-}; ?>
+new class extends Component {} ?>
 
 <nav x-data="{ open: false }" class="bg-surface border-b border-rule h-20 flex items-center">
     <!-- Primary Navigation Menu -->
@@ -59,11 +47,12 @@ new class extends Component
                         </x-dropdown-link>
  
                         <!-- Authentication -->
-                        <button wire:click="logout" class="w-full text-start">
-                            <x-dropdown-link>
+                        <form method="POST" action="{{ route('logout') }}" class="w-full">
+                            @csrf
+                            <button type="submit" class="block w-full px-4 py-2 text-start text-sm leading-5 text-gray-700 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-700 focus:outline-none focus:bg-gray-100 dark:focus:bg-slate-700 transition duration-150 ease-in-out">
                                 {{ __('Log Out') }}
-                            </x-dropdown-link>
-                        </button>
+                            </button>
+                        </form>
                     </x-slot>
                 </x-dropdown>
                 @else
@@ -98,8 +87,8 @@ new class extends Component
         <div class="pt-4 pb-1 border-t border-gray-200">
             @auth
                 <div class="px-4">
-                    <div class="font-medium text-base text-gray-800" x-data="{{ json_encode(['name' => auth()->user()->name]) }}" x-text="name" x-on:profile-updated.window="name = $event.detail.name"></div>
-                    <div class="font-medium text-sm text-gray-500">{{ auth()->user()->email }}</div>
+                    <div class="font-medium text-base text-gray-800" x-data="{{ json_encode(['name' => auth()->user()->name ?? '']) }}" x-text="name" x-on:profile-updated.window="name = $event.detail.name"></div>
+                    <div class="font-medium text-sm text-gray-500">{{ auth()->user()->email ?? '' }}</div>
                 </div>
 
                 <div class="mt-3 space-y-1">
@@ -108,11 +97,12 @@ new class extends Component
                     </x-responsive-nav-link>
 
                     <!-- Authentication -->
-                    <button wire:click="logout" class="w-full text-start">
-                        <x-responsive-nav-link>
+                    <form method="POST" action="{{ route('logout') }}" class="w-full">
+                        @csrf
+                        <button type="submit" class="block w-full px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-700 transition">
                             {{ __('Log Out') }}
-                        </x-responsive-nav-link>
-                    </button>
+                        </button>
+                    </form>
                 </div>
             @else
                 <div class="px-4 space-y-2">

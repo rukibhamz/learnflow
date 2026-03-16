@@ -18,7 +18,6 @@ Route::middleware(['web'])->group(function () {
 
 Route::middleware(['web', \App\Http\Middleware\RedirectIfNotInstalled::class])->group(function () {
     // Public routes
-    Route::get('/debug-route', fn() => 'Routing is working!')->name('debug-route');
     Route::view('/', 'home')->name('home');
     Route::get('courses', fn () => view('courses.index'))->name('courses.index');
     Route::get('courses/{slug}', fn () => view('courses.show', ['slug' => request()->route('slug')]))->name('courses.show');
@@ -45,7 +44,11 @@ Route::middleware(['web', \App\Http\Middleware\RedirectIfNotInstalled::class])->
     // Admin
     Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.')->group(function () {
         Route::view('dashboard', 'admin.dashboard')->name('dashboard');
+        Route::get('courses', fn () => view('admin.courses.index'))->name('courses.index');
         Route::get('users', fn () => view('admin.users.index'))->name('users.index');
+        Route::get('settings', fn () => view('admin.settings'))->name('settings');
+        Route::post('settings', [\App\Http\Controllers\Admin\SettingsController::class, 'update'])->name('settings.update');
+        Route::post('settings/test-email', [\App\Http\Controllers\Admin\SettingsController::class, 'sendTestEmail'])->name('settings.test-email');
     });
 
     Route::middleware(['auth'])->group(function () {

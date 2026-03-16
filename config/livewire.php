@@ -279,4 +279,8 @@ return [
         'max_calls' => 50,           // Maximum method calls per request
         'max_components' => 20,      // Maximum components per batch request
     ],
+
+    'update_uri' => '/learnflow/livewire/update',
+
+    'asset_url' => '/learnflow',
 ];

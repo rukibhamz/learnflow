@@ -4,7 +4,6 @@ namespace Tests\Feature\Auth;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Livewire\Volt\Volt;
 use Tests\TestCase;
 
 class AuthenticationTest extends TestCase
@@ -24,16 +23,27 @@ class AuthenticationTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $component = Volt::test('pages.auth.login')
-            ->set('form.email', $user->email)
-            ->set('form.password', 'password');
+        $response = $this->post(route('login.post'), [
+            'login' => $user->email,
+            'password' => 'password',
+            '_token' => csrf_token(),
+        ]);
 
-        $component->call('login');
+        $response->assertRedirect(route('dashboard', absolute: false));
+        $this->assertAuthenticated();
+    }
 
-        $component
-            ->assertHasNoErrors()
-            ->assertRedirect(route('dashboard', absolute: false));
+    public function test_users_can_authenticate_with_username(): void
+    {
+        $user = User::factory()->create();
 
+        $response = $this->post(route('login.post'), [
+            'login' => $user->username,
+            'password' => 'password',
+            '_token' => csrf_token(),
+        ]);
+
+        $response->assertRedirect(route('dashboard', absolute: false));
         $this->assertAuthenticated();
     }
 
@@ -41,16 +51,13 @@ class AuthenticationTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $component = Volt::test('pages.auth.login')
-            ->set('form.email', $user->email)
-            ->set('form.password', 'wrong-password');
+        $response = $this->post(route('login.post'), [
+            'login' => $user->email,
+            'password' => 'wrong-password',
+            '_token' => csrf_token(),
+        ]);
 
-        $component->call('login');
-
-        $component
-            ->assertHasErrors()
-            ->assertNoRedirect();
-
+        $response->assertSessionHasErrors('login');
         $this->assertGuest();
     }
 
@@ -71,16 +78,11 @@ class AuthenticationTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $this->actingAs($user);
+        $response = $this->actingAs($user)->post(route('logout'), [
+            '_token' => csrf_token(),
+        ]);
 
-        $component = Volt::test('layout.navigation');
-
-        $component->call('logout');
-
-        $component
-            ->assertHasNoErrors()
-            ->assertRedirect('/');
-
+        $response->assertRedirect('/');
         $this->assertGuest();
     }
 }

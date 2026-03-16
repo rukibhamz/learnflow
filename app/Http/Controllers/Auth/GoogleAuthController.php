@@ -41,8 +41,17 @@ class GoogleAuthController extends Controller
                     'avatar' => $googleUser->getAvatar(),
                 ]);
             } else {
+                $base = Str::slug(Str::before($googleUser->getEmail(), '@'));
+                $username = $base ?: 'user' . Str::random(8);
+                $original = $username;
+                $i = 1;
+                while (User::where('username', $username)->exists()) {
+                    $username = $original . $i;
+                    $i++;
+                }
                 $user = User::create([
                     'name' => $googleUser->getName(),
+                    'username' => $username,
                     'email' => $googleUser->getEmail(),
                     'email_verified_at' => now(),
                     'google_id' => $googleUser->getId(),

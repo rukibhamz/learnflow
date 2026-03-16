@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
             ['email' => 'admin@learnflow.test'],
             [
                 'name' => 'Admin User',
+                'username' => 'admin',
                 'password' => Hash::make('password'),
                 'email_verified_at' => now(),
             ]
@@ -35,6 +36,7 @@ class DatabaseSeeder extends Seeder
             ['email' => 'instructor@learnflow.test'],
             [
                 'name' => 'Jane Doe',
+                'username' => 'instructor',
                 'password' => Hash::make('password'),
                 'email_verified_at' => now(),
             ]
@@ -46,6 +48,7 @@ class DatabaseSeeder extends Seeder
             ['email' => 'student@learnflow.test'],
             [
                 'name' => 'John Student',
+                'username' => 'student',
                 'password' => Hash::make('password'),
                 'email_verified_at' => now(),
             ]

@@ -11,6 +11,7 @@ use App\Policies\CoursePolicy;
 use App\Policies\EnrollmentPolicy;
 use App\Policies\QuizAttemptPolicy;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 
@@ -33,6 +34,41 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Enrollment::class, EnrollmentPolicy::class);
         Gate::policy(QuizAttempt::class, QuizAttemptPolicy::class);
         Gate::policy(Certificate::class, CertificatePolicy::class);
+
+        // Load settings into config
+        if (Schema::hasTable('settings')) {
+            $settings = \App\Models\Setting::all();
+            foreach ($settings as $setting) {
+                if (str_starts_with($setting->key, 'mail_')) {
+                    // Map mail settings to Laravel config keys
+                    $mappings = [
+                        'mail_mailer' => 'mail.default',
+                        'mail_host' => 'mail.mailers.smtp.host',
+                        'mail_port' => 'mail.mailers.smtp.port',
+                        'mail_username' => 'mail.mailers.smtp.username',
+                        'mail_password' => 'mail.mailers.smtp.password',
+                        'mail_encryption' => 'mail.mailers.smtp.encryption',
+                        'mail_from_address' => 'mail.from.address',
+                        'mail_from_name' => 'mail.from.name',
+                        'mail_ses_key' => 'services.ses.key',
+                        'mail_ses_secret' => 'services.ses.secret',
+                        'mail_ses_region' => 'services.ses.region',
+                        'mail_mailgun_domain' => 'services.mailgun.domain',
+                        'mail_mailgun_secret' => 'services.mailgun.secret',
+                        'mail_mailgun_endpoint' => 'services.mailgun.endpoint',
+                        'mail_postmark_token' => 'services.postmark.token',
+                    ];
+
+                    if (isset($mappings[$setting->key])) {
+                        config([$mappings[$setting->key] => $setting->value]);
+                    } else {
+                        config(['settings.' . $setting->key => $setting->value]);
+                    }
+                } else {
+                    config(['settings.' . $setting->key => $setting->value]);
+                }
+            }
+        }
 
         $appUrl = config('app.url');
         if ($appUrl) {

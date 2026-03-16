@@ -1,48 +1,41 @@
 <?php
 
-use App\Livewire\Forms\LoginForm;
-use Illuminate\Support\Facades\Session;
 use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
 
-new #[Layout('layouts.guest')] class extends Component
-{
-    public LoginForm $form;
-
-    public function login(): void
-    {
-        $this->validate();
-        $this->form->authenticate();
-        Session::regenerate();
-        $this->redirectIntended(default: route('dashboard', absolute: false), navigate: true);
-    }
-}; ?>
+new #[Layout('layouts.guest')] class extends Component {} ?>
 
 <div class="bg-white dark:bg-slate-900 border border-neutral-border dark:border-slate-800 p-8 rounded-custom">
     <h2 class="text-brand-black dark:text-slate-100 text-2xl font-bold mb-8">Welcome back</h2>
 
     <x-auth-session-status class="mb-4 text-sm text-green-600 dark:text-green-400" :status="session('status')" />
 
-    <form wire:submit="login" class="space-y-6">
+    <form method="POST" action="{{ route('login.post') }}" class="space-y-6">
+        @csrf
         <div class="space-y-1.5">
-            <label class="block text-xs font-medium text-neutral-text dark:text-slate-400 uppercase tracking-wider" for="email">Email</label>
-            <input wire:model="form.email" id="email" name="email" type="email" placeholder="name@company.com" required autofocus autocomplete="username"
+            <label class="block text-xs font-medium text-neutral-text dark:text-slate-400 uppercase tracking-wider" for="login">Username or Email</label>
+            <input id="login" name="login" type="text" value="{{ old('login') }}" placeholder="johndoe or name@company.com" required autofocus autocomplete="username"
                 class="w-full h-[36px] px-3 py-2 bg-transparent border border-neutral-border dark:border-slate-700 rounded-custom text-sm text-brand-black dark:text-slate-200 placeholder:text-neutral-text/50 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all" />
-            <x-input-error :messages="$errors->get('form.email')" class="mt-1 text-sm text-red-600" />
+            <x-input-error :messages="$errors->get('login')" class="mt-1 text-sm text-red-600" />
         </div>
 
         <div class="space-y-1.5">
             <div class="flex justify-between items-center">
                 <label class="block text-xs font-medium text-neutral-text dark:text-slate-400 uppercase tracking-wider" for="password">Password</label>
-                <a class="text-[11px] text-primary hover:underline font-medium uppercase tracking-wider" href="{{ route('password.request') }}" wire:navigate>Forgot?</a>
+                <a class="text-[11px] text-primary hover:underline font-medium uppercase tracking-wider" href="{{ route('password.request') }}">Forgot?</a>
             </div>
-            <input wire:model="form.password" id="password" name="password" type="password" placeholder="••••••••" required autocomplete="current-password"
-                class="w-full h-[36px] px-3 py-2 bg-transparent border border-neutral-border dark:border-slate-700 rounded-custom text-sm text-brand-black dark:text-slate-200 placeholder:text-neutral-text/50 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all" />
-            <x-input-error :messages="$errors->get('form.password')" class="mt-1 text-sm text-red-600" />
+            <div class="relative" x-data="{ show: false }">
+                <input id="password" name="password" :type="show ? 'text' : 'password'" placeholder="••••••••" required autocomplete="current-password"
+                    class="w-full h-[36px] pl-3 pr-10 py-2 bg-transparent border border-neutral-border dark:border-slate-700 rounded-custom text-sm text-brand-black dark:text-slate-200 placeholder:text-neutral-text/50 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all" />
+                <button type="button" @click="show = !show" class="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-text/50 hover:text-primary transition-colors flex items-center justify-center">
+                    <span class="material-symbols-outlined text-[20px]" x-text="show ? 'visibility_off' : 'visibility'"></span>
+                </button>
+            </div>
+            <x-input-error :messages="$errors->get('password')" class="mt-1 text-sm text-red-600" />
         </div>
 
         <label class="inline-flex items-center gap-2 cursor-pointer">
-            <input wire:model="form.remember" type="checkbox" name="remember"
+            <input type="checkbox" name="remember"
                 class="rounded border-neutral-border dark:border-slate-700 text-primary focus:ring-primary focus:ring-offset-0" />
             <span class="text-sm text-neutral-text dark:text-slate-400">Remember me</span>
         </label>

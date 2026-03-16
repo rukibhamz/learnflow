@@ -1,11 +1,15 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
+    RewriteBase /learnflow/
 
-    # Serve Vite build assets from public/build/ (files live in public/build/, URLs use /build/)
-    RewriteRule ^build/(.*)$ public/build/$1 [L]
-
-    # Send all non-file, non-directory requests to the front controller
+    # Serve assets from the public folder if they exist there
+    # This handles requests like /learnflow/build/assets/...
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteRule ^(.*)$ public/index.php [L]
+    RewriteRule ^(build|assets|images|favicon.ico|robots.txt)(.*)$ public/$1$2 [L]
+
+    # Standard Laravel rewrite but pointing to index.php explicitly
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ index.php/$1 [L,QSA]
 </IfModule>
