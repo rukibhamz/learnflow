@@ -28,14 +28,14 @@ class PasswordConfirmationTest extends TestCase
 
         $this->actingAs($user);
 
-        $component = Volt::test('pages.auth.confirm-password')
-            ->set('password', 'password');
+        // confirm-password uses a plain form POST, not a Volt component with properties
+        $response = $this->post(route('password.confirm.post'), [
+            'password' => 'password',
+            '_token' => csrf_token(),
+        ]);
 
-        $component->call('confirmPassword');
-
-        $component
-            ->assertRedirect('/dashboard')
-            ->assertHasNoErrors();
+        $response->assertRedirect();
+        $this->assertCredentials(['email' => $user->email, 'password' => 'password']);
     }
 
     public function test_password_is_not_confirmed_with_invalid_password(): void
@@ -44,13 +44,11 @@ class PasswordConfirmationTest extends TestCase
 
         $this->actingAs($user);
 
-        $component = Volt::test('pages.auth.confirm-password')
-            ->set('password', 'wrong-password');
+        $response = $this->post(route('password.confirm.post'), [
+            'password' => 'wrong-password',
+            '_token' => csrf_token(),
+        ]);
 
-        $component->call('confirmPassword');
-
-        $component
-            ->assertNoRedirect()
-            ->assertHasErrors('password');
+        $response->assertSessionHasErrors('password');
     }
 }

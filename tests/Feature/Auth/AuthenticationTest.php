@@ -69,9 +69,10 @@ class AuthenticationTest extends TestCase
 
         $response = $this->get('/dashboard');
 
+        // Dashboard renders successfully with the notification bell component
         $response
             ->assertOk()
-            ->assertSeeVolt('layout.navigation');
+            ->assertSeeVolt('notification-bell');
     }
 
     public function test_users_can_logout(): void

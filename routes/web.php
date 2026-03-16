@@ -33,18 +33,27 @@ Route::middleware(['web', \App\Http\Middleware\RedirectIfNotInstalled::class])->
         Route::view('student/certificates', 'student.certificates')->name('student.certificates');
         Route::view('student/settings', 'student.settings')->name('student.settings');
         Route::get('learn/{course:slug}', fn ($course) => view('learn.show', ['course' => $course]))->name('learn.show');
+        
+        // Enrolment
+        Route::post('enrolments', [\App\Http\Controllers\EnrolmentController::class, 'store'])->name('enrolments.store');
+        Route::get('checkout/{course:slug}', fn ($course) => view('checkout.course', ['course' => $course]))->name('checkout.course');
     });
 
     // Instructor
     Route::middleware(['auth', 'verified', 'instructor'])->prefix('instructor')->name('instructor.')->group(function () {
         Route::view('dashboard', 'instructor.dashboard')->name('dashboard');
         Route::get('courses', fn () => view('instructor.courses.index'))->name('courses.index');
+        Route::get('courses/create', fn () => view('instructor.courses.create'))->name('courses.create');
+        Route::get('courses/{course}/edit', fn (\App\Models\Course $course) => view('instructor.courses.edit', ['course' => $course]))->name('courses.edit');
+        Route::get('courses/{course}/curriculum', fn (\App\Models\Course $course) => view('instructor.courses.curriculum', ['course' => $course]))->name('courses.curriculum');
+        Route::get('lessons/{lesson}/edit', fn (\App\Models\Lesson $lesson) => view('instructor.lessons.edit', ['lesson' => $lesson]))->name('lessons.edit');
     });
 
     // Admin
     Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.')->group(function () {
         Route::view('dashboard', 'admin.dashboard')->name('dashboard');
         Route::get('courses', fn () => view('admin.courses.index'))->name('courses.index');
+        Route::get('courses/review', fn () => view('admin.courses.review'))->name('courses.review');
         Route::get('users', fn () => view('admin.users.index'))->name('users.index');
         Route::get('settings', fn () => view('admin.settings'))->name('settings');
         Route::post('settings', [\App\Http\Controllers\Admin\SettingsController::class, 'update'])->name('settings.update');

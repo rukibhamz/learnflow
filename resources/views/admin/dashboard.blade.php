@@ -18,8 +18,8 @@
 
             @foreach($kpis as $kpi)
             <div class="p-6 border border-rule bg-surface">
-                <p class="text-[10px] font-syne font-bold uppercase tracking-widest text-ink3 mb-2">{{ $kpi['label'] }}</p>
-                <p class="font-syne font-extrabold text-2xl tracking-tight text-ink">{{ $kpi['value'] }}</p>
+                <p class="text-[10px] font-poppins font-bold uppercase tracking-widest text-ink3 mb-2">{{ $kpi['label'] }}</p>
+                <p class="font-poppins font-extrabold text-2xl tracking-tight text-ink">{{ $kpi['value'] }}</p>
                 <p class="text-[10px] mt-2 font-bold {{ $kpi['hint_color'] }} uppercase tracking-tighter">{{ $kpi['hint'] }}</p>
             </div>
             @endforeach
@@ -29,7 +29,7 @@
         <div class="border border-rule bg-surface p-8">
             <div class="flex items-center justify-between mb-10">
                 <div class="space-y-1">
-                    <h2 class="font-syne font-bold text-lg tracking-tight text-ink">Revenue Overview</h2>
+                    <h2 class="font-poppins font-bold text-lg tracking-tight text-ink">Revenue Overview</h2>
                     <p class="text-[11px] text-ink3 font-medium">Monthly operational revenue through Stripe</p>
                 </div>
                 <div class="flex border border-rule rounded-none p-1 bg-background-light">
@@ -68,12 +68,12 @@
         <!-- Top Courses Table -->
         <div class="border border-rule bg-surface overflow-hidden">
             <div class="px-8 py-5 border-b border-rule flex items-center justify-between">
-                <h2 class="font-syne font-bold text-lg tracking-tight text-ink">Top Performing Courses</h2>
+                <h2 class="font-poppins font-bold text-lg tracking-tight text-ink">Top Performing Courses</h2>
                 <button class="text-[10px] font-bold uppercase tracking-widest text-primary border-b-2 border-primary pb-0.5 hover:opacity-80 transition-opacity">Full Data</button>
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-left">
-                    <thead class="bg-background-light text-[10px] font-syne font-bold uppercase tracking-widest text-ink3">
+                    <thead class="bg-background-light text-[10px] font-poppins font-bold uppercase tracking-widest text-ink3">
                         <tr>
                             <th class="px-8 py-4">Course</th>
                             <th class="px-8 py-4">Instructor</th>
@@ -87,7 +87,7 @@
                             <td class="px-8 py-4 font-bold text-ink">{{ $course->title }}</td>
                             <td class="px-8 py-4 text-ink2">{{ $course->instructor->name ?? 'System' }}</td>
                             <td class="px-8 py-4 text-right text-ink2">{{ number_format($course->enrollments_count) }}</td>
-                            <td class="px-8 py-4 text-right font-syne font-bold text-primary">${{ number_format($course->orders_sum_amount ?? 0, 2) }}</td>
+                            <td class="px-8 py-4 text-right font-poppins font-bold text-primary">${{ number_format($course->orders_sum_amount ?? 0, 2) }}</td>
                         </tr>
                         @endforeach
                     </tbody>
@@ -100,7 +100,7 @@
     <div class="col-span-12 lg:col-span-3 space-y-8">
         <div class="border border-rule bg-surface p-8 h-full min-h-[600px]">
             <div class="mb-10">
-                <h2 class="font-syne font-bold text-lg tracking-tight text-ink">Recent Activity</h2>
+                <h2 class="font-poppins font-bold text-lg tracking-tight text-ink">Recent Activity</h2>
                 <p class="text-[10px] text-ink3 font-bold uppercase tracking-widest mt-1.5 flex items-center gap-2">
                     <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
                     Live Updates
@@ -113,7 +113,7 @@
                     <p class="text-[13px] font-bold text-ink leading-tight">{{ $order->user->name ?? 'Guest' }}</p>
                     <p class="text-[11px] text-ink2 mt-1">{{ optional($order->course)->title }}</p>
                     <div class="flex items-center justify-between mt-2">
-                        <span class="text-[11px] font-syne font-extrabold text-primary">${{ number_format($order->amount, 2) }}</span>
+                        <span class="text-[11px] font-poppins font-extrabold text-primary">${{ number_format($order->amount, 2) }}</span>
                         <span class="text-[10px] text-ink3 font-medium">{{ $order->created_at->diffForHumans(null, true) }}</span>
                     </div>
                 </div>

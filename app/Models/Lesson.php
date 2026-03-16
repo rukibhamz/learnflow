@@ -9,10 +9,19 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class Lesson extends Model
+class Lesson extends Model implements HasMedia
 {
-    use HasFactory;
+    use HasFactory, InteractsWithMedia;
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('pdf')
+            ->singleFile()
+            ->acceptsMimeTypes(['application/pdf']);
+    }
 
     protected static function booted(): void
     {
@@ -29,6 +38,7 @@ class Lesson extends Model
         'content_body',
         'duration_seconds',
         'is_preview',
+        'unlock_after_days',
         'order',
     ];
 

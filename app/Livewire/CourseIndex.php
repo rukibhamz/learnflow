@@ -2,49 +2,134 @@
 
 namespace App\Livewire;
 
+use App\Enums\CourseLevel;
+use App\Enums\CourseStatus;
+use App\Models\Course;
 use Livewire\Component;
-use Livewire\Attributes\Url;
-
+use Livewire\WithPagination;
 
 class CourseIndex extends Component
 {
-    #[Url]
-    public string $category = 'all';
+    use WithPagination;
 
-    public string $search = '';
+    public $search = '';
+    public $levels = [];
+    public $priceFilter = '';
+    public $language = '';
+    public $sort = 'newest';
 
-    public function setCategory(string $value): void
+    protected $queryString = [
+        'search' => ['except' => ''],
+        'levels' => ['except' => []],
+        'priceFilter' => ['except' => ''],
+        'language' => ['except' => ''],
+        'sort' => ['except' => 'newest'],
+    ];
+
+    public function updatingSearch()
     {
-        $this->category = $value;
+        $this->resetPage();
     }
 
-    public function updatedSearch(): void
+    public function updatingLevels()
     {
-        // Search triggers re-render; wire:model.live handles it
+        $this->resetPage();
     }
 
-    public function getCoursesProperty()
+    public function updatingPriceFilter()
     {
-        $query = \App\Models\Course::query()
-            ->published()
-            ->with(['instructor']);
+        $this->resetPage();
+    }
 
-        if ($this->category !== 'all') {
-            $query->where('category', $this->category);
+    public function updatingLanguage()
+    {
+        $this->resetPage();
+    }
+
+    public function updatingSort()
+    {
+        $this->resetPage();
+    }
+
+    public function toggleLevel($level)
+    {
+        if (in_array($level, $this->levels)) {
+            $this->levels = array_values(array_diff($this->levels, [$level]));
+        } else {
+            $this->levels[] = $level;
         }
+        $this->resetPage();
+    }
 
-        if (!empty($this->search)) {
-            $query->where('title', 'like', '%' . $this->search . '%');
-        }
-
-        return $query->get()->map(function ($course) {
-            $course->url = route('courses.show', $course->slug);
-            return $course;
-        });
+    public function clearFilters()
+    {
+        $this->reset(['search', 'levels', 'priceFilter', 'language', 'sort']);
+        $this->resetPage();
     }
 
     public function render()
     {
-        return view('livewire.course-index');
+        $query = Course::query()
+            ->published()
+            ->with(['instructor', 'media'])
+            ->withCount(['enrollments', 'reviews' => fn($q) => $q->whereNotNull('approved_at')])
+            ->withAvg(['reviews' => fn($q) => $q->whereNotNull('approved_at')], 'rating');
+
+        if ($this->search) {
+            $searchIds = Course::search($this->search)->keys();
+            if ($searchIds->isNotEmpty()) {
+                $query->whereIn('id', $searchIds);
+            } else {
+                $query->where('title', 'like', '%' . $this->search . '%')
+                    ->orWhere('short_description', 'like', '%' . $this->search . '%');
+            }
+        }
+
+        if (!empty($this->levels)) {
+            $query->whereIn('level', $this->levels);
+        }
+
+        if ($this->priceFilter === 'free') {
+            $query->where('price', 0);
+        } elseif ($this->priceFilter === 'paid') {
+            $query->where('price', '>', 0);
+        }
+
+        if ($this->language) {
+            $query->where('language', $this->language);
+        }
+
+        switch ($this->sort) {
+            case 'popular':
+                $query->orderByDesc('enrollments_count');
+                break;
+            case 'rated':
+                $query->orderByDesc('reviews_avg_rating');
+                break;
+            case 'price_low':
+                $query->orderBy('price');
+                break;
+            case 'price_high':
+                $query->orderByDesc('price');
+                break;
+            case 'newest':
+            default:
+                $query->latest();
+                break;
+        }
+
+        $courses = $query->paginate(12);
+
+        $languages = Course::published()
+            ->whereNotNull('language')
+            ->distinct()
+            ->pluck('language')
+            ->filter();
+
+        return view('livewire.course-index', [
+            'courses' => $courses,
+            'languages' => $languages,
+            'levelOptions' => CourseLevel::cases(),
+        ]);
     }
 }

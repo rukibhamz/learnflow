@@ -9,7 +9,7 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700;800&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-25..0" />
     
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -23,11 +23,11 @@
             <div class="h-[52px] flex items-center px-6 border-b border-rule shrink-0">
                 <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-2">
                     <span class="material-symbols-outlined text-primary">school</span>
-                    <span class="font-syne font-bold text-lg tracking-tight">LearnFlow</span>
+                    <span class="font-poppins font-bold text-lg tracking-tight">LearnFlow</span>
                 </a>
             </div>
             <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
-                <div class="px-2 py-2 text-[11px] font-syne font-bold uppercase tracking-wider text-ink3 mb-2">Main</div>
+                <div class="px-2 py-2 text-[11px] font-poppins font-bold uppercase tracking-wider text-ink3 mb-2">Main</div>
                 <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg {{ request()->routeIs('admin.dashboard') ? 'bg-primary/10 text-primary' : 'text-ink hover:bg-background-light' }} group">
                     <span class="material-symbols-outlined text-[20px] {{ request()->routeIs('admin.dashboard') ? 'text-primary' : 'text-ink3 group-hover:text-ink' }}">dashboard</span>
                     <span class="text-sm font-medium">Overview</span>
@@ -45,7 +45,7 @@
                     <span class="text-sm font-medium">Finance</span>
                 </a>
                 
-                <div class="pt-6 px-2 py-2 text-[11px] font-syne font-bold uppercase tracking-wider text-ink3 mb-2">Account</div>
+                <div class="pt-6 px-2 py-2 text-[11px] font-poppins font-bold uppercase tracking-wider text-ink3 mb-2">Account</div>
                 <a href="{{ route('admin.settings') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg {{ request()->routeIs('admin.settings') ? 'bg-primary/10 text-primary' : 'text-ink hover:bg-background-light' }} group">
                     <span class="material-symbols-outlined text-[20px] {{ request()->routeIs('admin.settings') ? 'text-primary' : 'text-ink3 group-hover:text-ink' }}">settings</span>
                     <span class="text-sm font-medium">Settings</span>

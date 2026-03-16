@@ -2,20 +2,158 @@
 
 namespace App\Livewire;
 
+use App\Models\User;
 use Livewire\Component;
+use Livewire\WithPagination;
+use Spatie\Permission\Models\Role;
 
 class AdminUserTable extends Component
 {
+    use WithPagination;
+
     public $search = '';
     public $roleFilter = '';
 
+    public $showEditModal = false;
+    public $editingUserId = null;
+    public $editName = '';
+    public $editEmail = '';
+    public $editUsername = '';
+    public $editRole = '';
+
+    public $showCreateModal = false;
+    public $newName = '';
+    public $newEmail = '';
+    public $newUsername = '';
+    public $newPassword = '';
+    public $newRole = 'student';
+
+    protected $queryString = ['search', 'roleFilter'];
+
+    public function updatingSearch()
+    {
+        $this->resetPage();
+    }
+
+    public function updatingRoleFilter()
+    {
+        $this->resetPage();
+    }
+
+    public function openCreateModal()
+    {
+        $this->reset(['newName', 'newEmail', 'newUsername', 'newPassword', 'newRole']);
+        $this->newRole = 'student';
+        $this->showCreateModal = true;
+    }
+
+    public function createUser()
+    {
+        $this->validate([
+            'newName' => 'required|string|max:255',
+            'newEmail' => 'required|email|unique:users,email',
+            'newUsername' => 'required|string|max:30|min:3|unique:users,username|regex:/^[a-zA-Z0-9_]+$/',
+            'newPassword' => 'required|string|min:8',
+            'newRole' => 'required|in:admin,instructor,student',
+        ]);
+
+        $user = User::create([
+            'name' => $this->newName,
+            'email' => $this->newEmail,
+            'username' => $this->newUsername,
+            'password' => bcrypt($this->newPassword),
+            'email_verified_at' => now(),
+        ]);
+
+        $user->assignRole($this->newRole);
+
+        $this->showCreateModal = false;
+        session()->flash('success', 'User created successfully.');
+    }
+
+    public function editUser($userId)
+    {
+        $user = User::findOrFail($userId);
+        $this->editingUserId = $userId;
+        $this->editName = $user->name;
+        $this->editEmail = $user->email;
+        $this->editUsername = $user->username;
+        $this->editRole = $user->roles->first()?->name ?? 'student';
+        $this->showEditModal = true;
+    }
+
+    public function updateUser()
+    {
+        $this->validate([
+            'editName' => 'required|string|max:255',
+            'editEmail' => 'required|email|unique:users,email,' . $this->editingUserId,
+            'editUsername' => 'required|string|max:30|min:3|unique:users,username,' . $this->editingUserId . '|regex:/^[a-zA-Z0-9_]+$/',
+            'editRole' => 'required|in:admin,instructor,student',
+        ]);
+
+        $user = User::findOrFail($this->editingUserId);
+        $user->update([
+            'name' => $this->editName,
+            'email' => $this->editEmail,
+            'username' => $this->editUsername,
+        ]);
+
+        $user->syncRoles([$this->editRole]);
+
+        $this->showEditModal = false;
+        session()->flash('success', 'User updated successfully.');
+    }
+
+    public function toggleSuspension($userId)
+    {
+        $user = User::findOrFail($userId);
+
+        if ($user->id === auth()->id()) {
+            session()->flash('error', 'You cannot suspend yourself.');
+            return;
+        }
+
+        $user->suspended_at = $user->suspended_at ? null : now();
+        $user->save();
+
+        session()->flash('success', $user->suspended_at ? 'User suspended.' : 'User reactivated.');
+    }
+
+    public function deleteUser($userId)
+    {
+        $user = User::findOrFail($userId);
+
+        if ($user->id === auth()->id()) {
+            session()->flash('error', 'You cannot delete yourself.');
+            return;
+        }
+
+        $user->delete();
+        session()->flash('success', 'User deleted successfully.');
+    }
+
     public function render()
     {
-        $users = [
-            ['name' => 'Jane Doe', 'email' => 'jane@example.com', 'role' => 'admin', 'enrolled' => 5, 'joined' => 'Jan 2025', 'suspended' => false],
-            ['name' => 'John Smith', 'email' => 'john@example.com', 'role' => 'instructor', 'enrolled' => 0, 'joined' => 'Feb 2025', 'suspended' => false],
-            ['name' => 'Alice User', 'email' => 'alice@example.com', 'role' => 'student', 'enrolled' => 12, 'joined' => 'Mar 2025', 'suspended' => true],
-        ];
-        return view('livewire.admin-user-table', ['users' => $users]);
+        $query = User::with('roles')->withCount('enrollments');
+
+        if ($this->search) {
+            $query->where(function ($q) {
+                $q->where('name', 'like', '%' . $this->search . '%')
+                  ->orWhere('email', 'like', '%' . $this->search . '%')
+                  ->orWhere('username', 'like', '%' . $this->search . '%');
+            });
+        }
+
+        if ($this->roleFilter) {
+            $query->whereHas('roles', fn($q) => $q->where('name', $this->roleFilter));
+        }
+
+        $users = $query->latest()->paginate(15);
+        $roles = Role::all();
+
+        return view('livewire.admin-user-table', [
+            'users' => $users,
+            'roles' => $roles,
+        ]);
     }
 }

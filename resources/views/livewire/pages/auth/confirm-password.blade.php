@@ -1,62 +1,28 @@
 <?php
 
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\ValidationException;
 use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
 
-new #[Layout('layouts.guest')] class extends Component
-{
-    public string $password = '';
+new #[Layout('layouts.guest')] class extends Component {} ?>
 
-    /**
-     * Confirm the current user's password.
-     */
-    public function confirmPassword(): void
-    {
-        $this->validate([
-            'password' => ['required', 'string'],
-        ]);
+<div class="bg-white dark:bg-slate-900 border border-neutral-border dark:border-slate-800 p-8 rounded-custom">
+    <h2 class="text-brand-black dark:text-slate-100 text-2xl font-bold mb-4">Confirm Password</h2>
 
-        if (! Auth::guard('web')->validate([
-            'email' => Auth::user()->email,
-            'password' => $this->password,
-        ])) {
-            throw ValidationException::withMessages([
-                'password' => __('auth.password'),
-            ]);
-        }
-
-        session(['auth.password_confirmed_at' => time()]);
-
-        $this->redirectIntended(default: route('dashboard', absolute: false), navigate: true);
-    }
-}; ?>
-
-<div>
-    <div class="mb-4 text-sm text-gray-600">
+    <div class="mb-6 text-sm text-neutral-text dark:text-slate-400">
         {{ __('This is a secure area of the application. Please confirm your password before continuing.') }}
     </div>
 
-    <form wire:submit="confirmPassword">
-        <!-- Password -->
-        <div>
-            <x-input-label for="password" :value="__('Password')" />
-
-            <x-text-input wire:model="password"
-                          id="password"
-                          class="block mt-1 w-full"
-                          type="password"
-                          name="password"
-                          required autocomplete="current-password" />
-
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
+    <form method="POST" action="{{ route('password.confirm.post') }}" class="space-y-6">
+        @csrf
+        <div class="space-y-1.5">
+            <label class="block text-xs font-medium text-neutral-text dark:text-slate-400 uppercase tracking-wider" for="password">Password</label>
+            <input id="password" name="password" type="password" placeholder="••••••••" required autocomplete="current-password"
+                class="w-full h-[36px] px-3 py-2 bg-transparent border border-neutral-border dark:border-slate-700 rounded-custom text-sm text-brand-black dark:text-slate-200 placeholder:text-neutral-text/50 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all" />
+            <x-input-error :messages="$errors->get('password')" class="mt-1 text-sm text-red-600" />
         </div>
 
-        <div class="flex justify-end mt-4">
-            <x-primary-button>
-                {{ __('Confirm') }}
-            </x-primary-button>
-        </div>
+        <button type="submit" class="w-full h-[44px] bg-brand-black dark:bg-primary text-white font-bold rounded-custom hover:opacity-90 transition-opacity">
+            Confirm
+        </button>
     </form>
 </div>

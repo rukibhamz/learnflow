@@ -6,10 +6,10 @@
 <div class="space-y-8">
     <div class="flex items-center justify-between">
         <div class="space-y-1">
-            <h2 class="font-syne font-bold text-lg tracking-tight text-ink">All Courses</h2>
+            <h2 class="font-poppins font-bold text-lg tracking-tight text-ink">All Courses</h2>
             <p class="text-[13px] text-ink2 font-body">Review, manage, and monitor all courses on the platform.</p>
         </div>
-        <button class="bg-primary text-white px-5 py-2.5 rounded-lg font-syne font-bold text-sm hover:opacity-90 transition-opacity flex items-center gap-2">
+        <button class="bg-primary text-white px-5 py-2.5 rounded-lg font-poppins font-bold text-sm hover:opacity-90 transition-opacity flex items-center gap-2">
             <span class="material-symbols-outlined text-[20px]">add</span>
             Create New Course
         </button>
@@ -17,7 +17,7 @@
 
     <div class="bg-surface border border-rule rounded-none overflow-hidden">
         <table class="w-full text-left">
-            <thead class="bg-background-light text-[11px] font-syne font-bold uppercase tracking-widest text-ink3 border-b border-rule">
+            <thead class="bg-background-light text-[11px] font-poppins font-bold uppercase tracking-widest text-ink3 border-b border-rule">
                 <tr>
                     <th class="px-6 h-[44px]">Course</th>
                     <th class="px-6 h-[44px]">Instructor</th>

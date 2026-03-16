@@ -32,7 +32,7 @@ export default {
                 'brand-black': '#0E0E0C',
             },
             fontFamily: {
-                display: ['Lexend', 'Syne', 'Poppins', ...defaultTheme.fontFamily.sans],
+                display: ['Lexend', 'Poppins', ...defaultTheme.fontFamily.sans],
                 sans: ['Lexend', 'Poppins', 'DM Sans', ...defaultTheme.fontFamily.sans],
                 body: ['DM Sans', 'sans-serif'],
             },

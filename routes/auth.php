@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Auth\ConfirmablePasswordController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\Auth\RegisteredUserController;
@@ -48,4 +49,6 @@ Route::middleware('auth')->group(function () {
 
     Volt::route('confirm-password', 'pages.auth.confirm-password')
         ->name('password.confirm');
+    Route::post('confirm-password', [ConfirmablePasswordController::class, 'store'])
+        ->name('password.confirm.post');
 });

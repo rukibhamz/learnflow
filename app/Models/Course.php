@@ -19,6 +19,22 @@ class Course extends Model implements HasMedia
 {
     use HasFactory, InteractsWithMedia, Searchable, SoftDeletes;
 
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('thumbnail')
+            ->singleFile()
+            ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/webp']);
+    }
+
+    public function registerMediaConversions(\Spatie\MediaLibrary\MediaCollections\Models\Media $media = null): void
+    {
+        $this->addMediaConversion('thumb')
+            ->width(400)
+            ->height(225)
+            ->sharpen(10)
+            ->nonQueued();
+    }
+
     protected $fillable = [
         'instructor_id',
         'title',
@@ -83,6 +99,24 @@ class Course extends Model implements HasMedia
     public function getTotalDurationSecondsAttribute(): int
     {
         return (int) $this->lessons()->sum('duration_seconds');
+    }
+
+    public function toSearchableArray(): array
+    {
+        return [
+            'id' => $this->id,
+            'title' => $this->title,
+            'short_description' => $this->short_description,
+            'description' => strip_tags($this->description ?? ''),
+            'category' => $this->category,
+            'level' => $this->level?->value,
+            'instructor_name' => $this->instructor?->name,
+        ];
+    }
+
+    public function shouldBeSearchable(): bool
+    {
+        return $this->status === CourseStatus::Published;
     }
 
     public function scopePublished(Builder $query): Builder

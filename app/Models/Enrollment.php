@@ -39,7 +39,7 @@ class Enrollment extends Model
             return 0.0;
         }
         $completed = LessonProgress::where('user_id', $this->user_id)
-            ->whereIn('lesson_id', $this->course->lessons()->pluck('id'))
+            ->whereIn('lesson_id', $this->course->lessons()->pluck('lessons.id'))
             ->count();
 
         return round(($completed / $total) * 100, 1);

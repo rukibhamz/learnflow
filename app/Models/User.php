@@ -29,6 +29,7 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail
         'bio',
         'website',
         'social_links',
+        'wishlist',
     ];
 
     protected $hidden = [
@@ -40,9 +41,16 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail
     {
         return [
             'email_verified_at' => 'datetime',
+            'suspended_at' => 'datetime',
             'password' => 'hashed',
             'social_links' => 'array',
+            'wishlist' => 'array',
         ];
+    }
+
+    public function isSuspended(): bool
+    {
+        return $this->suspended_at !== null;
     }
 
     protected $appends = [

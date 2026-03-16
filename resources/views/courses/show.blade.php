@@ -1,126 +1,367 @@
 @extends('layouts.app')
 
-@section('title', 'Course Title')
+@php
+    $course = \App\Models\Course::where('slug', $slug)
+        ->published()
+        ->with(['instructor', 'sections.lessons', 'reviews' => fn($q) => $q->whereNotNull('approved_at')->with('user')->latest()->take(10)])
+        ->withCount(['enrollments', 'reviews' => fn($q) => $q->whereNotNull('approved_at')])
+        ->withAvg(['reviews' => fn($q) => $q->whereNotNull('approved_at')], 'rating')
+        ->firstOrFail();
+    
+    $isEnrolled = auth()->check() && auth()->user()->enrollments()->where('course_id', $course->id)->exists();
+    $totalDuration = $course->lessons->sum('duration_seconds');
+    $totalLessons = $course->lessons->count();
+@endphp
+
+@section('title', $course->title . ' - LearnFlow')
 
 @section('content')
-    {{-- Dark Hero Section --}}
-    <section class="bg-ink py-20 px-6">
-        <div class="max-w-6xl mx-auto flex flex-col md:flex-row gap-12 text-white items-center">
-            <div class="flex-1">
-                <div class="flex items-center gap-3 text-[13px] text-[#8899FF] font-medium mb-6">
-                    <span>Design</span>
-                    <span class="text-[#444444]">/</span>
-                    <span>User Interface</span>
-                </div>
+<div x-data="{ showPreviewModal: false, previewLesson: null }">
+    {{-- Hero Section --}}
+    <div class="bg-gradient-to-br from-ink via-ink to-primary/90 text-white">
+        <div class="max-w-7xl mx-auto px-6 py-12 lg:py-16">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+                {{-- Left Content --}}
+                <div class="lg:col-span-2">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="px-3 py-1 bg-white/20 text-white text-xs font-bold uppercase rounded-full">{{ ucfirst($course->level?->value ?? 'All Levels') }}</span>
+                        @if($course->category)
+                            <span class="text-white/60 text-sm">{{ $course->category }}</span>
+                        @endif
+                    </div>
 
-                <h1 class="font-display font-extrabold text-[28px] md:text-[36px] leading-tight tracking-tight mb-6">
-                    Advanced Interface Design Systems for Modern Web Applications
-                </h1>
+                    <h1 class="font-display font-extrabold text-3xl md:text-4xl lg:text-5xl leading-tight mb-6">{{ $course->title }}</h1>
+                    
+                    @if($course->short_description)
+                        <p class="text-lg text-white/80 mb-6 max-w-2xl">{{ $course->short_description }}</p>
+                    @endif
 
-                <p class="max-w-[480px] text-[14px] text-[#AAAAAA] font-body leading-relaxed mb-10">
-                    Master the art of building scalable, maintainable design systems that empower your team to build faster and with higher quality.
-                </p>
-
-                <div class="flex flex-wrap items-center gap-x-8 gap-y-4 text-[12px] font-medium">
-                    <span class="flex items-center gap-2">
-                        <span class="text-[#F0A500]">★ 4.8</span>
-                        <span class="text-[#666666]">(2.4k students)</span>
-                    </span>
-                    <span class="text-[#666666]">Instructor: <span class="text-white">Sarah Connor</span></span>
-                    <span class="text-[#666666]">32 lessons (12 hours)</span>
-                    <x-status-badge status="Advanced" class="!bg-accent-bg !text-accent border-0" />
-                </div>
-            </div>
-        </div>
-    </section>
-
-    {{-- Content Area --}}
-    <section class="py-16 px-6 max-w-6xl mx-auto">
-        <div class="grid grid-cols-1 lg:grid-cols-[1fr_260px] gap-16">
-            {{-- Main Content --}}
-            <div>
-                {{-- Tabs --}}
-                <div class="flex gap-8 border-b border-rule mb-12" x-data="{ tab: 'curriculum' }">
-                    <button 
-                        @click="tab = 'curriculum'"
-                        :class="tab === 'curriculum' ? 'border-accent text-ink' : 'border-transparent text-ink3 hover:text-ink2'"
-                        class="pb-4 font-display font-bold text-sm border-b-2 transition-colors"
-                    >Curriculum</button>
-                    <button 
-                        @click="tab = 'overview'"
-                        :class="tab === 'overview' ? 'border-accent text-ink' : 'border-transparent text-ink3 hover:text-ink2'"
-                        class="pb-4 font-display font-bold text-sm border-b-2 transition-colors"
-                    >Overview</button>
-                    <button 
-                        @click="tab = 'reviews'"
-                        :class="tab === 'reviews' ? 'border-accent text-ink' : 'border-transparent text-ink3 hover:text-ink2'"
-                        class="pb-4 font-display font-bold text-sm border-b-2 transition-colors"
-                    >Reviews</button>
-                </div>
-
-                {{-- Curriculum Accordion --}}
-                <div class="space-y-6">
-                    @foreach(['Introduction', 'Foundation & Tokens', 'Component Library'] as $section)
-                    <div class="border border-rule rounded-card overflow-hidden">
-                        <div class="bg-bg px-6 py-4 flex justify-between items-center cursor-pointer">
-                            <h3 class="font-display font-bold text-sm text-ink">{{ $section }}</h3>
-                            <span class="text-[11px] font-bold text-ink2 uppercase tracking-widest">4 lessons</span>
-                        </div>
-                        <div class="px-0">
-                            @foreach(range(1, 4) as $l)
-                            <div class="px-6 py-3.5 border-t border-rule flex items-center justify-between group hover:bg-bg transition-colors">
-                                <div class="flex items-center gap-4">
-                                    <div class="w-8 h-8 rounded-card {{ $l == 1 ? 'bg-accent-bg text-accent' : 'bg-bg text-ink3' }} flex items-center justify-center">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path></svg>
-                                    </div>
-                                    <span class="text-[13px] font-body text-ink2 group-hover:text-ink transition-colors">Lesson {{ $l }}: System Architecture Overview</span>
+                    {{-- Meta Info --}}
+                    <div class="flex flex-wrap items-center gap-6 mb-6">
+                        @if($course->reviews_avg_rating)
+                            <div class="flex items-center gap-2">
+                                <span class="text-xl font-bold text-amber-400">{{ number_format($course->reviews_avg_rating, 1) }}</span>
+                                <div class="flex">
+                                    @for($i = 1; $i <= 5; $i++)
+                                        <span class="material-symbols-outlined text-[18px] {{ $i <= round($course->reviews_avg_rating) ? 'text-amber-400' : 'text-white/30' }}" style="font-variation-settings: 'FILL' 1">star</span>
+                                    @endfor
                                 </div>
-                                <div class="flex items-center gap-4">
-                                    @if($l == 1)
-                                        <span class="px-2 py-0.5 bg-success-bg text-success text-[10px] font-bold uppercase tracking-widest rounded-pill">Free Preview</span>
-                                    @endif
-                                    <span class="text-[11px] font-medium text-ink3">12:40</span>
+                                <span class="text-white/60">({{ number_format($course->reviews_count) }} reviews)</span>
+                            </div>
+                        @endif
+                        <div class="flex items-center gap-2 text-white/80">
+                            <span class="material-symbols-outlined text-[20px]">group</span>
+                            {{ number_format($course->enrollments_count) }} students enrolled
+                        </div>
+                    </div>
+
+                    {{-- Instructor --}}
+                    <div class="flex items-center gap-4">
+                        <img src="{{ $course->instructor?->avatar_url }}" alt="{{ $course->instructor?->name }}" class="w-12 h-12 rounded-full border-2 border-white/30">
+                        <div>
+                            <p class="text-sm text-white/60">Created by</p>
+                            <p class="font-medium text-white">{{ $course->instructor?->name ?? 'Unknown Instructor' }}</p>
+                        </div>
+                    </div>
+
+                    {{-- Course Stats --}}
+                    <div class="flex flex-wrap gap-6 mt-8 pt-6 border-t border-white/20">
+                        <div class="flex items-center gap-2 text-white/80">
+                            <span class="material-symbols-outlined text-[20px]">schedule</span>
+                            {{ floor($totalDuration / 3600) }}h {{ floor(($totalDuration % 3600) / 60) }}m total
+                        </div>
+                        <div class="flex items-center gap-2 text-white/80">
+                            <span class="material-symbols-outlined text-[20px]">play_lesson</span>
+                            {{ $totalLessons }} lessons
+                        </div>
+                        <div class="flex items-center gap-2 text-white/80">
+                            <span class="material-symbols-outlined text-[20px]">folder</span>
+                            {{ $course->sections->count() }} sections
+                        </div>
+                        @if($course->language)
+                            <div class="flex items-center gap-2 text-white/80">
+                                <span class="material-symbols-outlined text-[20px]">language</span>
+                                {{ strtoupper($course->language) }}
+                            </div>
+                        @endif
+                    </div>
+                </div>
+
+                {{-- Sidebar Card (Desktop) --}}
+                <div class="hidden lg:block">
+                    <div class="bg-surface text-ink rounded-2xl shadow-2xl overflow-hidden sticky top-24">
+                        {{-- Thumbnail --}}
+                        <div class="aspect-video bg-bg relative">
+                            @if($course->getFirstMediaUrl('thumbnail'))
+                                <img src="{{ $course->getFirstMediaUrl('thumbnail') }}" alt="{{ $course->title }}" class="w-full h-full object-cover">
+                            @else
+                                <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/10 to-primary/5">
+                                    <span class="material-symbols-outlined text-[64px] text-primary/30">school</span>
+                                </div>
+                            @endif
+                        </div>
+
+                        <div class="p-6">
+                            {{-- Price --}}
+                            <div class="flex items-center gap-3 mb-6">
+                                <span class="font-display font-extrabold text-4xl {{ $course->price > 0 ? 'text-ink' : 'text-green-600' }}">
+                                    {{ $course->price > 0 ? '$' . number_format($course->price, 2) : 'Free' }}
+                                </span>
+                            </div>
+
+                            {{-- CTA Button --}}
+                            @auth
+                                @if($isEnrolled)
+                                    <a href="{{ route('learn.show', $course->slug) }}" class="block w-full py-4 bg-primary text-white font-display font-bold text-center rounded-xl hover:opacity-90 transition-opacity">
+                                        Continue Learning
+                                    </a>
+                                @else
+                                    <form action="{{ route('enrolments.store') }}" method="POST">
+                                        @csrf
+                                        <input type="hidden" name="course_id" value="{{ $course->id }}">
+                                        <button type="submit" class="w-full py-4 bg-ink text-white font-display font-bold rounded-xl hover:opacity-90 transition-opacity">
+                                            {{ $course->price > 0 ? 'Enrol Now' : 'Enrol for Free' }}
+                                        </button>
+                                    </form>
+                                @endif
+                            @else
+                                <a href="{{ route('login') }}?redirect={{ urlencode(request()->url()) }}" class="block w-full py-4 bg-ink text-white font-display font-bold text-center rounded-xl hover:opacity-90 transition-opacity">
+                                    Login to Enrol
+                                </a>
+                            @endauth
+
+                            {{-- Features --}}
+                            <div class="mt-6 pt-6 border-t border-rule space-y-3">
+                                <div class="flex items-center gap-3 text-sm text-ink2">
+                                    <span class="material-symbols-outlined text-[20px] text-green-500">check_circle</span>
+                                    Full lifetime access
+                                </div>
+                                <div class="flex items-center gap-3 text-sm text-ink2">
+                                    <span class="material-symbols-outlined text-[20px] text-green-500">check_circle</span>
+                                    Access on mobile and desktop
+                                </div>
+                                <div class="flex items-center gap-3 text-sm text-ink2">
+                                    <span class="material-symbols-outlined text-[20px] text-green-500">check_circle</span>
+                                    Certificate of completion
                                 </div>
                             </div>
-                            @endforeach
                         </div>
                     </div>
-                    @endforeach
                 </div>
             </div>
-
-            {{-- Sticky Sidebar --}}
-            <aside class="relative">
-                <div class="lg:sticky lg:top-24 space-y-8 p-8 bg-surface border border-rule rounded-card">
-                    <div class="space-y-2">
-                        <div class="flex items-baseline gap-3">
-                            <span class="font-display font-extrabold text-3xl text-ink">$29</span>
-                            <span class="text-ink3 text-sm line-through">$89</span>
-                            <span class="px-2 py-0.5 bg-accent-bg text-accent text-[10px] font-bold uppercase tracking-widest rounded-pill">60% OFF</span>
-                        </div>
-                        <p class="text-[11px] font-bold text-warn flex items-center gap-2">
-                            <span>⏱</span> 2 days left at this price!
-                        </p>
-                    </div>
-
-                    <div class="space-y-3">
-                        <button class="w-full py-3.5 bg-ink text-white font-display font-bold text-sm rounded-card hover:opacity-90 transition-opacity">Enroll Now</button>
-                        <button class="w-full py-3.5 border border-rule text-ink font-display font-bold text-sm rounded-card hover:border-ink transition-colors">Add to wishlist</button>
-                    </div>
-
-                    <div class="pt-8 border-t border-rule">
-                        <h4 class="font-display font-bold text-[11px] uppercase tracking-widest text-ink mb-4">Course includes:</h4>
-                        <ul class="space-y-3">
-                            @foreach(['Full lifetime access', '32 on-demand video lessons', '12 downloadable resources', 'Certificate of completion'] as $feat)
-                            <li class="flex items-center gap-3 text-[13px] text-ink2 font-body">
-                                <span class="text-accent text-lg leading-none">✦</span>
-                                {{ $feat }}
-                            </li>
-                            @endforeach
-                        </ul>
-                    </div>
-                </div>
-            </aside>
         </div>
-    </section>
+    </div>
+
+    {{-- Mobile Sticky CTA --}}
+    <div class="lg:hidden fixed bottom-0 left-0 right-0 bg-surface border-t border-rule p-4 z-40">
+        <div class="flex items-center justify-between gap-4">
+            <div>
+                <span class="font-display font-extrabold text-2xl {{ $course->price > 0 ? 'text-ink' : 'text-green-600' }}">
+                    {{ $course->price > 0 ? '$' . number_format($course->price, 2) : 'Free' }}
+                </span>
+            </div>
+            @auth
+                @if($isEnrolled)
+                    <a href="{{ route('learn.show', $course->slug) }}" class="flex-1 py-3 bg-primary text-white font-display font-bold text-center rounded-xl">
+                        Continue Learning
+                    </a>
+                @else
+                    <form action="{{ route('enrolments.store') }}" method="POST" class="flex-1">
+                        @csrf
+                        <input type="hidden" name="course_id" value="{{ $course->id }}">
+                        <button type="submit" class="w-full py-3 bg-ink text-white font-display font-bold rounded-xl">
+                            {{ $course->price > 0 ? 'Enrol Now' : 'Enrol Free' }}
+                        </button>
+                    </form>
+                @endif
+            @else
+                <a href="{{ route('login') }}" class="flex-1 py-3 bg-ink text-white font-display font-bold text-center rounded-xl">
+                    Login to Enrol
+                </a>
+            @endauth
+        </div>
+    </div>
+
+    {{-- Main Content --}}
+    <div class="max-w-7xl mx-auto px-6 py-12 lg:pb-12 pb-32">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+            <div class="lg:col-span-2 space-y-12">
+                {{-- What You'll Learn --}}
+                @if($course->outcomes && count($course->outcomes) > 0)
+                <section>
+                    <h2 class="font-display font-bold text-2xl text-ink mb-6">What you'll learn</h2>
+                    <div class="bg-surface border border-rule rounded-xl p-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            @foreach($course->outcomes as $outcome)
+                                <div class="flex items-start gap-3">
+                                    <span class="material-symbols-outlined text-[20px] text-green-500 shrink-0 mt-0.5">check_circle</span>
+                                    <span class="text-sm text-ink2">{{ $outcome }}</span>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </section>
+                @endif
+
+                {{-- Requirements --}}
+                @if($course->requirements && count($course->requirements) > 0)
+                <section>
+                    <h2 class="font-display font-bold text-2xl text-ink mb-6">Requirements</h2>
+                    <ul class="space-y-3">
+                        @foreach($course->requirements as $requirement)
+                            <li class="flex items-start gap-3">
+                                <span class="material-symbols-outlined text-[18px] text-ink3 shrink-0 mt-0.5">arrow_right</span>
+                                <span class="text-sm text-ink2">{{ $requirement }}</span>
+                            </li>
+                        @endforeach
+                    </ul>
+                </section>
+                @endif
+
+                {{-- Course Curriculum --}}
+                <section>
+                    <h2 class="font-display font-bold text-2xl text-ink mb-6">Course Curriculum</h2>
+                    <div class="bg-surface border border-rule rounded-xl overflow-hidden divide-y divide-rule" x-data="{ openSection: 0 }">
+                        @foreach($course->sections as $index => $section)
+                            <div>
+                                <button @click="openSection = openSection === {{ $index }} ? null : {{ $index }}" 
+                                    class="w-full flex items-center justify-between p-5 text-left hover:bg-bg transition-colors">
+                                    <div class="flex items-center gap-4">
+                                        <span class="material-symbols-outlined text-[20px] text-ink3 transition-transform" :class="{ 'rotate-90': openSection === {{ $index }} }">chevron_right</span>
+                                        <div>
+                                            <h3 class="font-display font-bold text-sm text-ink">{{ $section->title }}</h3>
+                                            <p class="text-xs text-ink3 mt-1">{{ $section->lessons->count() }} lessons · {{ floor($section->lessons->sum('duration_seconds') / 60) }} min</p>
+                                        </div>
+                                    </div>
+                                </button>
+                                <div x-show="openSection === {{ $index }}" x-collapse class="border-t border-rule bg-bg">
+                                    @foreach($section->lessons as $lesson)
+                                        <div class="flex items-center gap-4 px-5 py-3 {{ !$loop->last ? 'border-b border-rule' : '' }}">
+                                            @php
+                                                $typeIcons = ['video' => 'play_circle', 'text' => 'article', 'pdf' => 'picture_as_pdf', 'embed' => 'code'];
+                                            @endphp
+                                            <span class="material-symbols-outlined text-[20px] text-ink3">{{ $typeIcons[$lesson->type->value] ?? 'description' }}</span>
+                                            <div class="flex-1 min-w-0">
+                                                <p class="text-sm text-ink truncate">{{ $lesson->title }}</p>
+                                            </div>
+                                            <div class="flex items-center gap-3 shrink-0">
+                                                @if($lesson->is_preview)
+                                                    <button @click="showPreviewModal = true; previewLesson = { id: {{ $lesson->id }}, title: '{{ addslashes($lesson->title) }}', type: '{{ $lesson->type->value }}', url: '{{ $lesson->content_url }}', body: {{ json_encode($lesson->content_body) }} }" 
+                                                        class="px-2 py-1 bg-primary/10 text-primary text-[10px] font-bold uppercase rounded hover:bg-primary/20 transition-colors">
+                                                        Preview
+                                                    </button>
+                                                @endif
+                                                @if($lesson->duration_seconds)
+                                                    <span class="text-xs text-ink3">{{ gmdate('i:s', $lesson->duration_seconds) }}</span>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </section>
+
+                {{-- Description --}}
+                @if($course->description)
+                <section>
+                    <h2 class="font-display font-bold text-2xl text-ink mb-6">Description</h2>
+                    <div class="prose prose-sm max-w-none text-ink2">
+                        {!! $course->description !!}
+                    </div>
+                </section>
+                @endif
+
+                {{-- Instructor --}}
+                <section>
+                    <h2 class="font-display font-bold text-2xl text-ink mb-6">Your Instructor</h2>
+                    <div class="bg-surface border border-rule rounded-xl p-6">
+                        <div class="flex items-start gap-6">
+                            <img src="{{ $course->instructor?->avatar_url }}" alt="{{ $course->instructor?->name }}" class="w-24 h-24 rounded-full">
+                            <div class="flex-1">
+                                <h3 class="font-display font-bold text-lg text-ink">{{ $course->instructor?->name }}</h3>
+                                @if($course->instructor?->bio)
+                                    <p class="text-sm text-ink2 mt-2">{{ $course->instructor->bio }}</p>
+                                @endif
+                                <div class="flex items-center gap-6 mt-4 text-sm text-ink3">
+                                    <span class="flex items-center gap-1">
+                                        <span class="material-symbols-outlined text-[18px]">school</span>
+                                        {{ $course->instructor?->courses()->published()->count() ?? 0 }} courses
+                                    </span>
+                                    <span class="flex items-center gap-1">
+                                        <span class="material-symbols-outlined text-[18px]">group</span>
+                                        {{ number_format($course->instructor?->courses()->withCount('enrollments')->get()->sum('enrollments_count') ?? 0) }} students
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                {{-- Reviews --}}
+                @if($course->reviews->count() > 0)
+                <section>
+                    <h2 class="font-display font-bold text-2xl text-ink mb-6">Student Reviews</h2>
+                    <div class="space-y-6">
+                        @foreach($course->reviews as $review)
+                            <div class="bg-surface border border-rule rounded-xl p-6">
+                                <div class="flex items-start gap-4">
+                                    <img src="{{ $review->user?->avatar_url }}" alt="{{ $review->user?->name }}" class="w-12 h-12 rounded-full">
+                                    <div class="flex-1">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <h4 class="font-medium text-ink">{{ $review->user?->name }}</h4>
+                                            <span class="text-xs text-ink3">{{ $review->created_at->diffForHumans() }}</span>
+                                        </div>
+                                        <div class="flex mb-3">
+                                            @for($i = 1; $i <= 5; $i++)
+                                                <span class="material-symbols-outlined text-[16px] {{ $i <= $review->rating ? 'text-amber-400' : 'text-gray-200' }}" style="font-variation-settings: 'FILL' 1">star</span>
+                                            @endfor
+                                        </div>
+                                        @if($review->comment)
+                                            <p class="text-sm text-ink2">{{ $review->comment }}</p>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </section>
+                @endif
+            </div>
+
+            {{-- Empty space for sticky sidebar on desktop --}}
+            <div class="hidden lg:block"></div>
+        </div>
+    </div>
+
+    {{-- Preview Modal --}}
+    <div x-show="showPreviewModal" x-cloak 
+        class="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4"
+        @click.self="showPreviewModal = false"
+        @keydown.escape.window="showPreviewModal = false">
+        <div class="bg-surface rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden" @click.stop>
+            <div class="flex items-center justify-between p-4 border-b border-rule">
+                <h3 class="font-display font-bold text-lg text-ink" x-text="previewLesson?.title"></h3>
+                <button @click="showPreviewModal = false" class="p-2 hover:bg-bg rounded-lg transition-colors">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div class="p-6 overflow-y-auto max-h-[calc(90vh-80px)]">
+                <template x-if="previewLesson?.type === 'video' && previewLesson?.url">
+                    <div class="aspect-video bg-black rounded-lg overflow-hidden">
+                        <iframe :src="previewLesson.url.includes('youtube') ? previewLesson.url.replace('watch?v=', 'embed/') : previewLesson.url" 
+                            class="w-full h-full" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                </template>
+                <template x-if="previewLesson?.type === 'text' && previewLesson?.body">
+                    <div class="prose prose-sm max-w-none" x-html="previewLesson.body"></div>
+                </template>
+                <template x-if="previewLesson?.type === 'pdf'">
+                    <p class="text-center text-ink3 py-12">PDF preview not available. Enrol to access.</p>
+                </template>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection

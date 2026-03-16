@@ -5,7 +5,7 @@
 @section('content')
 <div class="max-w-3xl space-y-12">
     <div class="space-y-1">
-        <h2 class="font-syne font-bold text-lg tracking-tight text-ink">Platform Configuration</h2>
+        <h2 class="font-poppins font-bold text-lg tracking-tight text-ink">Platform Configuration</h2>
         <p class="text-[13px] font-body text-ink2">Manage global settings, integrations, and platform health.</p>
     </div>
 
@@ -23,7 +23,7 @@
 
     {{-- Mailer Section --}}
     <section class="space-y-6" x-data="{ mailer: '{{ \App\Models\Setting::get('mail_mailer', config('mail.default')) }}' }">
-        <h3 class="font-syne font-bold text-[11px] uppercase tracking-widest text-ink3 border-l-2 border-primary pl-4">Mailer Configuration</h3>
+        <h3 class="font-poppins font-bold text-[11px] uppercase tracking-widest text-ink3 border-l-2 border-primary pl-4">Mailer Configuration</h3>
         
         <form method="POST" action="{{ route('admin.settings.update') }}" class="p-8 bg-surface border border-rule space-y-8">
             @csrf
@@ -132,7 +132,7 @@
             </div>
 
             <div class="flex justify-end pt-4">
-                <button type="submit" class="px-8 py-3 bg-primary text-white font-syne font-bold text-xs uppercase tracking-widest hover:opacity-90 transition-opacity">
+                <button type="submit" class="px-8 py-3 bg-primary text-white font-poppins font-bold text-xs uppercase tracking-widest hover:opacity-90 transition-opacity">
                     Update Mailer Settings
                 </button>
             </div>
@@ -147,7 +147,7 @@
                     <input type="email" name="test_email" value="{{ auth()->user()?->email }}" 
                         class="w-full h-11 bg-background-light/50 border border-rule/50 rounded-lg px-4 font-body text-sm focus:ring-1 focus:ring-primary/30 outline-none">
                 </div>
-                <button type="submit" class="h-11 px-6 border border-ink text-ink font-syne font-bold text-xs uppercase tracking-widest hover:bg-ink hover:text-white transition-all">
+                <button type="submit" class="h-11 px-6 border border-ink text-ink font-poppins font-bold text-xs uppercase tracking-widest hover:bg-ink hover:text-white transition-all">
                     Run Test
                 </button>
             </form>
@@ -157,7 +157,7 @@
     <form class="space-y-12">
         {{-- General Section --}}
         <section class="space-y-6">
-            <h3 class="font-syne font-bold text-[11px] uppercase tracking-widest text-ink3 border-l-2 border-primary pl-4">General Configuration</h3>
+            <h3 class="font-poppins font-bold text-[11px] uppercase tracking-widest text-ink3 border-l-2 border-primary pl-4">General Configuration</h3>
             <div class="grid grid-cols-1 gap-6 p-8 bg-surface border border-rule">
                 <div class="space-y-2">
                     <label class="block text-[11px] font-bold uppercase tracking-widest text-ink2">Site Name</label>
@@ -172,7 +172,7 @@
 
         {{-- Payment Section --}}
         <section class="space-y-6">
-            <h3 class="font-syne font-bold text-[11px] uppercase tracking-widest text-ink3 border-l-2 border-primary pl-4">Payment Gateway</h3>
+            <h3 class="font-poppins font-bold text-[11px] uppercase tracking-widest text-ink3 border-l-2 border-primary pl-4">Payment Gateway</h3>
             <div class="p-8 bg-surface border border-rule">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-4">
@@ -191,7 +191,7 @@
 
         {{-- Feature Toggles --}}
         <section class="space-y-6">
-            <h3 class="font-syne font-bold text-[11px] uppercase tracking-widest text-ink3 border-l-2 border-primary pl-4">Feature Flags</h3>
+            <h3 class="font-poppins font-bold text-[11px] uppercase tracking-widest text-ink3 border-l-2 border-primary pl-4">Feature Flags</h3>
             <div class="grid grid-cols-1 gap-4">
                 <div class="flex items-center justify-between p-6 bg-surface border border-rule group">
                     <div class="space-y-0.5">
@@ -215,7 +215,7 @@
         </section>
 
         <div class="pt-8 border-t border-rule flex justify-end">
-            <button type="submit" class="px-10 py-4 bg-primary text-white font-syne font-bold text-xs uppercase tracking-widest hover:opacity-90 transition-opacity shadow-lg shadow-primary/20">
+            <button type="submit" class="px-10 py-4 bg-primary text-white font-poppins font-bold text-xs uppercase tracking-widest hover:opacity-90 transition-opacity shadow-lg shadow-primary/20">
                 Save All Changes
             </button>
         </div>
