@@ -20,10 +20,7 @@ new #[Layout('layouts.guest')] class extends Component {} ?>
         </div>
 
         <div class="space-y-1.5">
-            <div class="flex justify-between items-center">
-                <label class="block text-xs font-medium text-neutral-text dark:text-slate-400 uppercase tracking-wider" for="password">Password</label>
-                <a class="text-[11px] text-primary hover:underline font-medium uppercase tracking-wider" href="{{ route('password.request') }}">Forgot?</a>
-            </div>
+            <label class="block text-xs font-medium text-neutral-text dark:text-slate-400 uppercase tracking-wider" for="password">Password</label>
             <div class="relative" x-data="{ show: false }">
                 <input id="password" name="password" :type="show ? 'text' : 'password'" placeholder="••••••••" required autocomplete="current-password"
                     class="w-full h-[36px] pl-3 pr-10 py-2 bg-transparent border border-neutral-border dark:border-slate-700 rounded-custom text-sm text-brand-black dark:text-slate-200 placeholder:text-neutral-text/50 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all" />
@@ -34,11 +31,14 @@ new #[Layout('layouts.guest')] class extends Component {} ?>
             <x-input-error :messages="$errors->get('password')" class="mt-1 text-sm text-red-600" />
         </div>
 
-        <label class="inline-flex items-center gap-2 cursor-pointer">
-            <input type="checkbox" name="remember"
-                class="rounded border-neutral-border dark:border-slate-700 text-primary focus:ring-primary focus:ring-offset-0" />
-            <span class="text-sm text-neutral-text dark:text-slate-400">Remember me</span>
-        </label>
+        <div class="flex items-center justify-between">
+            <label class="inline-flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" name="remember"
+                    class="rounded border-neutral-border dark:border-slate-700 text-primary focus:ring-primary focus:ring-offset-0" />
+                <span class="text-sm text-neutral-text dark:text-slate-400">Remember me</span>
+            </label>
+            <a class="text-[11px] text-primary hover:underline font-medium uppercase tracking-wider" href="{{ route('password.request') }}">Forgot password?</a>
+        </div>
 
         <button type="submit" class="w-full h-[44px] bg-brand-black dark:bg-primary text-white font-bold rounded-custom hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
             <span>Sign In</span>

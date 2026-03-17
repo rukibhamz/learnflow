@@ -90,27 +90,27 @@
                     <h4 class="font-display font-bold text-sm text-ink uppercase tracking-wider mb-4">Platform</h4>
                     <ul class="space-y-2 text-sm text-ink2">
                         <li><a href="{{ route('courses.index') }}" class="hover:text-accent transition-colors">Courses</a></li>
-                        <li><a href="{{ route('courses.index') }}" class="hover:text-accent transition-colors">Mentors</a></li>
-                        <li><a href="{{ route('courses.index') }}" class="hover:text-accent transition-colors">Enterprise</a></li>
-                        <li><a href="{{ route('courses.index') }}" class="hover:text-accent transition-colors">Resources</a></li>
+                        <li><a href="{{ route('pages.mentors') }}" class="hover:text-accent transition-colors">Mentors</a></li>
+                        <li><a href="{{ route('pages.pricing') }}" class="hover:text-accent transition-colors">Pricing</a></li>
+                        <li><a href="{{ route('pages.resources') }}" class="hover:text-accent transition-colors">Resources</a></li>
                     </ul>
                 </div>
                 <div>
                     <h4 class="font-display font-bold text-sm text-ink uppercase tracking-wider mb-4">Company</h4>
                     <ul class="space-y-2 text-sm text-ink2">
-                        <li><a href="#" class="hover:text-accent transition-colors">About Us</a></li>
-                        <li><a href="#" class="hover:text-accent transition-colors">Careers</a></li>
-                        <li><a href="#" class="hover:text-accent transition-colors">Blog</a></li>
-                        <li><a href="#" class="hover:text-accent transition-colors">Contact</a></li>
+                        <li><a href="{{ route('pages.about') }}" class="hover:text-accent transition-colors">About Us</a></li>
+                        <li><a href="{{ route('pages.about') }}" class="hover:text-accent transition-colors">Careers</a></li>
+                        <li><a href="{{ route('pages.about') }}" class="hover:text-accent transition-colors">Blog</a></li>
+                        <li><a href="{{ route('pages.contact') }}" class="hover:text-accent transition-colors">Contact</a></li>
                     </ul>
                 </div>
                 <div>
                     <h4 class="font-display font-bold text-sm text-ink uppercase tracking-wider mb-4">Support</h4>
                     <ul class="space-y-2 text-sm text-ink2">
-                        <li><a href="#" class="hover:text-accent transition-colors">Help Center</a></li>
-                        <li><a href="#" class="hover:text-accent transition-colors">Terms of Service</a></li>
-                        <li><a href="#" class="hover:text-accent transition-colors">Privacy Policy</a></li>
-                        <li><a href="#" class="hover:text-accent transition-colors">Cookie Policy</a></li>
+                        <li><a href="{{ route('pages.help') }}" class="hover:text-accent transition-colors">Help Center</a></li>
+                        <li><a href="{{ route('pages.terms') }}" class="hover:text-accent transition-colors">Terms of Service</a></li>
+                        <li><a href="{{ route('pages.privacy') }}" class="hover:text-accent transition-colors">Privacy Policy</a></li>
+                        <li><a href="{{ route('pages.privacy') }}" class="hover:text-accent transition-colors">Cookie Policy</a></li>
                     </ul>
                 </div>
             </div>

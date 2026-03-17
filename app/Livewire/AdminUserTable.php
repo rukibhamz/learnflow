@@ -3,6 +3,8 @@
 namespace App\Livewire;
 
 use App\Models\User;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Spatie\Permission\Models\Role;
@@ -27,6 +29,12 @@ class AdminUserTable extends Component
     public $newUsername = '';
     public $newPassword = '';
     public $newRole = 'student';
+
+    public $showPasswordModal = false;
+    public $passwordUserId = null;
+    public $passwordUserName = '';
+    public $passwordUserEmail = '';
+    public $newPasswordValue = '';
 
     protected $queryString = ['search', 'roleFilter'];
 
@@ -130,6 +138,54 @@ class AdminUserTable extends Component
 
         $user->delete();
         session()->flash('success', 'User deleted successfully.');
+    }
+
+    public function openPasswordModal($userId): void
+    {
+        $user = User::findOrFail($userId);
+        $this->passwordUserId = $user->id;
+        $this->passwordUserName = $user->name;
+        $this->passwordUserEmail = $user->email;
+        $this->newPasswordValue = '';
+        $this->showPasswordModal = true;
+    }
+
+    public function closePasswordModal(): void
+    {
+        $this->showPasswordModal = false;
+        $this->passwordUserId = null;
+        $this->passwordUserName = '';
+        $this->passwordUserEmail = '';
+        $this->newPasswordValue = '';
+    }
+
+    public function setPassword(): void
+    {
+        abort_unless(auth()->user()->hasRole('admin'), 403);
+
+        $this->validate([
+            'newPasswordValue' => 'required|string|min:8',
+        ]);
+
+        $user = User::findOrFail($this->passwordUserId);
+        $user->update(['password' => Hash::make($this->newPasswordValue)]);
+
+        $this->closePasswordModal();
+        session()->flash('success', 'Password updated successfully.');
+    }
+
+    public function sendResetEmail(): void
+    {
+        abort_unless(auth()->user()->hasRole('admin'), 403);
+
+        $status = Password::sendResetLink(['email' => $this->passwordUserEmail]);
+
+        if ($status === Password::RESET_LINK_SENT) {
+            $this->closePasswordModal();
+            session()->flash('success', 'Password reset email sent.');
+        } else {
+            session()->flash('error', 'Failed to send password reset email.');
+        }
     }
 
     public function render()

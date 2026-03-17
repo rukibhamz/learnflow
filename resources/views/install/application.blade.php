@@ -18,7 +18,7 @@
         Configure your application and create the administrator account.
     </p>
 
-    <form method="POST" action="{{ route('install.application.store') }}/">
+    <form method="POST" action="{{ route('install.application.store') }}">
         @csrf
 
         <div class="space-y-4">

@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="max-w-5xl mx-auto">
-    <div class="mb-8 flex items-center justify-between">
+    <div class="mb-10 flex items-center justify-between">
         <div>
             <h1 class="font-display font-extrabold text-2xl text-ink">My Orders</h1>
             <p class="text-[13px] font-body text-ink2 mt-1">View your course purchase history and download invoices.</p>

@@ -44,10 +44,6 @@ class StudentDashboard extends Component
         }
 
         $courses = $enrollments->pluck('course')->filter();
-        $courseLessonIds = $courses
-            ->keyBy('id')
-            ->map(fn ($course) => $course->lessons->pluck('id')->all())
-            ->all();
 
         $allLessonIds = $courses->flatMap(fn ($course) => $course->lessons->pluck('id'))->unique()->values();
 
@@ -67,9 +63,9 @@ class StudentDashboard extends Component
                 continue;
             }
 
-            $lessons = $course->lessons;
+            $lessons = $course->lessons->sortBy('order');
             $next = $lessons->first(fn ($lesson) => ! $completed->has($lesson->id)) ?? $lessons->first();
-            $nextByEnrollmentId[$enrollment->id] = $next?->id;
+            $nextByEnrollmentId[$enrollment->id] = $next;
         }
 
         return $nextByEnrollmentId;
@@ -87,6 +83,15 @@ class StudentDashboard extends Component
             ->values();
 
         $nextLessonIdByEnrollmentId = $this->buildNextLessonMap($inProgressEnrollments);
+
+        // Attach next_lesson directly to each enrollment for easy access
+        foreach ($inProgressEnrollments as $enrollment) {
+            $enrollment->next_lesson = $nextLessonIdByEnrollmentId[$enrollment->id] ?? null;
+        }
+
+        $nextLessonIdByEnrollmentId = collect($nextLessonIdByEnrollmentId)
+            ->map(fn ($lesson) => $lesson?->id)
+            ->all();
 
         $completedEnrollments = Enrollment::where('user_id', $user->id)
             ->whereNotNull('completed_at')

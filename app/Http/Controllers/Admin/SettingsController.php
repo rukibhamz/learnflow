@@ -23,7 +23,7 @@ class SettingsController extends Controller
             Setting::set($key, $value);
         }
 
-        return back()->with('success', 'Settings updated successfully.');
+        return redirect()->route('admin.settings')->with('success', 'Settings updated successfully.');
     }
 
     /**

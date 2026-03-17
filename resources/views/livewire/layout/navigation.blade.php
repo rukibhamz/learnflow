@@ -20,9 +20,9 @@ new class extends Component {} ?>
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:flex">
                     <a href="{{ route('courses.index') }}" class="text-sm font-medium {{ request()->routeIs('courses*') ? 'text-accent' : 'text-ink2 hover:text-accent' }} transition-colors">Courses</a>
-                    <a href="{{ route('courses.index') }}#mentors" class="text-sm font-medium text-ink2 hover:text-accent transition-colors">Mentors</a>
-                    <a href="{{ route('courses.index') }}#pricing" class="text-sm font-medium text-ink2 hover:text-accent transition-colors">Pricing</a>
-                    <a href="{{ route('courses.index') }}" class="text-sm font-medium text-ink2 hover:text-accent transition-colors">Resources</a>
+                    <a href="{{ route('pages.mentors') }}" class="text-sm font-medium {{ request()->routeIs('pages.mentors') ? 'text-accent' : 'text-ink2 hover:text-accent' }} transition-colors">Mentors</a>
+                    <a href="{{ route('pages.pricing') }}" class="text-sm font-medium {{ request()->routeIs('pages.pricing') ? 'text-accent' : 'text-ink2 hover:text-accent' }} transition-colors">Pricing</a>
+                    <a href="{{ route('pages.resources') }}" class="text-sm font-medium {{ request()->routeIs('pages.resources') ? 'text-accent' : 'text-ink2 hover:text-accent' }} transition-colors">Resources</a>
                     @auth
                     <a href="{{ route('dashboard') }}" class="text-sm font-medium {{ request()->routeIs('dashboard') ? 'text-accent' : 'text-ink2 hover:text-accent' }} transition-colors">Dashboard</a>
                     @endauth
@@ -78,9 +78,23 @@ new class extends Component {} ?>
     <!-- Responsive Navigation Menu -->
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
+            <x-responsive-nav-link :href="route('courses.index')" :active="request()->routeIs('courses*')">
+                Courses
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('pages.mentors')" :active="request()->routeIs('pages.mentors')">
+                Mentors
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('pages.pricing')" :active="request()->routeIs('pages.pricing')">
+                Pricing
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('pages.resources')" :active="request()->routeIs('pages.resources')">
+                Resources
+            </x-responsive-nav-link>
+            @auth
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" wire:navigate>
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
+            @endauth
         </div>
 
         <!-- Responsive Settings Options -->

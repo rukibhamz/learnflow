@@ -3,7 +3,7 @@
 @section('title', 'Settings')
 
 @section('content')
-<div class="max-w-3xl" x-data="{ tab: 'profile' }">
+<div class="max-w-5xl mx-auto" x-data="{ tab: 'profile' }">
     <div class="mb-10">
         <h1 class="font-display font-extrabold text-2xl text-ink">Account Settings</h1>
         <p class="text-[13px] font-body text-ink2 mt-1">Manage your profile and account preferences.</p>
@@ -19,7 +19,7 @@
 
     {{-- Profile Tab --}}
     <div x-show="tab === 'profile'">
-        <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
+        <div class="bg-surface border border-rule rounded-card p-8">
             <div class="max-w-xl">
                 <livewire:profile.update-profile-information-form />
             </div>
@@ -28,7 +28,7 @@
 
     {{-- Password Tab --}}
     <div x-show="tab === 'password'" x-cloak>
-        <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
+        <div class="bg-surface border border-rule rounded-card p-8">
             <div class="max-w-xl">
                 <livewire:profile.update-password-form />
             </div>
@@ -37,7 +37,7 @@
 
     {{-- Notifications Tab --}}
     <div x-show="tab === 'notifications'" x-cloak>
-        <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
+        <div class="bg-surface border border-rule rounded-card p-8">
             <div class="max-w-xl">
                 <livewire:notification-preferences />
             </div>
@@ -46,7 +46,7 @@
 
     {{-- Billing Tab --}}
     <div x-show="tab === 'billing'" x-cloak>
-        <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
+        <div class="bg-surface border border-rule rounded-card p-8">
             @php
                 $orders = \App\Models\Order::where('user_id', auth()->id())
                     ->with('course')
@@ -56,26 +56,26 @@
             @endphp
 
             <h3 class="font-display font-bold text-lg text-ink mb-1">Purchase History</h3>
-            <p class="text-sm text-ink2 mb-6">Your recent course purchases.</p>
+            <p class="text-[13px] font-body text-ink2 mb-6">Your recent course purchases.</p>
 
             @if($orders->isNotEmpty())
                 <div class="bg-bg rounded-lg overflow-hidden">
                     <table class="w-full text-sm">
                         <thead>
                             <tr class="border-b border-rule">
-                                <th class="text-left px-4 py-3 text-[10px] font-bold uppercase tracking-widest text-ink3">Course</th>
-                                <th class="text-left px-4 py-3 text-[10px] font-bold uppercase tracking-widest text-ink3">Amount</th>
-                                <th class="text-left px-4 py-3 text-[10px] font-bold uppercase tracking-widest text-ink3">Status</th>
-                                <th class="text-left px-4 py-3 text-[10px] font-bold uppercase tracking-widest text-ink3">Date</th>
-                                <th class="text-right px-4 py-3 text-[10px] font-bold uppercase tracking-widest text-ink3">Invoice</th>
+                                <th class="text-left px-5 py-3 text-[10px] font-bold uppercase tracking-widest text-ink3">Course</th>
+                                <th class="text-left px-5 py-3 text-[10px] font-bold uppercase tracking-widest text-ink3">Amount</th>
+                                <th class="text-left px-5 py-3 text-[10px] font-bold uppercase tracking-widest text-ink3">Status</th>
+                                <th class="text-left px-5 py-3 text-[10px] font-bold uppercase tracking-widest text-ink3">Date</th>
+                                <th class="text-right px-5 py-3 text-[10px] font-bold uppercase tracking-widest text-ink3">Invoice</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-rule">
                             @foreach($orders as $order)
                             <tr>
-                                <td class="px-4 py-3 text-ink font-medium">{{ $order->course?->title ?? '—' }}</td>
-                                <td class="px-4 py-3 text-ink2">${{ number_format($order->amount, 2) }}</td>
-                                <td class="px-4 py-3">
+                                <td class="px-5 py-3 text-ink font-medium">{{ $order->course?->title ?? '—' }}</td>
+                                <td class="px-5 py-3 text-ink2">${{ number_format($order->amount, 2) }}</td>
+                                <td class="px-5 py-3">
                                     @php
                                         $colors = ['paid' => 'text-green-700 bg-green-50', 'pending' => 'text-amber-700 bg-amber-50', 'refunded' => 'text-blue-700 bg-blue-50', 'failed' => 'text-red-700 bg-red-50'];
                                     @endphp
@@ -83,8 +83,8 @@
                                         {{ $order->status->value }}
                                     </span>
                                 </td>
-                                <td class="px-4 py-3 text-ink3 text-xs">{{ $order->created_at->format('M j, Y') }}</td>
-                                <td class="px-4 py-3 text-right">
+                                <td class="px-5 py-3 text-ink3 text-xs">{{ $order->created_at->format('M j, Y') }}</td>
+                                <td class="px-5 py-3 text-right">
                                     @if($order->status->value === 'paid' && ($order->metadata['invoice_path'] ?? null))
                                         <a href="{{ route('my-orders.invoice', $order) }}" class="text-xs text-primary hover:underline">Download</a>
                                     @endif

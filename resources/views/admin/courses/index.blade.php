@@ -9,10 +9,10 @@
             <h2 class="font-poppins font-bold text-lg tracking-tight text-ink">All Courses</h2>
             <p class="text-[13px] text-ink2 font-body">Review, manage, and monitor all courses on the platform.</p>
         </div>
-        <button class="bg-primary text-white px-5 py-2.5 rounded-lg font-poppins font-bold text-sm hover:opacity-90 transition-opacity flex items-center gap-2">
+        <a href="{{ route('admin.courses.create') }}" class="bg-primary text-white px-5 py-2.5 rounded-lg font-poppins font-bold text-sm hover:opacity-90 transition-opacity flex items-center gap-2">
             <span class="material-symbols-outlined text-[20px]">add</span>
             Create New Course
-        </button>
+        </a>
     </div>
 
     <div class="bg-surface border border-rule rounded-none overflow-hidden">
@@ -59,23 +59,26 @@
                                 'draft' => 'bg-bg text-ink3 border-rule',
                                 'pending' => 'bg-amber-50 text-amber-600 border-amber-100',
                             ];
-                            $statusColor = $statusColors[strtolower($course->status)] ?? $statusColors['draft'];
+                            $statusColor = $statusColors[strtolower($course->status->value ?? $course->status)] ?? $statusColors['draft'];
                         @endphp
                         <span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border {{ $statusColor }}">
-                            {{ ucfirst($course->status) }}
+                            {{ ucfirst($course->status->value ?? $course->status) }}
                         </span>
                     </td>
                     <td class="px-6 py-4 text-right">
                         <div class="flex items-center justify-end gap-2">
-                            <a href="#" class="p-1.5 hover:bg-background-light rounded-lg text-ink3 hover:text-primary transition-colors" title="View Details">
+                            <a href="{{ route('admin.courses.show', $course) }}" class="p-1.5 hover:bg-background-light rounded-lg text-ink3 hover:text-primary transition-colors" title="View Details">
                                 <span class="material-symbols-outlined text-[18px]">visibility</span>
                             </a>
-                            <button class="p-1.5 hover:bg-background-light rounded-lg text-ink3 hover:text-primary transition-colors" title="Edit Course">
+                            <a href="{{ route('admin.courses.edit', $course) }}" class="p-1.5 hover:bg-background-light rounded-lg text-ink3 hover:text-primary transition-colors" title="Edit Course">
                                 <span class="material-symbols-outlined text-[18px]">edit</span>
-                            </button>
-                            <button class="p-1.5 hover:bg-background-light rounded-lg text-ink3 hover:text-red-500 transition-colors" title="Reject/Archive">
-                                <span class="material-symbols-outlined text-[18px]">delete</span>
-                            </button>
+                            </a>
+                            <form method="POST" action="{{ route('admin.courses.destroy', $course) }}" onsubmit="return confirm('Delete this course permanently?')" class="inline">
+                                @csrf @method('DELETE')
+                                <button type="submit" class="p-1.5 hover:bg-background-light rounded-lg text-ink3 hover:text-red-500 transition-colors" title="Delete Course">
+                                    <span class="material-symbols-outlined text-[18px]">delete</span>
+                                </button>
+                            </form>
                         </div>
                     </td>
                 </tr>

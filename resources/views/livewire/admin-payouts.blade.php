@@ -7,7 +7,6 @@
     @endif
 
     {{-- Instructor Balances --}}
-    <h2 class="font-display font-bold text-lg text-ink mb-4">Instructor Balances</h2>
     <div class="bg-surface border border-rule rounded-xl overflow-hidden mb-8">
         <table class="w-full">
             <thead>
@@ -43,7 +42,7 @@
 
     {{-- Payout History --}}
     <div class="flex items-center justify-between mb-4">
-        <h2 class="font-display font-bold text-lg text-ink">Payout History</h2>
+        <h3 class="font-display font-bold text-base text-ink">Payout History</h3>
         <div class="flex gap-2">
             <input type="text" wire:model.live.debounce.300ms="search" placeholder="Search instructor..." class="h-9 px-3 border border-rule rounded-card text-sm w-48">
             <select wire:model.live="statusFilter" class="h-9 px-3 border border-rule rounded-card text-sm bg-surface">

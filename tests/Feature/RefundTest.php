@@ -66,7 +66,7 @@ class RefundTest extends TestCase
         $service = new RefundService();
         $service->refund($order);
 
-        $this->assertDatabaseMissing('enrollments', [
+        $this->assertSoftDeleted('enrollments', [
             'user_id' => $user->id,
             'course_id' => $course->id,
         ]);

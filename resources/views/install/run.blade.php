@@ -18,7 +18,7 @@
         Everything is configured. Click the button below to run the installation.
     </p>
 
-    <form method="POST" action="{{ route('install.execute') }}/" id="install-form">
+    <form method="POST" action="{{ route('install.run.execute') }}" id="install-form">
         @csrf
         <button type="submit" id="install-btn"
                 class="inline-flex items-center justify-center gap-2 w-full px-5 py-3 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-medium text-sm transition disabled:opacity-50 disabled:cursor-not-allowed">

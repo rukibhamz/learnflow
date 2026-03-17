@@ -30,9 +30,9 @@
 
         <footer class="mt-8 text-neutral-text dark:text-slate-500 text-[11px] uppercase tracking-widest text-center">
             © {{ date('Y') }} LearnFlow Inc.
-            <a class="hover:text-brand-black dark:hover:text-slate-300 transition-colors" href="#">Privacy</a>
+            <a class="hover:text-brand-black dark:hover:text-slate-300 transition-colors" href="{{ route('pages.privacy') }}">Privacy</a>
             <span class="mx-1">•</span>
-            <a class="hover:text-brand-black dark:hover:text-slate-300 transition-colors" href="#">Terms</a>
+            <a class="hover:text-brand-black dark:hover:text-slate-300 transition-colors" href="{{ route('pages.terms') }}">Terms</a>
         </footer>
         @livewireScripts
     </body>

@@ -86,12 +86,11 @@ class AppServiceProvider extends ServiceProvider
             }
         }
 
-        $appUrl = config('app.url');
-        if ($appUrl) {
-            URL::forceRootUrl($appUrl);
-        }
-        if (config('app.env') === 'production' && str_starts_with($appUrl, 'https:')) {
-            URL::forceScheme('https');
+        if (config('app.env') === 'production') {
+            $appUrl = config('app.url');
+            if ($appUrl && str_starts_with($appUrl, 'https:')) {
+                URL::forceScheme('https');
+            }
         }
     }
 }

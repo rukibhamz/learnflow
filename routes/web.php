@@ -33,6 +33,36 @@ Route::middleware(['web', \App\Http\Middleware\RedirectIfNotInstalled::class])->
     Route::get('certificates/{uuid}/verify', [CertificateController::class, 'verify'])->name('certificates.verify');
     Route::get('pricing', [SubscriptionController::class, 'pricing'])->name('pricing');
 
+    Route::view('about', 'pages.about')->name('pages.about');
+    Route::view('contact', 'pages.contact')->name('pages.contact');
+    Route::view('privacy', 'pages.privacy')->name('pages.privacy');
+    Route::view('terms', 'pages.terms')->name('pages.terms');
+    Route::view('help', 'pages.help')->name('pages.help');
+    Route::view('resources', 'pages.resources')->name('pages.resources');
+
+    Route::get('mentors', function () {
+        $instructors = \App\Models\User::instructors()
+            ->withCount('courses')
+            ->with(['courses' => fn ($q) => $q->published()->latest()->limit(2)])
+            ->get()
+            ->map(function ($instructor) {
+                $instructor->students_count = \App\Models\Enrollment::whereIn('course_id', $instructor->courses->pluck('id'))->distinct('user_id')->count('user_id');
+                $instructor->avg_rating = \App\Models\Review::whereIn('course_id', $instructor->courses->pluck('id'))->avg('rating');
+                return $instructor;
+            });
+
+        return view('pages.mentors', [
+            'instructors' => $instructors,
+            'totalCourses' => \App\Models\Course::published()->count(),
+            'totalStudents' => \App\Models\Enrollment::distinct('user_id')->count('user_id'),
+        ]);
+    })->name('pages.mentors');
+
+    Route::get('plans', function () {
+        $plans = \App\Models\SubscriptionPlan::active()->get();
+        return view('pages.pricing', ['plans' => $plans]);
+    })->name('pages.pricing');
+
     require __DIR__.'/auth.php';
 
     // Auth required
@@ -44,11 +74,19 @@ Route::middleware(['web', \App\Http\Middleware\RedirectIfNotInstalled::class])->
         Route::get('student/certificates', [CertificateController::class, 'index'])->name('student.certificates');
         Route::view('student/settings', 'student.settings')->name('student.settings');
         Route::get('learn/{course:slug}', fn (\App\Models\Course $course) => view('learn.show', ['course' => $course]))
-            ->middleware('enrolled')
+            ->middleware(['enrolled', 'content-protection'])
             ->name('learn.show');
         Route::get('learn/{course:slug}/quiz/{quiz}', fn (\App\Models\Course $course, \App\Models\Quiz $quiz) => view('learn.quiz', ['course' => $course, 'quiz' => $quiz]))
-            ->middleware('enrolled')
+            ->middleware(['enrolled', 'content-protection'])
             ->name('learn.quiz');
+
+        // Protected media endpoints (signed, time-limited)
+        Route::get('media/lesson/{lesson}/video', [\App\Http\Controllers\ProtectedMediaController::class, 'streamVideo'])
+            ->middleware('content-protection')
+            ->name('media.lesson.video');
+        Route::get('media/lesson/{lesson}/pdf', [\App\Http\Controllers\ProtectedMediaController::class, 'streamPdf'])
+            ->middleware('content-protection')
+            ->name('media.lesson.pdf');
         
         // Enrolment
         Route::post('enrolments', [\App\Http\Controllers\EnrolmentController::class, 'store'])->name('enrolments.store');
@@ -127,7 +165,12 @@ Route::middleware(['web', \App\Http\Middleware\RedirectIfNotInstalled::class])->
     Route::middleware(['auth', 'verified', 'not-suspended', 'admin'])->prefix('admin')->name('admin.')->group(function () {
         Route::view('dashboard', 'admin.dashboard')->name('dashboard');
         Route::get('courses', fn () => view('admin.courses.index'))->name('courses.index');
+        Route::get('courses/create', fn () => view('admin.courses.create'))->name('courses.create');
         Route::get('courses/review', fn () => view('admin.courses.review'))->name('courses.review');
+        Route::get('courses/{course}', [\App\Http\Controllers\Admin\CourseController::class, 'show'])->name('courses.show');
+        Route::get('courses/{course}/edit', fn (\App\Models\Course $course) => view('admin.courses.edit', ['course' => $course]))->name('courses.edit');
+        Route::patch('courses/{course}/status', [\App\Http\Controllers\Admin\CourseController::class, 'updateStatus'])->name('courses.update-status');
+        Route::delete('courses/{course}', [\App\Http\Controllers\Admin\CourseController::class, 'destroy'])->name('courses.destroy');
         Route::get('users', fn () => view('admin.users.index'))->name('users.index');
         Route::get('coupons', fn () => view('admin.coupons.index'))->name('coupons.index');
         Route::get('orders', fn () => view('admin.orders.index'))->name('orders.index');

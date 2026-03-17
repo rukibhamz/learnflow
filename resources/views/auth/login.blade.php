@@ -42,10 +42,10 @@
             <span class="relative px-3 bg-surface text-[10px] font-bold uppercase tracking-[0.2em] text-ink3">Or continue with</span>
         </div>
 
-        <button class="w-full h-9 border border-rule rounded-card flex items-center justify-center gap-3 font-body text-sm font-medium hover:bg-bg transition-colors">
+        <a href="{{ route('auth.google') }}" class="w-full h-9 border border-rule rounded-card flex items-center justify-center gap-3 font-body text-sm font-medium hover:bg-bg transition-colors">
             <svg class="w-4 h-4" viewBox="0 0 24 24"><path fill="#EA4335" d="M12.48 10.92v3.28h7.84c-.24 1.84-2.24 5.36-7.84 5.36-4.8 0-8.72-3.92-8.72-8.72s3.92-8.72 8.72-8.72c2.72 0 4.56 1.12 5.6 2.08l2.56-2.48C19.12 1.92 16.08 0 12.48 0 5.6 0 0 5.6 0 12.48s5.6 12.48 12.48 12.48c7.2 0 12-5.04 12-12.24 0-.8-.08-1.44-.24-2.32h-11.76z"/></svg>
             Google
-        </button>
+        </a>
 
         <p class="mt-8 text-center text-[12px] text-ink2 font-body">
             New here? <a href="{{ route('register') }}" class="text-accent font-bold hover:underline">Create account</a>

@@ -18,7 +18,7 @@
         Enter your database credentials. For SQLite, only the file path is needed.
     </p>
 
-    <form method="POST" action="{{ route('install.database.store') }}/" id="db-form">
+    <form method="POST" action="{{ route('install.database.store') }}" id="db-form">
         @csrf
 
         <div class="mb-4">

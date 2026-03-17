@@ -1,30 +1,131 @@
-<div class="flex flex-col h-[calc(100vh-52px)]">
+<div class="flex flex-col h-[calc(100vh-52px)]" data-content-protected>
     @if (session('success'))
         <div class="px-6 py-3 bg-green-50 border-b border-green-200 text-sm text-green-800">
             {{ session('success') }}
         </div>
     @endif
 
-    {{-- Video Stage --}}
-    <div class="flex-1 bg-black flex flex-col items-center justify-center p-8 relative group">
-        @if($currentLesson?->video_url)
-            <div class="w-full max-w-4xl aspect-video">
-                <iframe src="{{ $currentLesson->video_url }}" class="w-full h-full rounded-card" allowfullscreen></iframe>
+    {{-- Content Stage --}}
+    <div class="flex-1 bg-black flex flex-col items-center justify-center p-8 relative group content-protected lesson-content-area">
+
+        {{-- Dynamic watermark overlay --}}
+        @auth
+        <div class="watermark-overlay text-white/80" aria-hidden="true">
+            @php
+                $wm = auth()->user()->email . ' · ' . auth()->id();
+                $positions = [
+                    ['top' => '8%', 'left' => '5%'],
+                    ['top' => '8%', 'left' => '55%'],
+                    ['top' => '30%', 'left' => '20%'],
+                    ['top' => '30%', 'left' => '70%'],
+                    ['top' => '52%', 'left' => '5%'],
+                    ['top' => '52%', 'left' => '55%'],
+                    ['top' => '74%', 'left' => '20%'],
+                    ['top' => '74%', 'left' => '70%'],
+                ];
+            @endphp
+            @foreach($positions as $pos)
+                <span class="watermark-text" style="top: {{ $pos['top'] }}; left: {{ $pos['left'] }};">{{ $wm }}</span>
+            @endforeach
+        </div>
+        @endauth
+
+        @if($currentLesson?->type?->value === 'video' && $currentLesson->content_url)
+            {{-- Video content --}}
+            @if(str_contains($currentLesson->content_url, 'youtube.com') || str_contains($currentLesson->content_url, 'youtu.be') || str_contains($currentLesson->content_url, 'vimeo.com'))
+                {{-- External embed (YouTube/Vimeo) with overlay shield --}}
+                <div class="w-full max-w-4xl aspect-video relative video-shield">
+                    <iframe
+                        src="{{ $currentLesson->content_url }}"
+                        class="w-full h-full rounded-card"
+                        allowfullscreen
+                        sandbox="allow-scripts allow-same-origin allow-presentation"
+                        referrerpolicy="no-referrer"
+                    ></iframe>
+                </div>
+            @else
+                {{-- Self-hosted video via signed URL --}}
+                <div class="w-full max-w-4xl aspect-video relative video-shield">
+                    <video
+                        src="{{ route('media.lesson.video', $currentLesson) }}"
+                        class="w-full h-full rounded-card bg-black"
+                        controls
+                        controlslist="nodownload noremoteplayback"
+                        disablepictureinpicture
+                        oncontextmenu="return false;"
+                        crossorigin="use-credentials"
+                    >
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+            @endif
+
+        @elseif($currentLesson?->type?->value === 'embed' && $currentLesson->content_url)
+            {{-- Embed content --}}
+            <div class="w-full max-w-4xl aspect-video relative video-shield">
+                <iframe
+                    src="{{ $currentLesson->content_url }}"
+                    class="w-full h-full rounded-card"
+                    allowfullscreen
+                    sandbox="allow-scripts allow-same-origin allow-presentation"
+                    referrerpolicy="no-referrer"
+                ></iframe>
             </div>
-        @elseif($currentLesson?->type === 'text' || $currentLesson?->body)
-            <div class="w-full max-w-4xl bg-white rounded-card p-8 overflow-y-auto max-h-full prose prose-sm">
-                {!! $currentLesson->body !!}
+
+        @elseif($currentLesson?->type?->value === 'text' && $currentLesson->content_body)
+            {{-- Text content — protected from selection/copy --}}
+            <div class="w-full max-w-4xl bg-white rounded-card p-8 overflow-y-auto max-h-full prose prose-sm content-protected relative"
+                 oncontextmenu="return false;"
+                 ondragstart="return false;"
+                 onselectstart="return false;"
+                 oncopy="return false;">
+                {!! $currentLesson->content_body !!}
             </div>
+
+        @elseif($currentLesson?->type?->value === 'pdf')
+            {{-- PDF content — rendered in protected inline viewer --}}
+            @php $pdfMedia = $currentLesson->getFirstMedia('pdf'); @endphp
+            @if($pdfMedia)
+                <div class="w-full max-w-4xl bg-white rounded-card overflow-hidden relative" style="height: 75vh;">
+                    <div class="absolute top-0 left-0 right-0 bg-gray-100 border-b border-gray-200 px-4 py-2 flex items-center justify-between z-20">
+                        <div class="flex items-center gap-2 text-sm text-gray-600">
+                            <span class="material-symbols-outlined text-[20px]">picture_as_pdf</span>
+                            <span class="font-medium">{{ $currentLesson->title }}</span>
+                        </div>
+                        <span class="text-[10px] text-gray-400 uppercase tracking-widest font-bold flex items-center gap-1">
+                            <span class="material-symbols-outlined text-[14px]">lock</span>
+                            Protected
+                        </span>
+                    </div>
+                    <iframe
+                        src="{{ route('media.lesson.pdf', $currentLesson) }}#toolbar=0&navpanes=0&scrollbar=1"
+                        class="w-full h-full pt-10"
+                        style="border: none;"
+                        sandbox="allow-same-origin"
+                    ></iframe>
+                    {{-- Transparent overlay to block right-click on PDF --}}
+                    <div class="absolute inset-0 pt-10" oncontextmenu="return false;" style="z-index: 10; pointer-events: auto; background: transparent;"></div>
+                </div>
+            @else
+                <div class="w-full max-w-4xl bg-white/5 border border-white/10 rounded-card p-8 text-center">
+                    <span class="material-symbols-outlined text-[48px] text-white/30 mb-4 block">picture_as_pdf</span>
+                    <p class="text-white/50 text-sm">PDF document not available.</p>
+                </div>
+            @endif
+
         @else
+            {{-- No content / placeholder --}}
             <div class="w-full max-w-4xl aspect-video bg-[#111111] border border-[#222222] rounded-card flex items-center justify-center">
-                <button class="w-20 h-20 rounded-full bg-white/10 flex items-center justify-center backdrop-blur-md hover:bg-white/20 transition-all">
-                    <svg class="w-8 h-8 text-white ml-1" fill="currentColor" viewBox="0 0 20 20"><path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/></svg>
-                </button>
+                <div class="text-center">
+                    <span class="material-symbols-outlined text-[48px] text-white/20 mb-3 block">play_circle</span>
+                    <p class="text-white/30 text-sm">Select a lesson to begin</p>
+                </div>
             </div>
         @endif
 
+        {{-- Lesson title overlay --}}
         @if($currentLesson)
-        <div class="absolute bottom-12 left-12 opacity-0 group-hover:opacity-100 transition-opacity">
+        <div class="absolute bottom-12 left-12 opacity-0 group-hover:opacity-100 transition-opacity z-20">
             <span class="text-[11px] font-bold uppercase tracking-widest text-[#888888] mb-2 block">Now Playing</span>
             <h3 class="font-display font-bold text-lg text-white">{{ $currentLesson->title }}</h3>
         </div>
@@ -61,8 +162,10 @@
                     </button>
                 @endif
             @endif
-            <button class="text-[11px] font-bold text-[#888888] hover:text-white">1.0x</button>
-            <button class="text-[#888888] hover:text-white"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path></svg></button>
+            <span class="flex items-center gap-1 text-[10px] text-[#555] uppercase tracking-widest font-bold">
+                <span class="material-symbols-outlined text-[14px]">shield</span>
+                Protected
+            </span>
         </div>
     </div>
 
@@ -80,8 +183,6 @@
         </div>
     @endif
 
-    {{-- Sidebar (inline for Livewire single-root) --}}
-    <div class="hidden">
-        {{-- Sidebar content is rendered via learn/show.blade.php @section('sidebar') --}}
-    </div>
+    {{-- Sidebar placeholder (content rendered via learn/show.blade.php @section('sidebar')) --}}
+    <div class="hidden"></div>
 </div>

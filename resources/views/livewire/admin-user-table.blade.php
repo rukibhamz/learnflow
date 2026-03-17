@@ -77,6 +77,11 @@
                             <button wire:click="editUser({{ $user->id }})" class="p-1.5 hover:bg-background-light rounded-lg text-ink3 hover:text-primary transition-colors" title="Edit User">
                                 <span class="material-symbols-outlined text-[18px]">edit_square</span>
                             </button>
+                            @if(auth()->user()->hasRole('admin'))
+                            <button wire:click="openPasswordModal({{ $user->id }})" class="p-1.5 hover:bg-background-light rounded-lg text-ink3 hover:text-blue-500 transition-colors" title="Manage Password">
+                                <span class="material-symbols-outlined text-[18px]">lock_reset</span>
+                            </button>
+                            @endif
                             <button wire:click="toggleSuspension({{ $user->id }})" wire:confirm="Are you sure you want to {{ $user->isSuspended() ? 'reactivate' : 'suspend' }} this user?" class="p-1.5 hover:bg-background-light rounded-lg text-ink3 hover:text-amber-500 transition-colors" title="{{ $user->isSuspended() ? 'Reactivate' : 'Suspend' }}">
                                 <span class="material-symbols-outlined text-[18px]">{{ $user->isSuspended() ? 'check_circle' : 'block' }}</span>
                             </button>
@@ -176,6 +181,45 @@
                 <div class="flex justify-end gap-3 pt-4">
                     <button type="button" wire:click="$set('showEditModal', false)" class="px-5 py-2.5 border border-rule rounded-lg text-sm font-medium text-ink2 hover:bg-bg transition-colors">Cancel</button>
                     <button type="submit" class="px-5 py-2.5 bg-primary text-white rounded-lg text-sm font-bold hover:opacity-90 transition-opacity">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    @endif
+
+    {{-- Password Management Modal --}}
+    @if($showPasswordModal)
+    <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50" wire:click.self="closePasswordModal">
+        <div class="bg-surface rounded-lg shadow-xl w-full max-w-md p-6">
+            <h3 class="font-poppins font-bold text-lg text-ink mb-2">Manage Password</h3>
+            <p class="text-sm text-ink3 mb-6">Update the password for this user or send them a reset link.</p>
+
+            {{-- Read-only user context --}}
+            <div class="bg-background-light rounded-lg px-4 py-3 mb-6 space-y-1">
+                <div class="text-[11px] font-bold uppercase tracking-widest text-ink3">User</div>
+                <div class="text-sm font-medium text-ink">{{ $passwordUserName }}</div>
+                <div class="text-sm text-ink2">{{ $passwordUserEmail }}</div>
+            </div>
+
+            {{-- Direct password set --}}
+            <form wire:submit="setPassword" class="space-y-4">
+                <div>
+                    <label class="block text-[11px] font-bold uppercase tracking-widest text-ink3 mb-2">New Password</label>
+                    <input type="password" wire:model="newPasswordValue" placeholder="Min. 8 characters"
+                        class="w-full h-11 bg-bg border border-rule rounded-lg px-4 text-sm focus:outline-none focus:border-primary">
+                    @error('newPasswordValue') <span class="text-xs text-red-600">{{ $message }}</span> @enderror
+                </div>
+                <div class="flex flex-col gap-3 pt-2">
+                    <button type="submit" class="w-full h-11 bg-primary text-white rounded-lg text-sm font-bold hover:opacity-90 transition-opacity">
+                        Set Password
+                    </button>
+                    <button type="button" wire:click="sendResetEmail" class="w-full h-11 border border-rule rounded-lg text-sm font-medium text-ink2 hover:bg-bg transition-colors flex items-center justify-center gap-2">
+                        <span class="material-symbols-outlined text-[16px]">mail</span>
+                        Send Reset Email
+                    </button>
+                    <button type="button" wire:click="closePasswordModal" class="w-full h-11 text-sm text-ink3 hover:text-ink transition-colors">
+                        Cancel
+                    </button>
                 </div>
             </form>
         </div>

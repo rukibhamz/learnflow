@@ -1,6 +1,5 @@
 <div>
     <div class="flex items-center justify-between mb-6">
-        <h2 class="font-display font-bold text-lg text-ink">Search Analytics</h2>
         <select wire:model.live="period" class="h-10 px-4 border border-rule rounded-card text-sm bg-surface">
             <option value="7">Last 7 days</option>
             <option value="30">Last 30 days</option>

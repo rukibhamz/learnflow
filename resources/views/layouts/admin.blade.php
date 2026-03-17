@@ -126,17 +126,17 @@
                 <button @click="sidebarOpen = true" class="lg:hidden w-9 h-9 flex items-center justify-center hover:bg-background-light rounded-lg">
                     <span class="material-symbols-outlined text-[20px] text-ink3">menu</span>
                 </button>
-                <div class="relative w-full max-w-md">
+                <form action="{{ route('admin.courses.index') }}" method="GET" class="relative w-full max-w-md">
                     <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[18px] text-ink3">search</span>
-                    <input type="text" placeholder="Search resources…"
+                    <input type="text" name="q" placeholder="Search courses…" value="{{ request('q') }}"
                            class="w-full bg-background-light border-none rounded-lg py-1.5 pl-10 pr-4 text-sm focus:ring-1 focus:ring-primary/30 outline-none">
-                </div>
+                </form>
             </div>
             <div class="flex items-center gap-2">
                 <livewire:notification-bell lazy />
-                <button class="w-9 h-9 flex items-center justify-center hover:bg-background-light rounded-lg">
+                <a href="https://laravel.com/docs" target="_blank" rel="noopener" class="w-9 h-9 flex items-center justify-center hover:bg-background-light rounded-lg" title="Help & Documentation">
                     <span class="material-symbols-outlined text-[20px] text-ink3">help</span>
-                </button>
+                </a>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
                     <button type="submit" class="w-9 h-9 flex items-center justify-center hover:bg-background-light rounded-lg text-ink3 hover:text-red-500 transition-colors">

@@ -1,8 +1,11 @@
 <div>
     {{-- Welcome Header --}}
-    <div class="mb-8">
-        <h1 class="font-display font-extrabold text-2xl text-ink">Welcome back, {{ auth()->user()->name }}!</h1>
-        <p class="text-sm text-ink3 mt-1">Continue your learning journey</p>
+    <div class="mb-10 flex items-center justify-between">
+        <div>
+            <h1 class="font-display font-extrabold text-2xl text-ink">Welcome back, {{ auth()->user()->name }}!</h1>
+            <p class="text-[13px] font-body text-ink2 mt-1">Continue your learning journey.</p>
+        </div>
+        <a href="{{ route('courses.index') }}" class="px-5 py-2.5 bg-accent text-white font-display font-bold text-[12px] rounded-card hover:opacity-90 transition-opacity">Browse Courses</a>
     </div>
 
     {{-- Stats Overview --}}
@@ -43,7 +46,7 @@
     </div>
 
     {{-- Tabs --}}
-    <div class="border-b border-rule mb-8">
+    <div class="border-b border-rule mb-10">
         <nav class="flex gap-8">
             <button wire:click="setTab('in_progress')" 
                 class="pb-4 text-sm font-medium transition-colors relative {{ $activeTab === 'in_progress' ? 'text-primary' : 'text-ink3 hover:text-ink' }}">
