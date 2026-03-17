@@ -1,17 +1,6 @@
 @extends('layouts.app')
 
 @php
-    $course = \App\Models\Course::where('slug', $slug)
-        ->published()
-        ->with(['instructor', 'sections.lessons', 'reviews' => fn($q) => $q->whereNotNull('approved_at')->with('user')->latest()->take(10)])
-        ->withCount(['enrollments', 'reviews' => fn($q) => $q->whereNotNull('approved_at')])
-        ->withAvg(['reviews' => fn($q) => $q->whereNotNull('approved_at')], 'rating')
-        ->firstOrFail();
-    
-    $isEnrolled = auth()->check() && auth()->user()->enrollments()->where('course_id', $course->id)->exists();
-    $totalDuration = $course->lessons->sum('duration_seconds');
-    $totalLessons = $course->lessons->count();
-
     $couponCode = session('coupon_code');
     $couponValidation = null;
     $discountAmount = 0.0;
@@ -89,7 +78,7 @@
                         </div>
                         <div class="flex items-center gap-2 text-white/80">
                             <span class="material-symbols-outlined text-[20px]">folder</span>
-                            {{ $course->sections->count() }} sections
+                            {{ $curriculumSections->count() }} sections
                         </div>
                         @if($course->language)
                             <div class="flex items-center gap-2 text-white/80">
@@ -128,6 +117,10 @@
                                     <a href="{{ route('learn.show', $course->slug) }}" class="block w-full py-4 bg-primary text-white font-display font-bold text-center rounded-xl hover:opacity-90 transition-opacity">
                                         Continue Learning
                                     </a>
+                                @elseif(! $prerequisitesMet)
+                                    <div class="w-full py-4 bg-gray-300 text-gray-500 font-display font-bold text-center rounded-xl cursor-not-allowed">
+                                        Complete Prerequisites First
+                                    </div>
                                 @else
                                     @if($course->price > 0)
                                         <div class="space-y-4">
@@ -208,6 +201,10 @@
                     <a href="{{ route('learn.show', $course->slug) }}" class="flex-1 py-3 bg-primary text-white font-display font-bold text-center rounded-xl">
                         Continue Learning
                     </a>
+                @elseif(! $prerequisitesMet)
+                    <span class="flex-1 py-3 bg-gray-300 text-gray-500 font-display font-bold text-center rounded-xl cursor-not-allowed">
+                        Prerequisites Required
+                    </span>
                 @else
                     @if($course->price > 0)
                         <form action="{{ route('checkout.course', $course) }}" method="POST" class="flex-1">
@@ -270,41 +267,78 @@
                 </section>
                 @endif
 
+                {{-- Prerequisites --}}
+                @if($prerequisites->isNotEmpty())
+                <section>
+                    <h2 class="font-display font-bold text-2xl text-ink mb-6">Prerequisites</h2>
+                    <div class="bg-surface border border-rule rounded-xl p-6 space-y-3">
+                        <p class="text-sm text-ink2 mb-4">Complete these courses before enrolling:</p>
+                        @foreach($prerequisites as $prereq)
+                            @php
+                                $completed = auth()->check()
+                                    ? \App\Models\Enrollment::where('user_id', auth()->id())
+                                        ->where('course_id', $prereq->id)
+                                        ->whereNotNull('completed_at')
+                                        ->exists()
+                                    : false;
+                            @endphp
+                            <a href="{{ route('courses.show', $prereq->slug) }}" class="flex items-center gap-3 p-3 rounded-lg hover:bg-bg transition-colors">
+                                <span class="material-symbols-outlined text-[20px] {{ $completed ? 'text-green-500' : 'text-ink3' }}" style="font-variation-settings: 'FILL' {{ $completed ? '1' : '0' }}">
+                                    {{ $completed ? 'check_circle' : 'radio_button_unchecked' }}
+                                </span>
+                                <span class="text-sm {{ $completed ? 'text-ink line-through' : 'text-primary font-medium' }}">{{ $prereq->title }}</span>
+                                @if($completed)
+                                    <span class="text-[10px] font-bold uppercase tracking-wider text-green-600 ml-auto">Completed</span>
+                                @endif
+                            </a>
+                        @endforeach
+
+                        @auth
+                            @if(! $prerequisitesMet)
+                                <div class="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                                    <p class="text-xs text-amber-800 font-medium">You must complete all prerequisites before you can enrol in this course.</p>
+                                </div>
+                            @endif
+                        @endauth
+                    </div>
+                </section>
+                @endif
+
                 {{-- Course Curriculum --}}
                 <section>
                     <h2 class="font-display font-bold text-2xl text-ink mb-6">Course Curriculum</h2>
                     <div class="bg-surface border border-rule rounded-xl overflow-hidden divide-y divide-rule" x-data="{ openSection: 0 }">
-                        @foreach($course->sections as $index => $section)
+                        @foreach($curriculumSections as $index => $section)
                             <div>
                                 <button @click="openSection = openSection === {{ $index }} ? null : {{ $index }}" 
                                     class="w-full flex items-center justify-between p-5 text-left hover:bg-bg transition-colors">
                                     <div class="flex items-center gap-4">
                                         <span class="material-symbols-outlined text-[20px] text-ink3 transition-transform" :class="{ 'rotate-90': openSection === {{ $index }} }">chevron_right</span>
                                         <div>
-                                            <h3 class="font-display font-bold text-sm text-ink">{{ $section->title }}</h3>
-                                            <p class="text-xs text-ink3 mt-1">{{ $section->lessons->count() }} lessons · {{ floor($section->lessons->sum('duration_seconds') / 60) }} min</p>
+                                            <h3 class="font-display font-bold text-sm text-ink">{{ $section['title'] ?? '' }}</h3>
+                                            <p class="text-xs text-ink3 mt-1">{{ count($section['lessons'] ?? []) }} lessons · {{ floor(collect($section['lessons'] ?? [])->sum('duration_seconds') / 60) }} min</p>
                                         </div>
                                     </div>
                                 </button>
                                 <div x-show="openSection === {{ $index }}" x-collapse class="border-t border-rule bg-bg">
-                                    @foreach($section->lessons as $lesson)
+                                    @foreach(($section['lessons'] ?? []) as $lesson)
                                         <div class="flex items-center gap-4 px-5 py-3 {{ !$loop->last ? 'border-b border-rule' : '' }}">
                                             @php
                                                 $typeIcons = ['video' => 'play_circle', 'text' => 'article', 'pdf' => 'picture_as_pdf', 'embed' => 'code'];
                                             @endphp
-                                            <span class="material-symbols-outlined text-[20px] text-ink3">{{ $typeIcons[$lesson->type->value] ?? 'description' }}</span>
+                                            <span class="material-symbols-outlined text-[20px] text-ink3">{{ $typeIcons[$lesson['type'] ?? 'video'] ?? 'description' }}</span>
                                             <div class="flex-1 min-w-0">
-                                                <p class="text-sm text-ink truncate">{{ $lesson->title }}</p>
+                                                <p class="text-sm text-ink truncate">{{ $lesson['title'] ?? '' }}</p>
                                             </div>
                                             <div class="flex items-center gap-3 shrink-0">
-                                                @if($lesson->is_preview)
-                                                    <button @click="showPreviewModal = true; previewLesson = { id: {{ $lesson->id }}, title: '{{ addslashes($lesson->title) }}', type: '{{ $lesson->type->value }}', url: '{{ $lesson->content_url }}', body: {{ json_encode($lesson->content_body) }} }" 
+                                                @if(!empty($lesson['is_preview']))
+                                                    <button @click="showPreviewModal = true; previewLesson = { id: {{ $lesson['id'] ?? 0 }}, title: '{{ addslashes($lesson['title'] ?? '') }}', type: '{{ $lesson['type'] ?? '' }}', url: '{{ $lesson['content_url'] ?? '' }}', body: {{ json_encode($lesson['content_body'] ?? null) }} }" 
                                                         class="px-2 py-1 bg-primary/10 text-primary text-[10px] font-bold uppercase rounded hover:bg-primary/20 transition-colors">
                                                         Preview
                                                     </button>
                                                 @endif
-                                                @if($lesson->duration_seconds)
-                                                    <span class="text-xs text-ink3">{{ gmdate('i:s', $lesson->duration_seconds) }}</span>
+                                                @if(!empty($lesson['duration_seconds']))
+                                                    <span class="text-xs text-ink3">{{ gmdate('i:s', $lesson['duration_seconds']) }}</span>
                                                 @endif
                                             </div>
                                         </div>
@@ -339,11 +373,11 @@
                                 <div class="flex items-center gap-6 mt-4 text-sm text-ink3">
                                     <span class="flex items-center gap-1">
                                         <span class="material-symbols-outlined text-[18px]">school</span>
-                                        {{ $course->instructor?->courses()->published()->count() ?? 0 }} courses
+                                        {{ $instructorCourseCount ?? 0 }} courses
                                     </span>
                                     <span class="flex items-center gap-1">
                                         <span class="material-symbols-outlined text-[18px]">group</span>
-                                        {{ number_format($course->instructor?->courses()->withCount('enrollments')->get()->sum('enrollments_count') ?? 0) }} students
+                                        {{ number_format($instructorStudentCount ?? 0) }} students
                                     </span>
                                 </div>
                             </div>

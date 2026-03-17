@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\ConfirmablePasswordController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
+use App\Http\Controllers\Auth\GitHubAuthController;
 use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
@@ -30,6 +31,11 @@ Route::middleware('guest')->group(function () {
         ->name('auth.google');
     Route::get('auth/google/callback', [GoogleAuthController::class, 'callback'])
         ->name('auth.google.callback');
+
+    Route::get('auth/github', [GitHubAuthController::class, 'redirect'])
+        ->name('auth.github');
+    Route::get('auth/github/callback', [GitHubAuthController::class, 'callback'])
+        ->name('auth.github.callback');
 });
 
 Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])

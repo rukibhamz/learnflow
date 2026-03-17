@@ -83,7 +83,7 @@
         @else
             <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                 @foreach($inProgressEnrollments as $enrollment)
-                    <div class="bg-surface border border-rule rounded-xl overflow-hidden hover:shadow-lg transition-shadow">
+                    <div wire:key="in-progress-enrollment-{{ $enrollment->id }}" class="bg-surface border border-rule rounded-xl overflow-hidden hover:shadow-lg transition-shadow">
                         {{-- Thumbnail --}}
                         <div class="aspect-video bg-bg relative">
                             @if($enrollment->course->getFirstMediaUrl('thumbnail'))
@@ -115,7 +115,7 @@
                             </div>
 
                             {{-- Continue Button --}}
-                            <a href="{{ route('learn.show', $enrollment->course->slug) }}{{ $enrollment->next_lesson ? '?lesson=' . $enrollment->next_lesson->id : '' }}" 
+                            <a href="{{ route('learn.show', $enrollment->course->slug) }}{{ isset($nextLessonIdByEnrollmentId[$enrollment->id]) ? '?lesson=' . $nextLessonIdByEnrollmentId[$enrollment->id] : '' }}" 
                                 class="block w-full py-3 bg-ink text-white font-display font-bold text-sm text-center rounded-lg hover:opacity-90 transition-opacity">
                                 Continue Learning
                             </a>
@@ -135,7 +135,7 @@
         @else
             <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                 @foreach($completedEnrollments as $enrollment)
-                    <div class="bg-surface border border-rule rounded-xl overflow-hidden hover:shadow-lg transition-shadow">
+                    <div wire:key="completed-enrollment-{{ $enrollment->id }}" class="bg-surface border border-rule rounded-xl overflow-hidden hover:shadow-lg transition-shadow">
                         {{-- Thumbnail with Completion Badge --}}
                         <div class="aspect-video bg-bg relative">
                             @if($enrollment->course->getFirstMediaUrl('thumbnail'))
@@ -192,7 +192,7 @@
         @else
             <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                 @foreach($wishlistCourses as $course)
-                    <div class="bg-surface border border-rule rounded-xl overflow-hidden hover:shadow-lg transition-shadow">
+                    <div wire:key="wishlist-course-{{ $course->id }}" class="bg-surface border border-rule rounded-xl overflow-hidden hover:shadow-lg transition-shadow">
                         {{-- Thumbnail --}}
                         <div class="aspect-video bg-bg relative">
                             @if($course->getFirstMediaUrl('thumbnail'))

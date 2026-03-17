@@ -5,6 +5,7 @@ namespace App\Livewire;
 use App\Enums\CourseLevel;
 use App\Enums\CourseStatus;
 use App\Models\Course;
+use App\Models\Enrollment;
 use Illuminate\Support\Str;
 use Livewire\Component;
 
@@ -77,6 +78,13 @@ class InstructorCourseForm extends Component
             $data['instructor_id'] = auth()->id();
             $data['status'] = CourseStatus::Draft;
             $course = Course::create($data);
+
+            Enrollment::create([
+                'user_id' => auth()->id(),
+                'course_id' => $course->id,
+                'enrolled_at' => now(),
+            ]);
+
             return redirect()->route('instructor.courses.edit', $course)->with('success', 'Course created successfully.');
         }
     }

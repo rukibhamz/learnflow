@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Facades\Cache;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
@@ -28,6 +29,21 @@ class Lesson extends Model implements HasMedia
         static::addGlobalScope('ordered', function (Builder $query) {
             $query->orderBy($query->qualifyColumn('order'));
         });
+
+        $flush = function (self $lesson): void {
+            $courseId = $lesson->section?->course_id ?? null;
+            if (! $courseId) {
+                return;
+            }
+            try {
+                Cache::tags(['courses', "course:{$courseId}"])->flush();
+            } catch (\Throwable) {
+                Cache::forget("course:{$courseId}:curriculum:v1");
+            }
+        };
+
+        static::saved($flush);
+        static::deleted($flush);
     }
 
     protected $fillable = [

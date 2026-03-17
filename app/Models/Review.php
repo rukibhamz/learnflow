@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Jobs\ScoutUpdateCourse;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -24,6 +25,13 @@ class Review extends Model
         return [
             'approved_at' => 'datetime',
         ];
+    }
+
+    protected static function booted(): void
+    {
+        // Re-index when a review is approved or rating changes
+        static::saved(fn (self $r) => ScoutUpdateCourse::dispatchDebounced($r->course_id));
+        static::deleted(fn (self $r) => ScoutUpdateCourse::dispatchDebounced($r->course_id));
     }
 
     public function scopeApproved(Builder $query): Builder

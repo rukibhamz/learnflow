@@ -40,6 +40,10 @@ class EnrolmentService
         if ($course->status !== CourseStatus::Published) {
             throw new \Exception('This course is not available for enrolment.');
         }
+
+        if (! $course->prerequisitesMet($user)) {
+            throw new \Exception('You must complete all prerequisite courses before enrolling.');
+        }
     }
 
     public function isAlreadyEnrolled(User $user, Course $course): bool
@@ -51,7 +55,8 @@ class EnrolmentService
 
     public function canEnrol(User $user, Course $course): bool
     {
-        return !$this->isAlreadyEnrolled($user, $course) 
-            && $course->status === CourseStatus::Published;
+        return ! $this->isAlreadyEnrolled($user, $course)
+            && $course->status === CourseStatus::Published
+            && $course->prerequisitesMet($user);
     }
 }

@@ -68,7 +68,8 @@ return [
             'driver' => 'redis',
             'connection' => env('REDIS_QUEUE_CONNECTION', 'default'),
             'queue' => env('REDIS_QUEUE', 'default'),
-            'retry_after' => (int) env('REDIS_QUEUE_RETRY_AFTER', 90),
+            // Must be greater than the longest expected job runtime (e.g. media/PDF/S3 jobs).
+            'retry_after' => (int) env('REDIS_QUEUE_RETRY_AFTER', 360),
             'block_for' => null,
             'after_commit' => false,
         ],

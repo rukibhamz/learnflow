@@ -36,7 +36,7 @@ class CertificateController extends Controller
         ]);
     }
 
-    public function download(Request $request, string $uuid): StreamedResponse
+    public function download(Request $request, string $uuid): StreamedResponse|\Illuminate\Http\Response
     {
         $certificate = Certificate::where('uuid', $uuid)
             ->with(['user', 'course'])
@@ -45,20 +45,37 @@ class CertificateController extends Controller
         Gate::authorize('view', $certificate);
 
         $path = 'certificates/' . $certificate->uuid . '.pdf';
-
-        abort_unless(Storage::disk('s3')->exists($path), 404);
-
-        $stream = Storage::disk('s3')->readStream($path);
-        abort_unless(is_resource($stream), 404);
-
         $filename = 'certificate-' . $certificate->course->slug . '-' . $certificate->uuid . '.pdf';
 
-        return response()->streamDownload(function () use ($stream) {
-            fpassthru($stream);
-            fclose($stream);
-        }, $filename, [
-            'Content-Type' => 'application/pdf',
-        ]);
+        $disk = Storage::disk('s3')->exists($path) ? 's3' : 'local';
+
+        if ($disk === 's3') {
+            $stream = Storage::disk('s3')->readStream($path);
+            abort_unless(is_resource($stream), 404);
+
+            return response()->streamDownload(function () use ($stream) {
+                fpassthru($stream);
+                fclose($stream);
+            }, $filename, ['Content-Type' => 'application/pdf']);
+        }
+
+        if (Storage::disk('local')->exists($path)) {
+            return response()->file(
+                Storage::disk('local')->path($path),
+                ['Content-Type' => 'application/pdf']
+            );
+        }
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('certificates.default', [
+            'studentName' => $certificate->user->name,
+            'courseTitle' => $certificate->course->title,
+            'instructorName' => $certificate->course->instructor?->name ?? 'Instructor',
+            'completionDate' => $certificate->issued_at,
+            'uuid' => $certificate->uuid,
+            'siteName' => config('app.name', 'LearnFlow'),
+        ])->setPaper('a4', 'landscape');
+
+        return $pdf->download($filename);
     }
 
     protected function maskName(?string $name): string

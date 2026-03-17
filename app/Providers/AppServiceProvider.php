@@ -40,6 +40,17 @@ class AppServiceProvider extends ServiceProvider
         Event::listen(\App\Events\CourseCompleted::class, \App\Listeners\QueueIssueCertificate::class);
         Event::listen(\App\Events\LessonCompleted::class, \App\Listeners\CheckCourseCompletion::class);
 
+        Event::listen(\App\Events\UserEnrolled::class, function (\App\Events\UserEnrolled $event) {
+            $instructor = $event->enrollment->course->instructor;
+            if ($instructor) {
+                $instructor->notify(new \App\Notifications\NewEnrollmentNotification($event->enrollment));
+            }
+        });
+
+        Event::listen(\App\Events\CourseCompleted::class, function (\App\Events\CourseCompleted $event) {
+            $event->user->notify(new \App\Notifications\CourseCompletedNotification($event->course));
+        });
+
         // Load settings into config
         if (Schema::hasTable('settings')) {
             $settings = \App\Models\Setting::all();

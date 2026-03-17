@@ -46,6 +46,13 @@ class AuthenticatedSessionController extends Controller
             ]);
         }
 
+        if (Auth::user()->isSuspended()) {
+            Auth::guard('web')->logout();
+            throw ValidationException::withMessages([
+                'login' => 'Your account has been suspended. Please contact support.',
+            ]);
+        }
+
         RateLimiter::clear($throttleKey);
         $request->session()->regenerate();
 

@@ -286,6 +286,35 @@
             </div>
         </div>
 
+        {{-- Prerequisites --}}
+        <div class="bg-surface border border-rule rounded-lg p-6 space-y-4">
+            <h3 class="font-display font-bold text-sm text-ink uppercase tracking-widest">Prerequisites</h3>
+            <p class="text-xs text-ink3">Select courses that students must complete before enrolling in this one.</p>
+
+            @php
+                $availableCourses = \App\Models\Course::query()
+                    ->where('instructor_id', auth()->id())
+                    ->when($course, fn ($q) => $q->where('id', '!=', $course->id))
+                    ->published()
+                    ->orderBy('title')
+                    ->get(['id', 'title']);
+            @endphp
+
+            @if($availableCourses->isEmpty())
+                <p class="text-xs text-ink3 italic">No other published courses available to set as prerequisites.</p>
+            @else
+                <div class="space-y-2">
+                    @foreach($availableCourses as $prereq)
+                        <label class="flex items-center gap-3 p-3 rounded-lg border border-rule hover:bg-bg transition-colors cursor-pointer {{ in_array($prereq->id, $prerequisite_ids) ? 'bg-primary/5 border-primary/30' : '' }}">
+                            <input type="checkbox" wire:model="prerequisite_ids" value="{{ $prereq->id }}"
+                                class="rounded border-rule text-primary focus:ring-primary focus:ring-offset-0">
+                            <span class="text-sm text-ink">{{ $prereq->title }}</span>
+                        </label>
+                    @endforeach
+                </div>
+            @endif
+        </div>
+
         {{-- Bottom Actions --}}
         <div class="flex items-center justify-between pt-4">
             <a href="{{ route('instructor.courses.index') }}" class="text-sm text-ink2 hover:text-ink transition-colors">

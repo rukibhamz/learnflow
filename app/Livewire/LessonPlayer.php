@@ -4,26 +4,29 @@ namespace App\Livewire;
 
 use App\Events\LessonCompleted;
 use App\Models\Enrollment;
+use App\Models\Lesson;
 use App\Models\LessonProgress;
+use Livewire\Attributes\On;
 use Livewire\Component;
 
 class LessonPlayer extends Component
 {
     public \App\Models\Course $course;
-    public ?\App\Models\Lesson $currentLesson = null;
+    public ?Lesson $currentLesson = null;
     public array $completedLessonIds = [];
-    
+
     public function mount(\App\Models\Course $course, $lessonId = null)
     {
         $this->course = $course;
-        $this->currentLesson = $lessonId 
-            ? \App\Models\Lesson::find($lessonId) 
+        $this->currentLesson = $lessonId
+            ? Lesson::find($lessonId)
             : $course->sections->first()?->lessons->first();
     }
 
+    #[On('selectLesson')]
     public function selectLesson($id): void
     {
-        $this->currentLesson = \App\Models\Lesson::find($id);
+        $this->currentLesson = Lesson::find($id);
     }
 
     public function markComplete(): void
@@ -41,6 +44,10 @@ class LessonPlayer extends Component
             return;
         }
 
+        if (in_array($this->currentLesson->id, $this->completedLessonIds)) {
+            return;
+        }
+
         LessonProgress::updateOrCreate(
             ['user_id' => $user->id, 'lesson_id' => $this->currentLesson->id],
             ['completed_at' => now()]
@@ -49,7 +56,21 @@ class LessonPlayer extends Component
         event(new LessonCompleted($user, $this->currentLesson->loadMissing('section.course'), now()));
 
         $this->refreshCompleted();
-        session()->flash('success', 'Lesson marked complete.');
+        $this->advanceToNext();
+    }
+
+    protected function advanceToNext(): void
+    {
+        $allLessons = $this->course->sections()
+            ->with('lessons')
+            ->get()
+            ->flatMap(fn ($s) => $s->lessons);
+
+        $currentIndex = $allLessons->search(fn ($l) => $l->id === $this->currentLesson->id);
+
+        if ($currentIndex !== false && isset($allLessons[$currentIndex + 1])) {
+            $this->currentLesson = $allLessons[$currentIndex + 1];
+        }
     }
 
     protected function refreshCompleted(): void

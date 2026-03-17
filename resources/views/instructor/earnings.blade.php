@@ -1,53 +1,192 @@
 @extends('layouts.dashboard')
 
 @section('title', 'Earnings')
-@section('sidebar_nav')
-    <a href="http://localhost/learnflow/dashboard" class="block py-2 px-3 text-[13px] rounded-card text-ink2 hover:bg-bg hover:text-ink">Dashboard</a>
-    <a href="http://localhost/learnflow/instructor/courses" class="block py-2 px-3 text-[13px] rounded-card text-ink2 hover:bg-bg hover:text-ink">My Courses</a>
-    <a href="http://localhost/learnflow/instructor/earnings" class="block py-2 px-3 text-[13px] rounded-card border-r-2 border-accent pr-2 bg-accent-bg text-accent font-medium">Earnings</a>
-    <a href="#" class="block py-2 px-3 text-[13px] rounded-card text-ink2 hover:bg-bg hover:text-ink">Quiz Builder</a>
-@endsection
+
+@prepend('sidebar')
+    @php
+        $instructorNav = [
+            ['label' => 'Overview', 'url' => route('instructor.dashboard'), 'match' => 'instructor/dashboard'],
+            ['label' => 'Courses', 'url' => route('instructor.courses.index'), 'match' => 'instructor/courses*'],
+            ['label' => 'Earnings', 'url' => route('instructor.earnings'), 'match' => 'instructor/earnings*'],
+        ];
+    @endphp
+
+    @foreach($instructorNav as $item)
+        <a href="{{ $item['url'] }}"
+           class="flex items-center px-4 py-2.5 text-[13px] font-medium transition-all duration-150 {{ request()->is($item['match']) ? 'bg-accent-bg text-accent border-r-2 border-accent' : 'text-ink2 hover:bg-bg hover:text-ink' }}">
+            {{ $item['label'] }}
+        </a>
+    @endforeach
+@endprepend
 
 @section('content')
-<h1 class="font-display font-extrabold text-xl text-ink mb-6">Earnings</h1>
-<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-    <div class="bg-surface border border-rule rounded-card p-6">
-        <p class="text-[11px] font-body text-ink3 mb-1">Total revenue</p>
-        <p class="font-display font-extrabold text-2xl text-ink">$12,450</p>
+@php
+    use App\Models\Order;
+    use App\Models\Course;
+    use Illuminate\Support\Carbon;
+
+    $instructor = auth()->user();
+    $courseIds = Course::where('instructor_id', $instructor->id)->pluck('id');
+
+    $totalRevenue = Order::whereIn('course_id', $courseIds)->paid()->sum('amount');
+    $thisMonthRevenue = Order::whereIn('course_id', $courseIds)->paid()
+        ->where('created_at', '>=', now()->startOfMonth())->sum('amount');
+    $lastMonthRevenue = Order::whereIn('course_id', $courseIds)->paid()
+        ->whereBetween('created_at', [now()->subMonth()->startOfMonth(), now()->subMonth()->endOfMonth()])
+        ->sum('amount');
+    $monthGrowth = $lastMonthRevenue > 0 ? round((($thisMonthRevenue - $lastMonthRevenue) / $lastMonthRevenue) * 100) : 0;
+
+    $revenueData = Order::whereIn('course_id', $courseIds)->paid()
+        ->where('created_at', '>=', now()->subMonths(5)->startOfMonth())
+        ->selectRaw("DATE_FORMAT(created_at, '%Y-%m') as month, SUM(amount) as total")
+        ->groupBy('month')->orderBy('month')
+        ->pluck('total', 'month');
+
+    $chartMonths = collect();
+    for ($i = 5; $i >= 0; $i--) {
+        $key = now()->subMonths($i)->format('Y-m');
+        $label = now()->subMonths($i)->format('M Y');
+        $chartMonths[$label] = (float) ($revenueData[$key] ?? 0);
+    }
+
+    $recentOrders = Order::whereIn('course_id', $courseIds)->paid()
+        ->with(['user', 'course'])
+        ->latest()
+        ->take(10)
+        ->get();
+
+    $courseSales = Course::where('instructor_id', $instructor->id)
+        ->withCount(['orders as paid_orders_count' => fn ($q) => $q->where('status', 'paid')])
+        ->withSum(['orders as paid_orders_sum' => fn ($q) => $q->where('status', 'paid')], 'amount')
+        ->orderByDesc('paid_orders_sum')
+        ->take(5)
+        ->get();
+@endphp
+
+<div class="max-w-5xl mx-auto">
+    <div class="mb-10">
+        <h1 class="font-display font-extrabold text-2xl text-ink">Earnings</h1>
+        <p class="text-[13px] font-body text-ink2 mt-1">Track your revenue and sales.</p>
     </div>
-    <div class="bg-surface border border-rule rounded-card p-6">
-        <p class="text-[11px] font-body text-ink3 mb-1">This month</p>
-        <p class="font-display font-extrabold text-2xl text-ink">$1,240</p>
-        <p class="text-[11px] text-success mt-1">+12%</p>
+
+    {{-- Stats --}}
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+        <div class="bg-surface border border-rule rounded-card p-6">
+            <p class="text-[11px] font-bold uppercase tracking-widest text-ink3 mb-1">Total Revenue</p>
+            <p class="font-display font-extrabold text-2xl text-ink">${{ number_format($totalRevenue, 2) }}</p>
+        </div>
+        <div class="bg-surface border border-rule rounded-card p-6">
+            <p class="text-[11px] font-bold uppercase tracking-widest text-ink3 mb-1">This Month</p>
+            <p class="font-display font-extrabold text-2xl text-ink">${{ number_format($thisMonthRevenue, 2) }}</p>
+            @if($monthGrowth !== 0)
+                <p class="text-[11px] mt-1 font-medium {{ $monthGrowth > 0 ? 'text-green-600' : 'text-red-600' }}">
+                    {{ $monthGrowth > 0 ? '+' : '' }}{{ $monthGrowth }}% vs last month
+                </p>
+            @endif
+        </div>
+        <div class="bg-surface border border-rule rounded-card p-6">
+            <p class="text-[11px] font-bold uppercase tracking-widest text-ink3 mb-1">Total Sales</p>
+            <p class="font-display font-extrabold text-2xl text-ink">{{ $recentOrders->count() > 0 ? Order::whereIn('course_id', $courseIds)->paid()->count() : 0 }}</p>
+        </div>
     </div>
-    <div class="bg-surface border border-rule rounded-card p-6">
-        <p class="text-[11px] font-body text-ink3 mb-1">Pending payout</p>
-        <p class="font-display font-extrabold text-2xl text-ink">$320</p>
+
+    {{-- Revenue Chart --}}
+    <div class="bg-surface border border-rule rounded-card p-8 mb-10">
+        <div class="flex items-center justify-between mb-6">
+            <h3 class="font-display font-bold text-sm text-ink uppercase tracking-widest">Monthly Revenue</h3>
+            <span class="text-[11px] font-display font-bold text-primary">Last 6 months</span>
+        </div>
+        <div class="h-[240px]">
+            <canvas id="earningsChart"></canvas>
+        </div>
+    </div>
+
+    {{-- Course Sales Breakdown --}}
+    @if($courseSales->isNotEmpty())
+    <div class="bg-surface border border-rule rounded-card overflow-hidden mb-10">
+        <div class="p-6 border-b border-rule">
+            <h3 class="font-display font-bold text-sm text-ink uppercase tracking-widest">Sales by Course</h3>
+        </div>
+        <table class="w-full text-sm">
+            <thead class="bg-bg border-b border-rule">
+                <tr>
+                    <th class="text-left px-6 py-3 font-display font-bold text-[10px] uppercase tracking-widest text-ink3">Course</th>
+                    <th class="text-right px-6 py-3 font-display font-bold text-[10px] uppercase tracking-widest text-ink3">Sales</th>
+                    <th class="text-right px-6 py-3 font-display font-bold text-[10px] uppercase tracking-widest text-ink3">Revenue</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-rule">
+                @foreach($courseSales as $course)
+                <tr class="hover:bg-bg transition-colors">
+                    <td class="px-6 py-3 font-medium text-ink">{{ $course->title }}</td>
+                    <td class="px-6 py-3 text-right text-ink2">{{ $course->paid_orders_count ?? 0 }}</td>
+                    <td class="px-6 py-3 text-right font-display font-bold text-primary">${{ number_format($course->paid_orders_sum ?? 0, 2) }}</td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+    @endif
+
+    {{-- Recent Sales --}}
+    <div class="bg-surface border border-rule rounded-card overflow-hidden">
+        <div class="p-6 border-b border-rule">
+            <h3 class="font-display font-bold text-sm text-ink uppercase tracking-widest">Recent Sales</h3>
+        </div>
+        <div class="divide-y divide-rule">
+            @forelse($recentOrders as $order)
+            <div class="px-6 py-4 flex items-center justify-between hover:bg-bg transition-colors">
+                <div class="flex items-center gap-4">
+                    <div class="w-8 h-8 rounded-full bg-bg border border-rule flex items-center justify-center font-display font-bold text-ink3 text-[11px]">
+                        {{ strtoupper(substr($order->user->name ?? '?', 0, 2)) }}
+                    </div>
+                    <div>
+                        <p class="text-[13px] font-bold text-ink">{{ $order->user->name ?? 'Unknown' }}</p>
+                        <p class="text-[11px] text-ink3">{{ $order->course->title ?? '—' }}</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <span class="font-display font-bold text-sm text-ink">${{ number_format($order->amount, 2) }}</span>
+                    <p class="text-[10px] text-ink3">{{ $order->created_at->diffForHumans() }}</p>
+                </div>
+            </div>
+            @empty
+            <div class="px-6 py-10 text-center text-ink3 text-sm">No sales yet. Create a course to get started!</div>
+            @endforelse
+        </div>
     </div>
 </div>
-<div class="bg-surface border border-rule rounded-card p-8 h-80 flex items-center justify-center text-ink3 font-body text-sm">
-    Chart — integrate Chart.js
-</div>
-<div class="mt-8 bg-surface border border-rule rounded-card overflow-hidden">
-    <table class="w-full">
-        <thead>
-            <tr class="border-b border-rule">
-                <th class="text-left py-3 px-4 font-display font-bold text-[11px] uppercase text-ink3">Date</th>
-                <th class="text-left py-3 px-4 font-display font-bold text-[11px] uppercase text-ink3">Amount</th>
-                <th class="text-left py-3 px-4 font-display font-bold text-[11px] uppercase text-ink3">Status</th>
-                <th class="text-left py-3 px-4 font-display font-bold text-[11px] uppercase text-ink3">Bank</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach([['date' => 'Mar 10, 2025', 'amount' => '$450', 'status' => 'paid'], ['date' => 'Feb 28, 2025', 'amount' => '$320', 'status' => 'paid'], ['date' => 'Feb 15, 2025', 'amount' => '$280', 'status' => 'pending']] as $row)
-            <tr class="border-b border-rule">
-                <td class="py-3 px-4 font-body text-[13px]">{{ $row['date'] }}</td>
-                <td class="py-3 px-4 font-body text-[13px]">{{ $row['amount'] }}</td>
-                <td class="py-3 px-4">@include('components.status-badge', ['status' => $row['status']])</td>
-                <td class="py-3 px-4 font-body text-[13px] text-ink3">•••• 4521</td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
-</div>
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const ctx = document.getElementById('earningsChart');
+    if (!ctx) return;
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: {!! collect($chartMonths->keys())->toJson() !!},
+            datasets: [{
+                data: {!! collect($chartMonths->values())->toJson() !!},
+                backgroundColor: (getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim() || '#6366f1') + '33',
+                borderColor: getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim() || '#6366f1',
+                borderWidth: 2,
+                borderRadius: 6,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { grid: { display: false }, ticks: { font: { size: 11 } } },
+                y: { beginAtZero: true, grid: { color: '#f0f0f0' }, ticks: { font: { size: 10 }, callback: v => '$' + v } }
+            }
+        }
+    });
+});
+</script>
+@endpush
 @endsection

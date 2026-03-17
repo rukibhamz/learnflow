@@ -42,7 +42,7 @@ return [
     |
     */
 
-    'queue' => env('SCOUT_QUEUE', false),
+    'queue' => env('SCOUT_QUEUE', true),
 
     /*
     |--------------------------------------------------------------------------
@@ -140,9 +140,26 @@ return [
         'host' => env('MEILISEARCH_HOST', 'http://localhost:7700'),
         'key' => env('MEILISEARCH_KEY'),
         'index-settings' => [
-            // 'users' => [
-            //     'filterableAttributes'=> ['id', 'name', 'email'],
-            // ],
+            \App\Models\Course::class => [
+                'searchableAttributes'  => ['title', 'short_description', 'instructor_name'],
+                'filterableAttributes'  => ['level', 'language', 'price', 'status'],
+                'sortableAttributes'    => ['enrolled_count', 'average_rating', 'price', 'created_at'],
+                'rankingRules' => [
+                    'words',
+                    'typo',
+                    'proximity',
+                    'attribute',
+                    'sort',
+                    'exactness',
+                ],
+                'typoTolerance' => [
+                    'enabled' => true,
+                    'minWordSizeForTypos' => [
+                        'oneTypo'  => 4,
+                        'twoTypos' => 8,
+                    ],
+                ],
+            ],
         ],
     ],
 

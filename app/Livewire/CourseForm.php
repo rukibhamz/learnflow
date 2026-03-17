@@ -5,6 +5,7 @@ namespace App\Livewire;
 use App\Enums\CourseLevel;
 use App\Enums\CourseStatus;
 use App\Models\Course;
+use App\Models\Enrollment;
 use Illuminate\Support\Str;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -27,6 +28,8 @@ class CourseForm extends Component
     public $outcomes = [];
     public $thumbnail;
     public $existingThumbnail = null;
+
+    public $prerequisite_ids = [];
 
     public $newRequirement = '';
     public $newOutcome = '';
@@ -52,6 +55,7 @@ class CourseForm extends Component
             $this->requirements = $course->requirements ?? [];
             $this->outcomes = $course->outcomes ?? [];
             $this->existingThumbnail = $course->getFirstMediaUrl('thumbnail', 'thumb');
+            $this->prerequisite_ids = $course->prerequisite_ids ?? [];
         }
     }
 
@@ -146,6 +150,8 @@ class CourseForm extends Component
             'language' => 'nullable|string|max:10',
             'category' => 'nullable|string|max:100',
             'thumbnail' => 'nullable|image|max:2048',
+            'prerequisite_ids' => 'nullable|array',
+            'prerequisite_ids.*' => 'integer|exists:courses,id',
         ]);
 
         $data = [
@@ -159,6 +165,7 @@ class CourseForm extends Component
             'category' => $this->category,
             'requirements' => array_values(array_filter($this->requirements)),
             'outcomes' => array_values(array_filter($this->outcomes)),
+            'prerequisite_ids' => array_values(array_filter(array_map('intval', $this->prerequisite_ids))),
             'status' => $status,
         ];
 
@@ -169,6 +176,12 @@ class CourseForm extends Component
             $this->authorize('create', Course::class);
             $data['instructor_id'] = auth()->id();
             $this->course = Course::create($data);
+
+            Enrollment::create([
+                'user_id' => auth()->id(),
+                'course_id' => $this->course->id,
+                'enrolled_at' => now(),
+            ]);
         }
 
         if ($this->thumbnail) {

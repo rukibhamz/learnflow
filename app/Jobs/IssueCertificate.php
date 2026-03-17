@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Models\Certificate;
+use App\Models\CertificateTemplate;
 use App\Models\Course;
 use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -48,15 +49,34 @@ class IssueCertificate implements ShouldQueue
             'issued_at' => now(),
         ]);
 
-        $pdf = Pdf::loadView('certificates.default', [
-            'studentName' => $user->name,
-            'courseTitle' => $course->title,
-            'instructorName' => $course->instructor?->name ?? 'Instructor',
-            'completionDate' => $this->completedAt,
-            'uuid' => $certificate->uuid,
-            'siteName' => config('app.name', 'LearnFlow'),
-        ])->setPaper('a4', 'landscape')
-            ->setOption('dpi', 150);
+        $template = $course->certificateTemplate
+            ?? CertificateTemplate::getDefault();
+
+        $templateData = [
+            'student_name' => $user->name,
+            'course_title' => $course->title,
+            'instructor_name' => $course->instructor?->name ?? 'Instructor',
+            'issued_date' => now()->format('F j, Y'),
+            'certificate_uuid' => $certificate->uuid,
+            'verify_url' => route('certificates.verify', $certificate->uuid),
+        ];
+
+        if ($template) {
+            $html = $template->render($templateData);
+            $pdf = Pdf::loadHTML($html)
+                ->setPaper($template->paper_size, $template->orientation)
+                ->setOption('dpi', 150);
+        } else {
+            $pdf = Pdf::loadView('certificates.default', [
+                'studentName' => $user->name,
+                'courseTitle' => $course->title,
+                'instructorName' => $course->instructor?->name ?? 'Instructor',
+                'completionDate' => $this->completedAt,
+                'uuid' => $certificate->uuid,
+                'siteName' => config('app.name', 'LearnFlow'),
+            ])->setPaper('a4', 'landscape')
+                ->setOption('dpi', 150);
+        }
 
         $path = 'certificates/' . $certificate->uuid . '.pdf';
 
@@ -66,6 +86,8 @@ class IssueCertificate implements ShouldQueue
         ]);
 
         SendCertificateEmail::dispatch($certificate->id);
+
+        $user->notify(new \App\Notifications\CertificateIssuedNotification($certificate));
     }
 }
 

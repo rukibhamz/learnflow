@@ -61,9 +61,19 @@
 <div class="space-y-8">
 
     {{-- Page heading --}}
-    <div>
-        <h1 class="font-poppins font-bold text-2xl tracking-tight text-ink">Overview</h1>
-        <p class="text-sm text-ink3 mt-1">Welcome back, {{ auth()->user()->name }}. Here's what's happening.</p>
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="font-poppins font-bold text-2xl tracking-tight text-ink">Overview</h1>
+            <p class="text-sm text-ink3 mt-1">Welcome back, {{ auth()->user()->name }}. Here's what's happening.</p>
+        </div>
+        <div class="flex gap-2">
+            <a href="{{ route('admin.analytics.export', ['type' => 'revenue', 'days' => 90]) }}" class="inline-flex items-center gap-1 px-3 py-2 text-xs font-medium border border-rule rounded-lg hover:bg-bg transition-colors">
+                <span class="material-symbols-outlined text-[16px]">download</span> Revenue CSV
+            </a>
+            <a href="{{ route('admin.analytics.export', ['type' => 'enrollments', 'days' => 90]) }}" class="inline-flex items-center gap-1 px-3 py-2 text-xs font-medium border border-rule rounded-lg hover:bg-bg transition-colors">
+                <span class="material-symbols-outlined text-[16px]">download</span> Enrollments CSV
+            </a>
+        </div>
     </div>
 
     {{-- KPI row --}}

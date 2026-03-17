@@ -69,10 +69,28 @@
                 <span class="text-sm font-medium">Coupons</span>
             </a>
 
-            <a href="#"
-               class="flex items-center gap-3 px-3 py-2 rounded-lg group text-ink hover:bg-background-light">
-                <span class="material-symbols-outlined text-[20px] text-ink3 group-hover:text-ink">payments</span>
-                <span class="text-sm font-medium">Finance</span>
+            <a href="{{ route('admin.orders.index') }}"
+               class="flex items-center gap-3 px-3 py-2 rounded-lg group {{ request()->routeIs('admin.orders.*') ? 'bg-primary/10 text-primary' : 'text-ink hover:bg-background-light' }}">
+                <span class="material-symbols-outlined text-[20px] {{ request()->routeIs('admin.orders.*') ? 'text-primary' : 'text-ink3 group-hover:text-ink' }}">payments</span>
+                <span class="text-sm font-medium">Orders</span>
+            </a>
+
+            <a href="{{ route('admin.search-analytics') }}"
+               class="flex items-center gap-3 px-3 py-2 rounded-lg group {{ request()->routeIs('admin.search-analytics') ? 'bg-primary/10 text-primary' : 'text-ink hover:bg-background-light' }}">
+                <span class="material-symbols-outlined text-[20px] {{ request()->routeIs('admin.search-analytics') ? 'text-primary' : 'text-ink3 group-hover:text-ink' }}">query_stats</span>
+                <span class="text-sm font-medium">Search Analytics</span>
+            </a>
+
+            <a href="{{ route('admin.payouts') }}"
+               class="flex items-center gap-3 px-3 py-2 rounded-lg group {{ request()->routeIs('admin.payouts') ? 'bg-primary/10 text-primary' : 'text-ink hover:bg-background-light' }}">
+                <span class="material-symbols-outlined text-[20px] {{ request()->routeIs('admin.payouts') ? 'text-primary' : 'text-ink3 group-hover:text-ink' }}">account_balance</span>
+                <span class="text-sm font-medium">Payouts</span>
+            </a>
+
+            <a href="{{ route('admin.certificate-templates') }}"
+               class="flex items-center gap-3 px-3 py-2 rounded-lg group {{ request()->routeIs('admin.certificate-templates') ? 'bg-primary/10 text-primary' : 'text-ink hover:bg-background-light' }}">
+                <span class="material-symbols-outlined text-[20px] {{ request()->routeIs('admin.certificate-templates') ? 'text-primary' : 'text-ink3 group-hover:text-ink' }}">workspace_premium</span>
+                <span class="text-sm font-medium">Certificates</span>
             </a>
 
             <p class="px-2 pt-6 pb-1 text-[11px] font-poppins font-bold uppercase tracking-wider text-ink3">Account</p>
@@ -115,7 +133,7 @@
                 </div>
             </div>
             <div class="flex items-center gap-2">
-                @livewire('notification-bell')
+                <livewire:notification-bell lazy />
                 <button class="w-9 h-9 flex items-center justify-center hover:bg-background-light rounded-lg">
                     <span class="material-symbols-outlined text-[20px] text-ink3">help</span>
                 </button>

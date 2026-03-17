@@ -23,7 +23,7 @@
             Learn<span class="text-accent">Flow</span>
         </a>
         <div class="flex items-center gap-4">
-            @livewire('notification-bell')
+            <livewire:notification-bell lazy />
             <div class="relative" x-data="{ open: false }">
                 <button @click="open = !open"
                         class="w-9 h-9 rounded-full bg-accent-bg border border-accent/10 flex items-center justify-center font-display font-bold text-accent text-sm hover:border-accent transition-colors"

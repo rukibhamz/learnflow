@@ -12,11 +12,12 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements HasMedia, MustVerifyEmail
 {
-    use HasFactory, HasRoles, InteractsWithMedia, Notifiable;
+    use HasApiTokens, HasFactory, HasRoles, InteractsWithMedia, Notifiable;
 
     /** @use HasFactory<UserFactory> */
     protected $fillable = [
@@ -25,11 +26,13 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail
         'email',
         'password',
         'google_id',
+        'github_id',
         'avatar',
         'bio',
         'website',
         'social_links',
         'wishlist',
+        'notification_preferences',
     ];
 
     protected $hidden = [
@@ -45,6 +48,7 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail
             'password' => 'hashed',
             'social_links' => 'array',
             'wishlist' => 'array',
+            'notification_preferences' => 'array',
         ];
     }
 
@@ -105,6 +109,16 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail
     public function enrollments(): HasMany
     {
         return $this->hasMany(Enrollment::class);
+    }
+
+    public function pushSubscriptions(): HasMany
+    {
+        return $this->hasMany(PushSubscription::class);
+    }
+
+    public function payouts(): HasMany
+    {
+        return $this->hasMany(Payout::class, 'instructor_id');
     }
 
     public function enrolledCourses(): BelongsToMany

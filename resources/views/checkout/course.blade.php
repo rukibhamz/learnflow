@@ -41,33 +41,34 @@
                         <span class="text-ink2">Course Price</span>
                         <span class="text-ink">${{ number_format($course->price, 2) }}</span>
                     </div>
-                    <div class="flex justify-between text-sm">
-                        <span class="text-ink2">Discount</span>
-                        <span class="text-ink">$0.00</span>
-                    </div>
+                    @if(session('coupon_discount'))
+                        <div class="flex justify-between text-sm">
+                            <span class="text-green-600">Coupon Discount</span>
+                            <span class="text-green-600">-${{ number_format(session('coupon_discount'), 2) }}</span>
+                        </div>
+                    @endif
                     <div class="border-t border-rule pt-3 flex justify-between">
                         <span class="font-display font-bold text-ink">Total</span>
-                        <span class="font-display font-bold text-xl text-ink">${{ number_format($course->price, 2) }}</span>
+                        <span class="font-display font-bold text-xl text-ink">
+                            ${{ number_format(max(0, $course->price - (session('coupon_discount') ?? 0)), 2) }}
+                        </span>
                     </div>
                 </div>
             </div>
 
-            {{-- Payment Section (Placeholder) --}}
+            {{-- Payment Action --}}
             <div class="p-6">
-                <div class="bg-amber-50 border border-amber-200 rounded-xl p-6 text-center mb-6">
-                    <span class="material-symbols-outlined text-[48px] text-amber-500 mb-3 block">construction</span>
-                    <h3 class="font-display font-bold text-lg text-amber-800 mb-2">Payment Coming Soon</h3>
-                    <p class="text-sm text-amber-700">Stripe Checkout integration will be available in the next phase. For now, please contact support for manual enrollment.</p>
-                </div>
-
-                <div class="flex gap-4">
-                    <a href="{{ route('courses.show', $course->slug) }}" class="flex-1 py-3 border border-rule text-ink2 font-medium text-sm text-center rounded-xl hover:bg-bg transition-colors">
-                        Back to Course
-                    </a>
-                    <button disabled class="flex-1 py-3 bg-ink/50 text-white font-display font-bold text-sm rounded-xl cursor-not-allowed">
+                <form action="{{ route('checkout.course', $course) }}" method="POST">
+                    @csrf
+                    <button type="submit" class="w-full py-3.5 bg-ink text-white font-display font-bold text-sm rounded-xl hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
+                        <span class="material-symbols-outlined text-[20px]">lock</span>
                         Pay with Stripe
                     </button>
-                </div>
+                </form>
+
+                <a href="{{ route('courses.show', $course->slug) }}" class="block text-center mt-4 text-sm text-ink3 hover:text-ink transition-colors">
+                    ← Back to Course
+                </a>
             </div>
         </div>
 

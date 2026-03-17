@@ -12,28 +12,46 @@
             <span class="absolute top-1 right-1 min-w-[18px] h-[18px] flex items-center justify-center bg-accent text-white font-display font-bold text-[11px] rounded-full">{{ $unreadCount }}</span>
         @endif
     </button>
+
     <div
         x-show="open"
         x-cloak
         x-transition
         @click.outside="open = false"
-        class="absolute right-0 top-full mt-2 w-[280px] bg-surface border border-rule rounded-card z-50 overflow-hidden"
+        class="absolute right-0 top-full mt-2 w-[320px] bg-surface border border-rule rounded-card z-50 overflow-hidden shadow-lg"
     >
-        <div class="p-3 border-b border-rule">
-            <button wire:click="markAllRead" class="text-accent text-[12px] font-body hover:underline">Mark all read</button>
+        <div class="p-3 border-b border-rule flex items-center justify-between">
+            <span class="font-display font-bold text-xs text-ink uppercase tracking-wider">Notifications</span>
+            @if($unreadCount > 0)
+                <button wire:click="markAllRead" class="text-primary text-[11px] font-medium hover:underline">Mark all read</button>
+            @endif
         </div>
-        <div class="max-h-[320px] overflow-y-auto">
-            @foreach([
-                ['text' => 'New lesson added to Web Development', 'unread' => true],
-                ['text' => 'Your certificate is ready', 'unread' => true],
-                ['text' => 'Course Data Science updated', 'unread' => false],
-                ['text' => 'New review on your course', 'unread' => false],
-                ['text' => 'Payout processed', 'unread' => false],
-            ] as $n)
-                <div class="px-4 py-3 h-11 flex items-center text-[13px] font-body {{ $n['unread'] ? 'border-l-[3px] border-accent bg-accent-bg' : '' }}">
-                    {{ $n['text'] }}
+
+        <div class="max-h-[360px] overflow-y-auto">
+            @forelse($notifications as $notification)
+                <div
+                    wire:key="notif-{{ $notification->id }}"
+                    wire:click="markAsRead('{{ $notification->id }}')"
+                    class="px-4 py-3 flex items-start gap-3 border-b border-rule last:border-0 cursor-pointer hover:bg-bg transition-colors {{ $notification->read_at ? '' : 'bg-primary/5' }}"
+                >
+                    <span class="material-symbols-outlined text-[20px] mt-0.5 {{ $notification->read_at ? 'text-ink3' : 'text-primary' }}">
+                        {{ $notification->data['icon'] ?? 'notifications' }}
+                    </span>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-[13px] text-ink leading-snug {{ $notification->read_at ? '' : 'font-medium' }}">
+                            {{ $notification->data['message'] ?? 'New notification' }}
+                        </p>
+                        <span class="text-[10px] text-ink3 mt-1 block">{{ $notification->created_at->diffForHumans() }}</span>
+                    </div>
+                    @if(! $notification->read_at)
+                        <span class="w-2 h-2 bg-primary rounded-full mt-1.5 shrink-0"></span>
+                    @endif
                 </div>
-            @endforeach
+            @empty
+                <div class="px-4 py-8 text-center text-ink3 text-sm">
+                    No notifications yet.
+                </div>
+            @endforelse
         </div>
     </div>
 </div>

@@ -31,7 +31,9 @@
         </div>
         <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             @forelse($this->courses as $course)
-                <x-course-card :course="$course" />
+                <div wire:key="featured-course-{{ $course->id }}">
+                    <x-course-card :course="$course" />
+                </div>
             @empty
                 <div class="col-span-full py-12 text-center border border-dashed border-rule">
                     <p class="text-ink3">No courses found in this category.</p>

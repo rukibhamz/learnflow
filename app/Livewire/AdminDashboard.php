@@ -1,11 +1,23 @@
-    public function getStatsProperty()
+<?php
+
+namespace App\Livewire;
+
+use App\Models\Course;
+use App\Models\Enrollment;
+use App\Models\Order;
+use App\Models\User;
+use Livewire\Component;
+
+class AdminDashboard extends Component
+{
+    public function getStatsProperty(): array
     {
         return [
-            'total_users' => \App\Models\User::count(),
-            'total_courses' => \App\Models\Course::count(),
-            'total_enrollments' => \App\Models\Enrollment::count(),
-            'total_revenue' => \App\Models\Enrollment::count() * 49.00, // Mock
-            'pending_reviews' => \App\Models\Course::where('status', 'review')->count(),
+            'total_users' => User::count(),
+            'total_courses' => Course::count(),
+            'total_enrollments' => Enrollment::count(),
+            'total_revenue' => Order::paid()->sum('amount'),
+            'pending_reviews' => Course::where('status', 'review')->count(),
         ];
     }
 

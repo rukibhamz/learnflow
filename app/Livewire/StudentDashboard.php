@@ -5,6 +5,7 @@ namespace App\Livewire;
 use App\Models\Course;
 use App\Models\Enrollment;
 use App\Models\LessonProgress;
+use Illuminate\Support\Collection;
 use Livewire\Component;
 
 class StudentDashboard extends Component
@@ -35,17 +36,43 @@ class StudentDashboard extends Component
         $this->toggleWishlist($courseId);
     }
 
-    public function getLastIncompleteLesson($enrollment)
+    private function buildNextLessonMap(Collection $enrollments): array
     {
-        $completedLessonIds = LessonProgress::where('user_id', $enrollment->user_id)
-            ->whereIn('lesson_id', $enrollment->course->lessons()->pluck('lessons.id'))
-            ->pluck('lesson_id');
+        $userId = auth()->id();
+        if (! $userId || $enrollments->isEmpty()) {
+            return [];
+        }
 
-        $nextLesson = $enrollment->course->lessons()
-            ->whereNotIn('lessons.id', $completedLessonIds)
-            ->first();
+        $courses = $enrollments->pluck('course')->filter();
+        $courseLessonIds = $courses
+            ->keyBy('id')
+            ->map(fn ($course) => $course->lessons->pluck('id')->all())
+            ->all();
 
-        return $nextLesson ?? $enrollment->course->lessons()->first();
+        $allLessonIds = $courses->flatMap(fn ($course) => $course->lessons->pluck('id'))->unique()->values();
+
+        $completed = $allLessonIds->isEmpty()
+            ? collect()
+            : LessonProgress::query()
+                ->where('user_id', $userId)
+                ->whereIn('lesson_id', $allLessonIds)
+                ->pluck('lesson_id')
+                ->flip();
+
+        $nextByEnrollmentId = [];
+
+        foreach ($enrollments as $enrollment) {
+            $course = $enrollment->course;
+            if (! $course) {
+                continue;
+            }
+
+            $lessons = $course->lessons;
+            $next = $lessons->first(fn ($lesson) => ! $completed->has($lesson->id)) ?? $lessons->first();
+            $nextByEnrollmentId[$enrollment->id] = $next?->id;
+        }
+
+        return $nextByEnrollmentId;
     }
 
     public function render()
@@ -54,13 +81,12 @@ class StudentDashboard extends Component
 
         $inProgressEnrollments = Enrollment::where('user_id', $user->id)
             ->whereNull('completed_at')
-            ->with(['course.instructor', 'course.media', 'course.sections.lessons'])
+            ->with(['course.instructor', 'course.media', 'course.lessons'])
             ->latest('enrolled_at')
             ->get()
-            ->map(function ($enrollment) {
-                $enrollment->next_lesson = $this->getLastIncompleteLesson($enrollment);
-                return $enrollment;
-            });
+            ->values();
+
+        $nextLessonIdByEnrollmentId = $this->buildNextLessonMap($inProgressEnrollments);
 
         $completedEnrollments = Enrollment::where('user_id', $user->id)
             ->whereNotNull('completed_at')
@@ -77,6 +103,7 @@ class StudentDashboard extends Component
 
         return view('livewire.student-dashboard', [
             'inProgressEnrollments' => $inProgressEnrollments,
+            'nextLessonIdByEnrollmentId' => $nextLessonIdByEnrollmentId,
             'completedEnrollments' => $completedEnrollments,
             'wishlistCourses' => $wishlistCourses,
         ]);

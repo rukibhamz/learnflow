@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Jobs\ScoutUpdateCourse;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -31,6 +32,14 @@ class Enrollment extends Model
     protected $appends = [
         'progress_percentage',
     ];
+
+    protected static function booted(): void
+    {
+        $dispatch = fn (self $e) => ScoutUpdateCourse::dispatchDebounced($e->course_id);
+
+        static::created($dispatch);
+        static::deleted($dispatch);
+    }
 
     public function getProgressPercentageAttribute(): float
     {

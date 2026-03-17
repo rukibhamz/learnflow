@@ -26,7 +26,7 @@ class Certificate extends Model
 
     public function getVerifyUrlAttribute(): string
     {
-        return url('/certificates/verify') . '?uuid=' . urlencode($this->uuid);
+        return route('certificates.verify', $this->uuid);
     }
 
     public function user(): BelongsTo

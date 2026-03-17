@@ -62,6 +62,11 @@ class GoogleAuthController extends Controller
             }
         }
 
+        if ($user->isSuspended()) {
+            return redirect()->route('login')
+                ->with('status', 'Your account has been suspended. Please contact support.');
+        }
+
         Auth::login($user, true);
 
         return redirect()->intended(route('dashboard', absolute: false));
