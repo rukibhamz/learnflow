@@ -24,8 +24,43 @@
         </a>
         <div class="flex items-center gap-4">
             @livewire('notification-bell')
-            <div class="w-9 h-9 rounded-full bg-accent-bg border border-accent/10 flex items-center justify-center font-display font-bold text-accent text-sm" title="{{ auth()->user()->name ?? 'User' }}">
-                {{ strtoupper(substr(auth()->user()->name ?? 'U', 0, 2)) }}
+            <div class="relative" x-data="{ open: false }">
+                <button @click="open = !open"
+                        class="w-9 h-9 rounded-full bg-accent-bg border border-accent/10 flex items-center justify-center font-display font-bold text-accent text-sm hover:border-accent transition-colors"
+                        title="{{ auth()->user()->name ?? 'User' }}">
+                    {{ strtoupper(substr(auth()->user()->name ?? 'U', 0, 2)) }}
+                </button>
+
+                <div x-show="open"
+                     x-cloak
+                     @click.outside="open = false"
+                     x-transition:enter="transition ease-out duration-100"
+                     x-transition:enter-start="opacity-0 scale-95"
+                     x-transition:enter-end="opacity-100 scale-100"
+                     x-transition:leave="transition ease-in duration-75"
+                     x-transition:leave-start="opacity-100 scale-100"
+                     x-transition:leave-end="opacity-0 scale-95"
+                     class="absolute right-0 mt-2 w-48 bg-surface border border-rule rounded-card shadow-lg z-50 py-1">
+                    <div class="px-4 py-2 border-b border-rule">
+                        <p class="text-[13px] font-bold text-ink truncate">{{ auth()->user()->name ?? 'User' }}</p>
+                        <p class="text-[11px] text-ink3 truncate">{{ auth()->user()->email ?? '' }}</p>
+                    </div>
+                    <a href="{{ route('profile') }}" class="block px-4 py-2 text-[13px] text-ink2 hover:bg-bg hover:text-ink transition-colors">Profile</a>
+                    @if(auth()->user()?->hasRole('admin'))
+                    <a href="{{ route('admin.dashboard') }}" class="block px-4 py-2 text-[13px] text-ink2 hover:bg-bg hover:text-ink transition-colors">Admin Panel</a>
+                    @endif
+                    @if(auth()->user()?->hasRole('instructor'))
+                    <a href="{{ route('instructor.dashboard') }}" class="block px-4 py-2 text-[13px] text-ink2 hover:bg-bg hover:text-ink transition-colors">Instructor Panel</a>
+                    @endif
+                    <div class="border-t border-rule mt-1 pt-1">
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit" class="block w-full text-left px-4 py-2 text-[13px] text-red-500 hover:bg-bg transition-colors">
+                                Log out
+                            </button>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
     </header>
