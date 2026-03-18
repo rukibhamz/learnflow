@@ -4,9 +4,9 @@ use Livewire\Volt\Component;
 
 new class extends Component {} ?>
 
-<nav x-data="{ open: false }" class="bg-surface border-b border-rule h-20 flex items-center">
+<nav x-data="{ open: false }" class="bg-surface border-b border-rule h-20 flex items-center sticky top-0 z-50 w-full">
     <!-- Primary Navigation Menu -->
-    <div class="max-w-7xl mx-auto px-6 w-full">
+    <div class="px-6 md:px-10 w-full">
         <div class="flex justify-between h-20 items-center">
             <div class="flex items-center gap-12">
                 <!-- Logo -->
@@ -65,65 +65,83 @@ new class extends Component {} ?>
 
             <!-- Hamburger -->
             <div class="-me-2 flex items-center sm:hidden">
-                <button @click="open = ! open" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out">
-                    <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                        <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                        <path :class="{'hidden': ! open, 'inline-flex': open }" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
+                <button @click="open = ! open" class="inline-flex items-center justify-center p-2 rounded-md text-ink2 hover:text-ink hover:bg-bg focus:outline-none focus:bg-bg focus:text-ink transition duration-150 ease-in-out">
+                    <span class="material-symbols-outlined text-[28px]">menu</span>
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Responsive Navigation Menu -->
-    <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
-        <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('courses.index')" :active="request()->routeIs('courses*')">
-                Courses
-            </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('pages.mentors')" :active="request()->routeIs('pages.mentors')">
-                Mentors
-            </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('pages.pricing')" :active="request()->routeIs('pages.pricing')">
-                Pricing
-            </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('pages.resources')" :active="request()->routeIs('pages.resources')">
-                Resources
-            </x-responsive-nav-link>
-            @auth
-            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" wire:navigate>
-                {{ __('Dashboard') }}
-            </x-responsive-nav-link>
-            @endauth
+    <!-- Mobile Menu Overlay -->
+    <div x-show="open" 
+         x-transition:enter="transition-opacity ease-linear duration-300" 
+         x-transition:enter-start="opacity-0" 
+         x-transition:enter-end="opacity-100" 
+         x-transition:leave="transition-opacity ease-linear duration-300" 
+         x-transition:leave-start="opacity-100" 
+         x-transition:leave-end="opacity-0" 
+         class="fixed inset-0 z-40 bg-ink/50 backdrop-blur-sm sm:hidden" 
+         @click="open = false" x-cloak></div>
+
+    <!-- Mobile Menu Flyout -->
+    <div x-show="open" 
+         x-transition:enter="transition ease-in-out duration-300 transform" 
+         x-transition:enter-start="translate-x-full" 
+         x-transition:enter-end="translate-x-0" 
+         x-transition:leave="transition ease-in-out duration-300 transform" 
+         x-transition:leave-start="translate-x-0" 
+         x-transition:leave-end="translate-x-full" 
+         class="fixed inset-y-0 right-0 z-50 w-full max-w-sm bg-surface overflow-y-auto sm:hidden flex flex-col shadow-2xl border-l border-rule" x-cloak>
+        
+        <div class="flex items-center justify-between px-6 h-20 border-b border-rule shrink-0">
+            <div class="flex items-center gap-2">
+                <x-icon name="school" class="w-8 h-8 text-accent shrink-0" />
+                <span class="text-xl font-bold tracking-tight font-display text-ink">LearnFlow</span>
+            </div>
+            <button @click="open = false" class="p-2 text-ink2 hover:text-ink transition-colors bg-bg rounded-lg">
+                <span class="material-symbols-outlined text-[20px]">close</span>
+            </button>
         </div>
 
-        <!-- Responsive Settings Options -->
-        <div class="pt-4 pb-1 border-t border-gray-200">
-            @auth
-                <div class="px-4">
-                    <div class="font-medium text-base text-gray-800" x-data="{{ json_encode(['name' => auth()->user()->name ?? '']) }}" x-text="name" x-on:profile-updated.window="name = $event.detail.name"></div>
-                    <div class="font-medium text-sm text-gray-500">{{ auth()->user()->email ?? '' }}</div>
-                </div>
+        <div class="px-6 py-8 space-y-6 flex-1 bg-white">
+            <div class="flex flex-col gap-5 border-b border-rule pb-8">
+                <a href="{{ route('courses.index') }}" class="text-lg font-bold font-display {{ request()->routeIs('courses*') ? 'text-accent' : 'text-ink2 hover:text-accent' }} transition-colors">Courses</a>
+                <a href="{{ route('pages.mentors') }}" class="text-lg font-bold font-display {{ request()->routeIs('pages.mentors') ? 'text-accent' : 'text-ink2 hover:text-accent' }} transition-colors">Mentors</a>
+                <a href="{{ route('pages.pricing') }}" class="text-lg font-bold font-display {{ request()->routeIs('pages.pricing') ? 'text-accent' : 'text-ink2 hover:text-accent' }} transition-colors">Pricing</a>
+                <a href="{{ route('pages.resources') }}" class="text-lg font-bold font-display {{ request()->routeIs('pages.resources') ? 'text-accent' : 'text-ink2 hover:text-accent' }} transition-colors">Resources</a>
+                @auth
+                <a href="{{ route('dashboard') }}" class="text-lg font-bold font-display {{ request()->routeIs('dashboard') ? 'text-accent' : 'text-ink2 hover:text-accent' }} transition-colors">Dashboard</a>
+                @endauth
+            </div>
 
-                <div class="mt-3 space-y-1">
-                    <x-responsive-nav-link :href="route('profile')" wire:navigate>
-                        {{ __('Profile') }}
-                    </x-responsive-nav-link>
+            <div class="pt-4">
+                @auth
+                    <div class="mb-6 bg-bg p-4 rounded-xl border border-rule">
+                        <div class="font-bold text-base font-display text-ink" x-data="{{ json_encode(['name' => auth()->user()->name ?? '']) }}" x-text="name" x-on:profile-updated.window="name = $event.detail.name"></div>
+                        <div class="font-medium text-xs text-ink3 mt-1">{{ auth()->user()->email ?? '' }}</div>
+                    </div>
 
-                    <!-- Authentication -->
-                    <form method="POST" action="{{ route('logout') }}" class="w-full">
-                        @csrf
-                        <button type="submit" class="block w-full px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-700 transition">
-                            {{ __('Log Out') }}
-                        </button>
-                    </form>
-                </div>
-            @else
-                <div class="px-4 space-y-2">
-                    <a href="{{ route('login') }}" class="block text-base font-medium text-ink2">Log In</a>
-                    <a href="{{ route('register') }}" class="block text-base font-medium text-accent">Sign Up</a>
-                </div>
-            @endauth
+                    <div class="flex flex-col gap-4">
+                        <a href="{{ route('profile') }}" wire:navigate class="text-base font-bold font-display text-ink2 hover:text-accent transition-colors flex items-center gap-3">
+                            <span class="material-symbols-outlined text-[20px]">person</span>
+                            {{ __('Profile') }}
+                        </a>
+
+                        <form method="POST" action="{{ route('logout') }}" class="w-full">
+                            @csrf
+                            <button type="submit" class="text-left w-full text-base font-bold font-display text-red-600 hover:text-red-700 transition flex items-center gap-3">
+                                <span class="material-symbols-outlined text-[20px]">logout</span>
+                                {{ __('Log Out') }}
+                            </button>
+                        </form>
+                    </div>
+                @else
+                    <div class="flex flex-col gap-4">
+                        <a href="{{ route('login') }}" class="py-3.5 px-4 text-center border-2 border-rule rounded-custom text-base font-bold font-display text-ink hover:border-ink transition-colors">Log In</a>
+                        <a href="{{ route('register') }}" class="py-3.5 px-4 text-center bg-accent rounded-custom text-base font-bold font-display text-white hover:opacity-90 transition-opacity">Sign Up</a>
+                    </div>
+                @endauth
+            </div>
         </div>
     </div>
 </nav>

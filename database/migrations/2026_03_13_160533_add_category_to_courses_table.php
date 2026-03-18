@@ -12,17 +12,18 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('courses', function (Blueprint $table) {
-            //
+            if (! Schema::hasColumn('courses', 'category')) {
+                $table->string('category')->nullable()->after('level');
+            }
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::table('courses', function (Blueprint $table) {
-            //
+            if (Schema::hasColumn('courses', 'category')) {
+                $table->dropColumn('category');
+            }
         });
     }
 };

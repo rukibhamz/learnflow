@@ -20,7 +20,7 @@
 @section('content')
 <div x-data="{ showPreviewModal: false, previewLesson: null }">
     {{-- Hero Section --}}
-    <div class="bg-gradient-to-br from-ink via-ink to-primary/90 text-white">
+    <div class="bg-ink text-white">
         <div class="max-w-7xl mx-auto px-6 py-12 lg:py-16">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
                 {{-- Left Content --}}
@@ -97,7 +97,7 @@
                             @if($course->getFirstMediaUrl('thumbnail'))
                                 <img src="{{ $course->getFirstMediaUrl('thumbnail') }}" alt="{{ $course->title }}" class="w-full h-full object-cover">
                             @else
-                                <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/10 to-primary/5">
+                                <div class="w-full h-full flex items-center justify-center bg-primary/10">
                                     <span class="material-symbols-outlined text-[64px] text-primary/30">school</span>
                                 </div>
                             @endif

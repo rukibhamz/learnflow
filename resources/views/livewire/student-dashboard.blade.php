@@ -94,7 +94,7 @@
                                     alt="{{ $enrollment->course->title }}" 
                                     class="w-full h-full object-cover">
                             @else
-                                <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/10 to-primary/5">
+                                <div class="w-full h-full flex items-center justify-center bg-primary/10">
                                     <span class="material-symbols-outlined text-[48px] text-primary/30">school</span>
                                 </div>
                             @endif
@@ -146,7 +146,7 @@
                                     alt="{{ $enrollment->course->title }}" 
                                     class="w-full h-full object-cover">
                             @else
-                                <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/10 to-primary/5">
+                                <div class="w-full h-full flex items-center justify-center bg-primary/10">
                                     <span class="material-symbols-outlined text-[48px] text-primary/30">school</span>
                                 </div>
                             @endif
@@ -203,7 +203,7 @@
                                     alt="{{ $course->title }}" 
                                     class="w-full h-full object-cover">
                             @else
-                                <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/10 to-primary/5">
+                                <div class="w-full h-full flex items-center justify-center bg-primary/10">
                                     <span class="material-symbols-outlined text-[48px] text-primary/30">school</span>
                                 </div>
                             @endif

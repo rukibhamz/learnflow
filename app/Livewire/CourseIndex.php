@@ -26,6 +26,9 @@ class CourseIndex extends Component
     #[Url(except: '')]
     public string $language = '';
 
+    #[Url(except: '')]
+    public string $categoryFilter = '';
+
     #[Url(except: 'newest')]
     public string $sort = 'newest';
 
@@ -44,6 +47,7 @@ class CourseIndex extends Component
     public function updatingLevels(): void      { $this->resetPage(); }
     public function updatingPriceFilter(): void { $this->resetPage(); }
     public function updatingLanguage(): void    { $this->resetPage(); }
+    public function updatingCategoryFilter(): void { $this->resetPage(); }
     public function updatingSort(): void        { $this->resetPage(); }
 
     public function fetchSuggestions(): void
@@ -87,7 +91,7 @@ class CourseIndex extends Component
 
     public function clearFilters(): void
     {
-        $this->reset(['search', 'levels', 'priceFilter', 'language', 'sort']);
+        $this->reset(['search', 'levels', 'priceFilter', 'language', 'categoryFilter', 'sort']);
         $this->highlights = [];
         $this->resetPage();
     }
@@ -105,10 +109,12 @@ class CourseIndex extends Component
         }
 
         $languages = collect(Course::cachedLanguages());
+        $categories = collect(Course::cachedCategories());
 
         return view('livewire.course-index', [
             'courses'      => $courses,
             'languages'    => $languages,
+            'categories'   => $categories,
             'levelOptions' => CourseLevel::cases(),
         ]);
     }
@@ -130,6 +136,10 @@ class CourseIndex extends Component
 
         if ($this->language) {
             $filters[] = 'language = "' . $this->language . '"';
+        }
+
+        if ($this->categoryFilter) {
+            $filters[] = 'category = "' . $this->categoryFilter . '"';
         }
 
         $sortMap = [
@@ -208,6 +218,10 @@ class CourseIndex extends Component
 
         if ($this->language) {
             $query->where('language', $this->language);
+        }
+
+        if ($this->categoryFilter) {
+            $query->where('category', $this->categoryFilter);
         }
 
         match ($this->sort) {

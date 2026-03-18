@@ -3,58 +3,118 @@
 @section('title', 'Learn Without Limits')
 
 @section('content')
-    <!-- Hero Section -->
-    <section class="max-w-7xl mx-auto px-6 py-20 lg:py-32 grid lg:grid-cols-2 gap-16 items-center">
-        <div class="flex flex-col gap-8">
-            <div class="flex flex-col gap-4">
-                <span class="text-accent font-bold tracking-[0.2em] text-xs uppercase">Online Learning Platform</span>
-                <h1 class="text-6xl lg:text-8xl font-extrabold leading-[1.1] text-ink">
-                    Learn without <span class="text-accent">limits.</span>
-                </h1>
-                <p class="text-lg text-ink2 max-w-lg leading-relaxed">
-                    Experience the future of education with our expert-led courses designed for your success. Join over 14,000 students worldwide.
-                </p>
-            </div>
-            <div class="flex flex-wrap gap-4">
-                <a href="{{ route('register') }}" class="bg-accent text-white px-8 py-4 text-base font-bold flex items-center gap-2 rounded-card hover:opacity-90 transition-opacity">
-                    Get Started
-                    <x-icon name="arrow-right" class="w-4 h-4" />
-                </a>
-                <a href="{{ route('courses.index') }}" class="border border-ink text-ink px-8 py-4 text-base font-bold rounded-card hover:bg-ink hover:text-white transition-all">
-                    View Courses
-                </a>
-            </div>
+    <!-- Hero Slider Section -->
+    <section x-data="{ 
+        activeSlide: 1,
+        autoplayInterval: null,
+        slides: [
+            @forelse($slides as $slide)
+            {
+                tag: '{{ $slide->tag }}',
+                title: '{!! addslashes($slide->title) !!}',
+                desc: '{{ addslashes($slide->description) }}',
+                img: '{{ $slide->getFirstMediaUrl('background') ?: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=2671&auto=format&fit=crop' }}'
+            },
+            @empty
+            {
+                tag: 'Online Learning Platform',
+                title: 'Learn without <span class=\'text-accent\'>limits.</span>',
+                desc: 'Experience the future of education with our expert-led courses designed for your success.',
+                img: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=2671&auto=format&fit=crop'
+            }
+            @endforelse
+        ],
+        next() { this.activeSlide = this.activeSlide === this.slides.length ? 1 : this.activeSlide + 1; },
+        prev() { this.activeSlide = this.activeSlide === 1 ? this.slides.length : this.activeSlide - 1; },
+        startAutoplay() { 
+            this.autoplayInterval = setInterval(() => this.next(), 6000); 
+        },
+        stopAutoplay() {
+            clearInterval(this.autoplayInterval);
+        }
+    }" 
+    x-init="startAutoplay()"
+    @mouseenter="stopAutoplay()"
+    @mouseleave="startAutoplay()"
+    class="relative overflow-hidden w-full bg-surface">
+        
+        <!-- Slider Track -->
+        <div class="flex transition-transform duration-700 ease-in-out w-full" :style="`transform: translateX(-${(activeSlide - 1) * 100}%)`">
+            
+            <template x-for="(slide, index) in slides" :key="index">
+                <div class="w-full shrink-0">
+                    <div class="max-w-7xl mx-auto px-6 py-16 lg:py-24 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+                        <div class="flex flex-col gap-8 order-2 lg:order-1 transition-all duration-700 delay-300" :class="activeSlide === index + 1 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'">
+                            <div class="flex flex-col gap-6">
+                                <span class="text-accent font-bold tracking-[0.2em] text-xs uppercase" x-text="slide.tag"></span>
+                                <h1 class="text-5xl sm:text-6xl lg:text-7xl font-extrabold leading-tight text-ink" x-html="slide.title"></h1>
+                                <p class="text-lg sm:text-xl text-ink2 max-w-lg leading-relaxed font-body" x-text="slide.desc"></p>
+                            </div>
+                            <div class="flex flex-wrap gap-4 pt-2">
+                                <a href="{{ route('register') }}" class="bg-primary text-white px-8 py-4 text-sm sm:text-base font-bold flex items-center gap-2 rounded-lg hover:opacity-90 transition-opacity shadow-lg shadow-primary/20">
+                                    Get Started
+                                    <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+                                </a>
+                                <a href="{{ route('courses.index') }}" class="border-2 border-rule text-ink px-8 py-4 text-sm sm:text-base font-bold rounded-lg hover:bg-ink hover:text-white transition-all">
+                                    View Courses
+                                </a>
+                            </div>
+                        </div>
+                        <div class="relative order-1 lg:order-2 transition-all duration-700 delay-100" :class="activeSlide === index + 1 ? 'opacity-100 scale-100' : 'opacity-0 scale-95'">
+                            <div class="aspect-[4/3] lg:aspect-square bg-background-light border border-rule overflow-hidden rounded-2xl shadow-2xl">
+                                <img :src="slide.img" :alt="slide.tag" class="w-full h-full object-cover grayscale-[0.1] hover:grayscale-0 transition-all duration-1000" />
+                            </div>
+                            <!-- Abstract decorative elements -->
+                            <div class="hidden sm:block absolute -bottom-8 -right-8 w-40 h-40 border-2 border-primary/20 -z-10 rounded-full"></div>
+                            <div class="hidden sm:block absolute -top-8 -left-8 w-24 h-24 bg-accent/10 -z-10 rounded-xl rotate-12"></div>
+                        </div>
+                    </div>
+                </div>
+            </template>
+
         </div>
-        <div class="relative">
-            <div class="aspect-square bg-bg border border-ink overflow-hidden">
-                <img alt="Students collaborating" class="w-full h-full object-cover grayscale-[0.5] hover:grayscale-0 transition-all duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCVXyKxeNnRvM7s_AVDKWd9fGx1BtCq-kIU7eoTFDgOJ7fPUxJvhe01TQtt76uDyEhMpluqz5BHxV7xNgPUHuCA25g-rvTswWLDD6wyB_IfOY4C9W2bU0qC3AxIZOViXyMmQVeEY17tymuacYfSCqGjgiyg0Hkrtl5chmzMSBBW_TAGKPcC-PaS5FEplfc2DMqEDMSmlz5-xqOzsnEzcH6ErDQ8Y745XF0i75dJbpjD0dSmOWmvkZ1urVmuK5lQs0J-E12pB4ONXVaA"/>
-            </div>
-            <!-- Abstract decorative box -->
-            <div class="absolute -bottom-6 -left-6 w-32 h-32 border border-ink -z-10 bg-accent/5"></div>
+
+        <!-- Pagination Dots -->
+        <div class="absolute bottom-10 left-1/2 -translate-x-1/2 flex items-center gap-4 z-20">
+            <template x-for="(slide, index) in slides" :key="index">
+                <button @click="activeSlide = index + 1; stopAutoplay(); startAutoplay();" 
+                        class="h-1.5 rounded-full transition-all duration-500"
+                        :class="activeSlide === index + 1 ? 'w-10 bg-primary' : 'w-4 bg-rule hover:bg-ink/20'"
+                        :aria-label="`Go to slide ${index + 1}`"></button>
+            </template>
         </div>
+
+        <!-- Navigation Arrows -->
+        <button @click="prev(); stopAutoplay(); startAutoplay();" class="hidden md:flex absolute left-8 top-1/2 -translate-y-1/2 size-12 items-center justify-center rounded-full bg-white/80 backdrop-blur-md border border-rule shadow-lg hover:bg-white text-ink transition-all z-20 group">
+            <span class="material-symbols-outlined text-[24px] group-hover:-translate-x-0.5 transition-transform">chevron_left</span>
+        </button>
+        <button @click="next(); stopAutoplay(); startAutoplay();" class="hidden md:flex absolute right-8 top-1/2 -translate-y-1/2 size-12 items-center justify-center rounded-full bg-white/80 backdrop-blur-md border border-rule shadow-lg hover:bg-white text-ink transition-all z-20 group">
+            <span class="material-symbols-outlined text-[24px] group-hover:translate-x-0.5 transition-transform">chevron_right</span>
+        </button>
+
     </section>
 
     <!-- Stats Bar -->
-    <section class="border-y border-rule bg-surface">
+    <section class="border-y border-rule bg-surface shadow-sm relative z-10">
         <div class="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 divide-x divide-rule">
-            <div class="py-10 px-8 flex flex-col gap-1 items-center md:items-start">
-                <span class="text-3xl font-bold font-display">{{ number_format(\App\Models\User::count() + 14000) }}+</span>
-                <span class="text-sm text-ink3 uppercase tracking-widest">Students</span>
+            <div class="py-12 px-8 flex flex-col gap-2 items-center group hover:bg-background-light/50 transition-colors">
+                <span class="text-4xl font-bold font-display text-primary group-hover:scale-110 transition-transform">{{ \App\Models\Setting::get('stat_students', '14,000+') }}</span>
+                <span class="text-[11px] font-bold text-ink3 uppercase tracking-[0.2em] font-poppins">Students Joined</span>
             </div>
-            <div class="py-10 px-8 flex flex-col gap-1 items-center md:items-start">
-                <span class="text-3xl font-bold font-display">{{ \App\Models\Course::published()->count() }}</span>
-                <span class="text-sm text-ink3 uppercase tracking-widest">Courses</span>
+            <div class="py-12 px-8 flex flex-col gap-2 items-center group hover:bg-background-light/50 transition-colors">
+                <span class="text-4xl font-bold font-display text-accent group-hover:scale-110 transition-transform">{{ \App\Models\Setting::get('stat_courses', '1,200+') }}</span>
+                <span class="text-[11px] font-bold text-ink3 uppercase tracking-[0.2em] font-poppins">Courses Available</span>
             </div>
-            <div class="py-10 px-8 flex flex-col gap-1 items-center md:items-start">
-                <span class="text-3xl font-bold font-display">{{ \App\Models\User::count() }}</span>
-                <span class="text-sm text-ink3 uppercase tracking-widest">Mentors</span>
+            <div class="py-12 px-8 flex flex-col gap-2 items-center group hover:bg-background-light/50 transition-colors">
+                <span class="text-4xl font-bold font-display text-primary group-hover:scale-110 transition-transform">{{ \App\Models\Setting::get('stat_mentors', '450+') }}</span>
+                <span class="text-[11px] font-bold text-ink3 uppercase tracking-[0.2em] font-poppins">Expert Mentors</span>
             </div>
-            <div class="py-10 px-8 flex flex-col gap-1 items-center md:items-start">
+            <div class="py-12 px-8 flex flex-col gap-2 items-center group hover:bg-background-light/50 transition-colors">
                 <div class="flex items-center gap-2">
-                    <span class="text-3xl font-bold font-display">4.8</span>
-                    <x-icon name="star-filled" class="w-6 h-6 text-amber-500 shrink-0" />
+                    <span class="text-4xl font-bold font-display text-accent group-hover:scale-110 transition-transform">{{ \App\Models\Setting::get('stat_rating', '4.8/5') }}</span>
+                    <span class="material-symbols-outlined text-amber-400 text-[24px] fill-1">star</span>
                 </div>
-                <span class="text-sm text-ink3 uppercase tracking-widest">Avg Rating</span>
+                <span class="text-[11px] font-bold text-ink3 uppercase tracking-[0.2em] font-poppins">Satisfaction Rate</span>
             </div>
         </div>
     </section>
@@ -100,7 +160,7 @@
                     <ul class="space-y-2 text-sm text-ink2">
                         <li><a href="{{ route('pages.about') }}" class="hover:text-accent transition-colors">About Us</a></li>
                         <li><a href="{{ route('pages.about') }}" class="hover:text-accent transition-colors">Careers</a></li>
-                        <li><a href="{{ route('pages.about') }}" class="hover:text-accent transition-colors">Blog</a></li>
+                        <li><a href="{{ route('blog.index') }}" class="hover:text-accent transition-colors">Blog</a></li>
                         <li><a href="{{ route('pages.contact') }}" class="hover:text-accent transition-colors">Contact</a></li>
                     </ul>
                 </div>

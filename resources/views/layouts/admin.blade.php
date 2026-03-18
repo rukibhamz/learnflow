@@ -93,6 +93,20 @@
                 <span class="text-sm font-medium">Certificates</span>
             </a>
 
+            <p class="px-2 pt-6 pb-1 text-[11px] font-poppins font-bold uppercase tracking-wider text-ink3">CMS</p>
+
+            <a href="{{ route('admin.blogs.index') }}"
+               class="flex items-center gap-3 px-3 py-2 rounded-lg group {{ request()->routeIs('admin.blogs.*') ? 'bg-primary/10 text-primary' : 'text-ink hover:bg-background-light' }}">
+                <span class="material-symbols-outlined text-[20px] {{ request()->routeIs('admin.blogs.*') ? 'text-primary' : 'text-ink3 group-hover:text-ink' }}">article</span>
+                <span class="text-sm font-medium">Blog Posts</span>
+            </a>
+
+            <a href="{{ route('admin.hero.index') }}"
+               class="flex items-center gap-3 px-3 py-2 rounded-lg group {{ request()->routeIs('admin.hero.*') ? 'bg-primary/10 text-primary' : 'text-ink hover:bg-background-light' }}">
+                <span class="material-symbols-outlined text-[20px] {{ request()->routeIs('admin.hero.*') ? 'text-primary' : 'text-ink3 group-hover:text-ink' }}">view_carousel</span>
+                <span class="text-sm font-medium">Hero Slider</span>
+            </a>
+
             <p class="px-2 pt-6 pb-1 text-[11px] font-poppins font-bold uppercase tracking-wider text-ink3">Account</p>
 
             <a href="{{ route('admin.settings') }}"

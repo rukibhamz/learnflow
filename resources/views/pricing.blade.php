@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="min-h-screen bg-bg">
-    <div class="bg-gradient-to-br from-ink via-ink to-primary/90 text-white py-16 text-center">
+    <div class="bg-ink text-white py-16 text-center">
         <h1 class="font-display font-extrabold text-4xl md:text-5xl mb-4">Choose Your Plan</h1>
         <p class="text-lg text-white/80 max-w-2xl mx-auto">Get unlimited access to courses with a subscription, or purchase courses individually.</p>
 

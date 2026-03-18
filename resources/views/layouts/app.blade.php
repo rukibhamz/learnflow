@@ -19,7 +19,7 @@
     <style>[x-cloak]{display:none!important}</style>
 </head>
 <body class="min-h-screen bg-bg font-sans text-ink antialiased">
-    <div class="min-h-screen">
+    <div class="min-h-screen flex flex-col">
         <livewire:layout.navigation />
 
         <!-- Page Heading -->
@@ -32,13 +32,15 @@
         @endif
 
         <!-- Page Content -->
-        <main>
+        <main class="flex-grow flex flex-col">
             @if(isset($slot))
                 {{ $slot }}
             @else
                 @yield('content')
             @endif
         </main>
+
+        <x-footer />
     </div>
     @livewireScripts
 </body>

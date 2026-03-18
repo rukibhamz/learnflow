@@ -44,6 +44,11 @@
                 class="pb-4 font-poppins font-bold text-[13px] border-b-2 transition-all outline-none">
             Notifications
         </button>
+        <button @click="activeTab = 'homepage'" 
+                :class="activeTab === 'homepage' ? 'text-primary border-primary' : 'text-ink3 border-transparent hover:text-ink hover:border-rule'"
+                class="pb-4 font-poppins font-bold text-[13px] border-b-2 transition-all outline-none">
+            Homepage
+        </button>
     </div>
 
     @if (session('success'))
@@ -630,6 +635,47 @@
             <div x-show="activeTab === 'notifications'" class="p-10 space-y-12">
                 <div class="flex items-center justify-center p-12 text-ink3 font-sans text-[13px] italic">
                     Notification settings coming soon...
+                </div>
+            </div>
+
+            <!-- Homepage Tab -->
+            <div x-show="activeTab === 'homepage'" class="p-10 space-y-12">
+                <div class="space-y-10">
+                    <h3 class="font-poppins font-bold text-[11px] uppercase tracking-widest text-ink3 border-b border-rule pb-3">Homepage Statistics Counters</h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
+                        <!-- Stat: Students -->
+                        <div class="space-y-2">
+                            <label class="block text-[13px] font-bold text-ink font-poppins">Total Students Counter</label>
+                            <p class="text-[11px] text-ink3 font-sans leading-relaxed mb-2">Display text for student count (e.g. 14,000+)</p>
+                            <input type="text" name="stat_students" value="{{ \App\Models\Setting::get('stat_students', '14,000+') }}" 
+                                   class="w-full h-12 border border-rule rounded-lg px-4 font-sans text-[14px] focus:ring-1 focus:ring-primary/30 outline-none transition-shadow">
+                        </div>
+
+                        <!-- Stat: Courses -->
+                        <div class="space-y-2">
+                            <label class="block text-[13px] font-bold text-ink font-poppins">Total Courses Counter</label>
+                            <p class="text-[11px] text-ink3 font-sans leading-relaxed mb-2">Display text for course count (e.g. 1,200+)</p>
+                            <input type="text" name="stat_courses" value="{{ \App\Models\Setting::get('stat_courses', '1,200+') }}" 
+                                   class="w-full h-12 border border-rule rounded-lg px-4 font-sans text-[14px] focus:ring-1 focus:ring-primary/30 outline-none transition-shadow">
+                        </div>
+
+                        <!-- Stat: Mentors -->
+                        <div class="space-y-2">
+                            <label class="block text-[13px] font-bold text-ink font-poppins">Total Mentors Counter</label>
+                            <p class="text-[11px] text-ink3 font-sans leading-relaxed mb-2">Display text for mentor count (e.g. 450+)</p>
+                            <input type="text" name="stat_mentors" value="{{ \App\Models\Setting::get('stat_mentors', '450+') }}" 
+                                   class="w-full h-12 border border-rule rounded-lg px-4 font-sans text-[14px] focus:ring-1 focus:ring-primary/30 outline-none transition-shadow">
+                        </div>
+
+                        <!-- Stat: Rating -->
+                        <div class="space-y-2">
+                            <label class="block text-[13px] font-bold text-ink font-poppins">Average Rating Counter</label>
+                            <p class="text-[11px] text-ink3 font-sans leading-relaxed mb-2">Display text for rating (e.g. 4.8/5)</p>
+                            <input type="text" name="stat_rating" value="{{ \App\Models\Setting::get('stat_rating', '4.8/5') }}" 
+                                   class="w-full h-12 border border-rule rounded-lg px-4 font-sans text-[14px] focus:ring-1 focus:ring-primary/30 outline-none transition-shadow">
+                        </div>
+                    </div>
                 </div>
             </div>
 

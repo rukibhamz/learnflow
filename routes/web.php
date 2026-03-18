@@ -27,11 +27,18 @@ Route::post('webhooks/stripe', [StripeWebhookController::class, 'handle'])
 
 Route::middleware(['web', \App\Http\Middleware\RedirectIfNotInstalled::class])->group(function () {
     // Public routes
-    Route::view('/', 'home')->name('home');
+    Route::get('/', function () {
+        $slides = \App\Models\HeroSlide::where('is_active', true)->orderBy('order')->get();
+        return view('home', compact('slides'));
+    })->name('home');
     Route::get('courses', fn () => view('courses.index'))->name('courses.index');
     Route::get('courses/{slug}', [CourseController::class, 'show'])->name('courses.show');
     Route::get('certificates/{uuid}/verify', [CertificateController::class, 'verify'])->name('certificates.verify');
     Route::get('pricing', [SubscriptionController::class, 'pricing'])->name('pricing');
+
+    // Blog Routes
+    Route::get('blog', [\App\Http\Controllers\BlogController::class, 'index'])->name('blog.index');
+    Route::get('blog/{slug}', [\App\Http\Controllers\BlogController::class, 'show'])->name('blog.show');
 
     Route::view('about', 'pages.about')->name('pages.about');
     Route::view('contact', 'pages.contact')->name('pages.contact');
@@ -181,6 +188,12 @@ Route::middleware(['web', \App\Http\Middleware\RedirectIfNotInstalled::class])->
         Route::get('settings', fn () => view('admin.settings'))->name('settings');
         Route::post('settings', [\App\Http\Controllers\Admin\SettingsController::class, 'update'])->name('settings.update');
         Route::post('settings/test-email', [\App\Http\Controllers\Admin\SettingsController::class, 'sendTestEmail'])->name('settings.test-email');
+        
+        // Blog CMS
+        Route::get('blogs', fn () => view('admin.blogs.index'))->name('blogs.index');
+
+        // Hero CMS
+        Route::get('hero', fn () => view('admin.hero.index'))->name('hero.index');
     });
 
     Route::middleware(['auth'])->group(function () {

@@ -304,4 +304,22 @@ class Course extends Model implements HasMedia
             return Cache::remember($key, $ttlSeconds, $callback);
         }
     }
+
+    public static function cachedCategories(int $ttlSeconds = 3600): \Illuminate\Support\Collection
+    {
+        $key = 'courses:filters:categories:v1';
+        $callback = fn () => self::published()
+            ->whereNotNull('category')
+            ->distinct()
+            ->orderBy('category')
+            ->pluck('category')
+            ->filter()
+            ->values();
+
+        try {
+            return Cache::tags(['courses', 'filters'])->remember($key, $ttlSeconds, $callback);
+        } catch (\Throwable) {
+            return Cache::remember($key, $ttlSeconds, $callback);
+        }
+    }
 }
