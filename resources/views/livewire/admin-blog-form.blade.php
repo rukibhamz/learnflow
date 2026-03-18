@@ -45,9 +45,9 @@
                     })
                  "
                  x-on:trix-change="content = $event.target.value"
-                 class="min-h-[500px]">
+                 class="min-h-[700px]">
                 <trix-editor x-ref="trix" 
-                             class="trix-content bg-bg border border-rule rounded-lg p-4 min-h-[500px] text-base text-ink focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all font-body">
+                             class="trix-content bg-bg border border-rule rounded-lg p-4 min-h-[700px] text-base text-ink focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/20 transition-all font-body">
                 </trix-editor>
             </div>
             @error('content') <span class="text-xs text-red-600 mt-1 block">{{ $message }}</span> @enderror

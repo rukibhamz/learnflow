@@ -9,6 +9,11 @@
     @if($post->keywords)
         <meta name="keywords" content="{{ $post->keywords }}">
     @endif
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
 @endpush
 
 @section('content')
@@ -44,9 +49,27 @@
             </div>
         @endif
         
+        {{-- Table of Contents --}}
+        @if(count($post->toc) > 0)
+            <div class="mb-16 p-8 bg-background-light border border-rule rounded-2xl">
+                <h4 class="font-display font-bold text-lg text-ink mb-6 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary text-[20px]">list_alt</span>
+                    Table of Contents
+                </h4>
+                <nav class="space-y-3">
+                    @foreach($post->toc as $item)
+                        <a href="#{{ $item['id'] }}" class="block text-sm font-medium text-ink2 hover:text-primary transition-colors flex items-center gap-3">
+                            <span class="w-1.5 h-1.5 rounded-full bg-rule {{ $item['level'] === 'h1' ? 'ml-0' : ($item['level'] === 'h2' ? 'ml-4' : 'ml-8') }}"></span>
+                            {{ $item['text'] }}
+                        </a>
+                    @endforeach
+                </nav>
+            </div>
+        @endif
+        
         {{-- Content --}}
-        <div class="prose prose-lg max-w-none text-ink font-body leading-relaxed prose-headings:font-display prose-headings:font-bold prose-p:mb-8 prose-img:rounded-2xl">
-            {!! $post->content !!}
+        <div class="prose prose-lg max-w-none text-ink font-body leading-relaxed prose-headings:font-display prose-headings:font-bold prose-p:mb-8 prose-img:rounded-2xl scroll-mt-24">
+            {!! $post->content_with_ids !!}
         </div>
         
         {{-- Footer --}}

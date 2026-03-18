@@ -7,7 +7,7 @@
     <script src="https://unpkg.com/trix@2.0.8/dist/trix.umd.min.js"></script>
     <style>
         .trix-editor {
-            min-height: 450px !important;
+            min-height: 700px !important;
         }
         trix-toolbar .trix-button-group--file-tools { display: none !important; }
     </style>

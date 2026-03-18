@@ -86,10 +86,10 @@
 
         <!-- Navigation Arrows -->
         <button @click="prev(); stopAutoplay(); startAutoplay();" class="hidden md:flex absolute left-8 top-1/2 -translate-y-1/2 size-12 items-center justify-center rounded-full bg-white/80 backdrop-blur-md border border-rule shadow-lg hover:bg-white text-ink transition-all z-20 group">
-            <span class="material-symbols-outlined text-[24px] group-hover:-translate-x-0.5 transition-transform">chevron_left</span>
+            <span class="material-symbols-outlined text-[24px] group-hover:-translate-x-0.5 transition-transform">arrow_back</span>
         </button>
         <button @click="next(); stopAutoplay(); startAutoplay();" class="hidden md:flex absolute right-8 top-1/2 -translate-y-1/2 size-12 items-center justify-center rounded-full bg-white/80 backdrop-blur-md border border-rule shadow-lg hover:bg-white text-ink transition-all z-20 group">
-            <span class="material-symbols-outlined text-[24px] group-hover:translate-x-0.5 transition-transform">chevron_right</span>
+            <span class="material-symbols-outlined text-[24px] group-hover:translate-x-0.5 transition-transform">arrow_forward</span>
         </button>
 
     </section>
