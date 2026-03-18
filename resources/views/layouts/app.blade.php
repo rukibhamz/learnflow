@@ -17,6 +17,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
     <style>[x-cloak]{display:none!important}</style>
+    @stack('head')
 </head>
 <body class="min-h-screen bg-bg font-sans text-ink antialiased">
     <div class="min-h-screen flex flex-col">

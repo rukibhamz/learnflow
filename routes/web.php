@@ -191,6 +191,8 @@ Route::middleware(['web', \App\Http\Middleware\RedirectIfNotInstalled::class])->
         
         // Blog CMS
         Route::get('blogs', fn () => view('admin.blogs.index'))->name('blogs.index');
+        Route::get('blogs/create', fn () => view('admin.blogs.create'))->name('blogs.create');
+        Route::get('blogs/{id}/edit', fn (string $id) => view('admin.blogs.edit', ['id' => $id]))->name('blogs.edit');
 
         // Hero CMS
         Route::get('hero', fn () => view('admin.hero.index'))->name('hero.index');

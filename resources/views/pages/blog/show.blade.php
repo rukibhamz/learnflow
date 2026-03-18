@@ -2,6 +2,15 @@
 
 @section('title', $post->title . ' - LearnFlow Blog')
 
+@push('head')
+    @if($post->meta_description)
+        <meta name="description" content="{{ $post->meta_description }}">
+    @endif
+    @if($post->keywords)
+        <meta name="keywords" content="{{ $post->keywords }}">
+    @endif
+@endpush
+
 @section('content')
 <article class="bg-surface py-20 lg:py-32">
     <div class="max-w-4xl mx-auto px-6">
