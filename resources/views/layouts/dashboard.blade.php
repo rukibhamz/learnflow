@@ -11,6 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
+    @include('partials.brand-styles')
     @stack('head')
     @stack('styles')
     <style>[x-cloak]{display:none!important}</style>
@@ -20,10 +21,7 @@
 
     {{-- Topbar --}}
     <header class="h-[52px] flex items-center justify-between px-6 bg-surface border-b border-rule sticky top-0 z-40">
-        <a href="{{ url('/') }}" class="flex items-center gap-2 font-display font-extrabold text-ink text-lg uppercase tracking-tight">
-            <x-icon name="school" class="w-6 h-6 text-accent shrink-0" />
-            Learn<span class="text-accent">Flow</span>
-        </a>
+        <x-branding href="{{ url('/') }}" class="font-display font-extrabold text-ink text-lg uppercase tracking-tight" variant="split" />
         <div class="flex items-center gap-4">
             <livewire:notification-bell lazy />
             <div class="relative" x-data="{ open: false }">

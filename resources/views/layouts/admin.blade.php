@@ -14,6 +14,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/admin.js'])
     @livewireStyles
     <style>[x-cloak]{display:none!important}</style>
+    @include('partials.brand-styles')
     @stack('head')
     @stack('styles')
 </head>
@@ -37,10 +38,7 @@
     >
         <!-- Logo -->
         <div class="h-[52px] flex items-center px-6 border-b border-rule shrink-0">
-            <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-2">
-                <span class="material-symbols-outlined text-primary">school</span>
-                <span class="font-poppins font-bold text-lg tracking-tight">LearnFlow</span>
-            </a>
+            <x-branding :href="route('admin.dashboard')" class="font-poppins font-bold text-lg tracking-tight" />
         </div>
 
         <!-- Nav -->

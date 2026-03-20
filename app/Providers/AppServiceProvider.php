@@ -13,7 +13,9 @@ use App\Policies\QuizAttemptPolicy;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -98,5 +100,23 @@ class AppServiceProvider extends ServiceProvider
         if ($appUrl) {
             URL::forceRootUrl($appUrl);
         }
+
+        // Share branding with all views
+        View::composer('*', function ($view) {
+            $siteName = config('app.name', 'LearnFlow');
+            $siteColor = '#1a42e0';
+            $siteLogoUrl = null;
+
+            if (Schema::hasTable('settings')) {
+                $siteName = \App\Models\Setting::get('site_name', $siteName);
+                $siteColor = \App\Models\Setting::get('site_color', $siteColor);
+                $logoPath = \App\Models\Setting::get('site_logo');
+                $siteLogoUrl = $logoPath && Storage::disk('public')->exists($logoPath)
+                    ? Storage::disk('public')->url($logoPath)
+                    : null;
+            }
+
+            $view->with(compact('siteName', 'siteColor', 'siteLogoUrl'));
+        });
     }
 }

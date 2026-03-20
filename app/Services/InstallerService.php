@@ -325,6 +325,13 @@ class InstallerService
             // Run migrations
             Artisan::call('migrate', ['--force' => true]);
 
+            // Create storage link for public files (e.g. logo)
+            try {
+                Artisan::call('storage:link');
+            } catch (\Throwable) {
+                // Ignore if link exists or fails (e.g. Windows)
+            }
+
             // Seed roles (required for Spatie Permission)
             Artisan::call('db:seed', ['--class' => \Database\Seeders\RolesAndPermissionsSeeder::class, '--force' => true]);
 
@@ -343,6 +350,7 @@ class InstallerService
             // Seed default settings
             $app = $data['app'];
             \App\Models\Setting::set('site_name', $app['name'] ?? 'LearnFlow');
+            \App\Models\Setting::set('site_color', '#1a42e0');
             \App\Models\Setting::set('currency', 'USD');
             \App\Models\Setting::set('payment_currency', 'USD');
             \App\Models\Setting::set('support_email', $admin['email']);

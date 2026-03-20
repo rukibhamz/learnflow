@@ -11,10 +11,7 @@ new class extends Component {} ?>
             <div class="flex items-center gap-12">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
-                    <a href="{{ route('home') }}" class="flex items-center gap-2 group">
-                        <x-icon name="school" class="w-8 h-8 text-accent shrink-0" />
-                        <span class="text-xl font-bold tracking-tight font-display text-ink">LearnFlow</span>
-                    </a>
+                    <x-branding href="{{ route('home') }}" variant="split" />
                 </div>
  
                 <!-- Navigation Links -->
@@ -95,8 +92,7 @@ new class extends Component {} ?>
         
         <div class="flex items-center justify-between px-6 h-20 border-b border-rule shrink-0">
             <div class="flex items-center gap-2">
-                <x-icon name="school" class="w-8 h-8 text-accent shrink-0" />
-                <span class="text-xl font-bold tracking-tight font-display text-ink">LearnFlow</span>
+                <x-branding href="{{ route('home') }}" variant="split" />
             </div>
             <button @click="open = false" class="p-2 text-ink2 hover:text-ink transition-colors bg-bg rounded-lg">
                 <span class="material-symbols-outlined text-[20px]">close</span>

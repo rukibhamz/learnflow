@@ -13,6 +13,7 @@
         @vite(['resources/css/app.css', 'resources/css/content-shield.css', 'resources/js/app.js', 'resources/js/content-shield.js'])
     @endunless
     @livewireStyles
+    @include('partials.brand-styles')
     <style>[x-cloak]{display:none!important}</style>
 </head>
 <body class="min-h-screen bg-ink font-body text-white antialiased">
@@ -20,10 +21,7 @@
 
     {{-- Topbar --}}
     <header class="h-[52px] flex items-center justify-between px-6 bg-ink border-b border-[#222222] sticky top-0 z-40">
-        <a href="{{ url('/') }}" class="flex items-center gap-2 font-display font-extrabold text-white text-lg uppercase tracking-tight">
-            <x-icon name="school" class="w-6 h-6 text-accent shrink-0" />
-            Learn<span class="text-accent">Flow</span>
-        </a>
+        <x-branding href="{{ url('/') }}" class="font-display font-extrabold text-lg uppercase tracking-tight" variant="dark" />
         
         <div class="flex-1 flex flex-col items-center max-w-2xl mx-auto px-8">
             <span class="text-[11px] font-bold uppercase tracking-widest text-[#888888] mb-1.5">{{ $courseTitle ?? 'Advanced Web Architecture' }}</span>

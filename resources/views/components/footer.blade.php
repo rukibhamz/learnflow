@@ -3,10 +3,7 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-16">
             <!-- Brand -->
             <div class="sm:col-span-2 lg:col-span-1">
-                <a href="{{ route('home') }}" class="flex items-center gap-2 mb-5">
-                    <x-icon name="school" class="w-7 h-7 text-primary shrink-0" />
-                    <span class="text-white text-xl font-bold tracking-tight">LearnFlow</span>
-                </a>
+                <x-branding href="{{ route('home') }}" class="text-white text-xl font-bold tracking-tight mb-5" variant="dark" />
                 <p class="text-slate-400 text-sm leading-relaxed mb-6">Empowering learners worldwide with high-quality courses, expert instructors, and an engaging learning experience.</p>
                 <div class="flex items-center gap-4">
                     <a href="#" class="size-9 rounded-full bg-slate-800 hover:bg-primary flex items-center justify-center transition-colors" aria-label="Twitter">
@@ -57,7 +54,7 @@
 
         <!-- Bottom Bar -->
         <div class="border-t border-slate-800 mt-12 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <p class="text-slate-500 text-sm">&copy; {{ date('Y') }} LearnFlow. All rights reserved.</p>
+            <p class="text-slate-500 text-sm">&copy; {{ date('Y') }} {{ $siteName ?? config('app.name') }}. All rights reserved.</p>
             <div class="flex items-center gap-6">
                 <a href="#" class="text-slate-500 text-sm hover:text-white transition-colors">Terms</a>
                 <a href="#" class="text-slate-500 text-sm hover:text-white transition-colors">Privacy</a>

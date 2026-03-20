@@ -15,13 +15,11 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
         @livewireStyles
+        @include('partials.brand-styles')
     </head>
     <body class="bg-background-light dark:bg-background-dark min-h-screen flex flex-col items-center justify-center p-4 font-display antialiased">
         <div class="mb-8 flex items-center gap-2">
-            <span class="material-symbols-outlined text-primary text-3xl">school</span>
-            <a href="{{ url('/') }}" wire:navigate class="text-brand-black dark:text-slate-100 text-2xl font-extrabold tracking-tight">
-                Learn<span class="text-primary">Flow</span>
-            </a>
+            <x-branding href="{{ url('/') }}" class="text-brand-black dark:text-slate-100 text-2xl font-extrabold tracking-tight" variant="split" />
         </div>
 
         <div class="w-full max-w-[400px]">
@@ -29,7 +27,7 @@
         </div>
 
         <footer class="mt-8 text-neutral-text dark:text-slate-500 text-[11px] uppercase tracking-widest text-center">
-            © {{ date('Y') }} LearnFlow Inc.
+            © {{ date('Y') }} {{ $siteName ?? config('app.name') }} Inc.
             <a class="hover:text-brand-black dark:hover:text-slate-300 transition-colors" href="{{ route('pages.privacy') }}">Privacy</a>
             <span class="mx-1">•</span>
             <a class="hover:text-brand-black dark:hover:text-slate-300 transition-colors" href="{{ route('pages.terms') }}">Terms</a>

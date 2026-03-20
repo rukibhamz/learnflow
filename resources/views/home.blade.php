@@ -126,7 +126,7 @@
         <div class="bg-ink p-12 lg:p-20 flex flex-col lg:flex-row items-center gap-12">
             <div class="flex-1 flex flex-col gap-6">
                 <h2 class="text-4xl lg:text-5xl font-bold font-display text-white leading-tight">Ready to start your journey?</h2>
-                <p class="text-white/80 text-lg">Join thousands of students who are already advancing their careers with LearnFlow.</p>
+                <p class="text-white/80 text-lg">Join thousands of students who are already advancing their careers with {{ $siteName ?? config('app.name') }}.</p>
             </div>
             <div class="w-full lg:w-auto flex flex-col sm:flex-row gap-4">
                 <input class="bg-white/10 border border-white/20 rounded-card text-white px-6 py-4 w-full sm:w-80 placeholder:text-white/60 focus:ring-1 focus:ring-accent focus:border-accent" placeholder="Enter your email" type="email"/>
@@ -140,10 +140,7 @@
         <div class="max-w-7xl mx-auto px-6 py-16">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
                 <div class="lg:col-span-1">
-                    <a href="{{ url('/') }}" class="flex items-center gap-2 mb-4">
-                        <x-icon name="school" class="w-8 h-8 text-accent shrink-0" />
-                        <span class="text-xl font-bold tracking-tight font-display text-ink">Learn<span class="text-accent">Flow</span></span>
-                    </a>
+                    <x-branding href="{{ url('/') }}" class="mb-4" variant="split" />
                     <p class="text-sm text-ink2 max-w-xs">Experience the future of education with expert-led courses designed for your success.</p>
                 </div>
                 <div>
@@ -175,7 +172,7 @@
                 </div>
             </div>
             <div class="mt-12 pt-8 border-t border-rule flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-ink3">
-                <span>© {{ date('Y') }} LearnFlow LMS. All rights reserved.</span>
+                <span>© {{ date('Y') }} {{ $siteName ?? config('app.name') }} LMS. All rights reserved.</span>
                 <span>English (US) · USD ($)</span>
             </div>
         </div>

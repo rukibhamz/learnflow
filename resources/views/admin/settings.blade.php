@@ -9,6 +9,7 @@
 <div class="max-w-5xl mx-auto space-y-8" x-data="{
     activeTab: 'general',
     currencyValue: '{{ $currentCurrency }}',
+    siteColor: '{{ \App\Models\Setting::get('site_color', '#1a42e0') }}',
     stripe: {{ \App\Models\Setting::get('stripe_enabled', '0') ? 'true' : 'false' }},
     paypal: {{ \App\Models\Setting::get('paypal_enabled', '0') ? 'true' : 'false' }},
     paystack: {{ \App\Models\Setting::get('paystack_enabled', '0') ? 'true' : 'false' }},
@@ -34,6 +35,11 @@
                 :class="activeTab === 'general' ? 'text-primary border-primary' : 'text-ink3 border-transparent hover:text-ink hover:border-rule'"
                 class="pb-4 font-poppins font-bold text-[13px] border-b-2 transition-all outline-none">
             General
+        </button>
+        <button @click="activeTab = 'branding'" 
+                :class="activeTab === 'branding' ? 'text-primary border-primary' : 'text-ink3 border-transparent hover:text-ink hover:border-rule'"
+                class="pb-4 font-poppins font-bold text-[13px] border-b-2 transition-all outline-none">
+            Branding
         </button>
         <button @click="activeTab = 'email'" 
                 :class="activeTab === 'email' ? 'text-primary border-primary' : 'text-ink3 border-transparent hover:text-ink hover:border-rule'"
@@ -77,7 +83,7 @@
     @endif
 
     <div class="bg-surface border border-rule rounded-xl overflow-hidden shadow-sm">
-        <form method="POST" action="{{ route('admin.settings.update') }}" @submit="document.getElementById('currency-hidden').value = currencyValue">
+        <form method="POST" action="{{ route('admin.settings.update') }}" enctype="multipart/form-data" @submit="document.getElementById('currency-hidden').value = currencyValue">
             @csrf
             <input type="hidden" id="currency-hidden" name="currency" :value="currencyValue">
             
@@ -87,17 +93,7 @@
                     <h3 class="font-poppins font-bold text-[11px] uppercase tracking-widest text-ink3 border-b border-rule pb-3">General Configuration</h3>
                     
                     <div class="space-y-8">
-                        <!-- Site Name -->
-                        <div class="flex flex-col md:flex-row md:items-start gap-6">
-                            <div class="md:w-1/2 space-y-1">
-                                <label class="block text-[13px] font-bold text-ink font-poppins">Site Name</label>
-                                <p class="text-[12px] text-ink3 font-sans leading-relaxed">This name will appear in the browser tab and email footers.</p>
-                            </div>
-                            <div class="md:w-1/2">
-                                <input type="text" name="site_name" value="{{ \App\Models\Setting::get('site_name', config('app.name')) }}" 
-                                       class="w-full h-12 border border-rule rounded-lg px-4 font-sans text-[14px] focus:ring-1 focus:ring-primary/30 outline-none transition-shadow" placeholder="LearnFlow Academy">
-                            </div>
-                        </div>
+                        <p class="text-[12px] text-ink3 font-sans">Site name, logo, and color are configured in the <strong>Branding</strong> tab.</p>
                         
                         <!-- Support Email -->
                         <div class="flex flex-col md:flex-row md:items-start gap-6 pt-6 border-t border-rule/50">
@@ -164,6 +160,75 @@
                                 <input type="checkbox" name="maintenance_mode" value="1" {{ \App\Models\Setting::get('maintenance_mode') ? 'checked' : '' }} class="sr-only peer">
                                 <div class="w-11 h-6 bg-rule peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
                             </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Branding Tab -->
+            <div x-show="activeTab === 'branding'" class="p-10 space-y-12">
+                <div class="space-y-10">
+                    <h3 class="font-poppins font-bold text-[11px] uppercase tracking-widest text-ink3 border-b border-rule pb-3">Site Branding</h3>
+                    
+                    <div class="space-y-8">
+                        <!-- Site Name -->
+                        <div class="flex flex-col md:flex-row md:items-start gap-6">
+                            <div class="md:w-1/2 space-y-1">
+                                <label class="block text-[13px] font-bold text-ink font-poppins">Site Name</label>
+                                <p class="text-[12px] text-ink3 font-sans leading-relaxed">Replaces "LearnFlow" throughout the site (header, footer, titles).</p>
+                            </div>
+                            <div class="md:w-1/2">
+                                <input type="text" name="site_name" value="{{ \App\Models\Setting::get('site_name', config('app.name')) }}" 
+                                       class="w-full h-12 border border-rule rounded-lg px-4 font-sans text-[14px] focus:ring-1 focus:ring-primary/30 outline-none transition-shadow" placeholder="LearnFlow Academy">
+                            </div>
+                        </div>
+
+                        <!-- Site Color -->
+                        <div class="flex flex-col md:flex-row md:items-start gap-6 pt-6 border-t border-rule/50">
+                            <div class="md:w-1/2 space-y-1">
+                                <label class="block text-[13px] font-bold text-ink font-poppins">Primary Color</label>
+                                <p class="text-[12px] text-ink3 font-sans leading-relaxed">Used for links, buttons, highlights, and accents across the site.</p>
+                            </div>
+                            <div class="md:w-1/2 flex items-center gap-4">
+                                <input type="hidden" name="site_color" :value="siteColor">
+                                <input type="color" x-model="siteColor" 
+                                       class="h-12 w-20 border border-rule rounded-lg cursor-pointer p-1 bg-transparent">
+                                <input type="text" x-model="siteColor" 
+                                       class="flex-1 h-12 border border-rule rounded-lg px-4 font-sans text-[14px] font-mono focus:ring-1 focus:ring-primary/30 outline-none"
+                                       placeholder="#1a42e0">
+                            </div>
+                        </div>
+
+                        <!-- Logo -->
+                        <div class="flex flex-col md:flex-row md:items-start gap-6 pt-6 border-t border-rule/50">
+                            <div class="md:w-1/2 space-y-1">
+                                <label class="block text-[13px] font-bold text-ink font-poppins">Logo</label>
+                                <p class="text-[12px] text-ink3 font-sans leading-relaxed">Upload a logo to replace the site name in the header. Recommended: PNG or SVG, max height 40px.</p>
+                            </div>
+                            <div class="md:w-1/2 space-y-4">
+                                @php $logoUrl = \App\Models\Setting::get('site_logo') ? \Illuminate\Support\Facades\Storage::disk('public')->url(\App\Models\Setting::get('site_logo')) : null; @endphp
+                                @if($logoUrl)
+                                    <div class="flex items-center gap-4">
+                                        <img src="{{ $logoUrl }}" alt="Current logo" class="h-10 object-contain object-left max-w-[200px] border border-rule rounded-lg p-1 bg-white">
+                                        <label class="cursor-pointer">
+                                            <span class="inline-flex items-center px-4 py-2 border border-rule rounded-lg text-sm font-medium hover:bg-bg transition-colors">Replace</span>
+                                            <input type="file" name="site_logo" accept="image/*" class="sr-only">
+                                        </label>
+                                        <label class="inline-flex items-center gap-2 cursor-pointer">
+                                            <input type="checkbox" name="remove_logo" value="1" class="rounded border-rule text-red-600 focus:ring-red-500">
+                                            <span class="text-sm font-medium text-red-600">Remove logo</span>
+                                        </label>
+                                    </div>
+                                @else
+                                    <label class="cursor-pointer block">
+                                        <span class="inline-flex items-center gap-2 px-4 py-3 border-2 border-dashed border-rule rounded-lg text-sm font-medium text-ink3 hover:border-ink2 hover:text-ink2 transition-colors">
+                                            <span class="material-symbols-outlined text-[20px]">upload</span>
+                                            Choose logo file
+                                        </span>
+                                        <input type="file" name="site_logo" accept="image/*" class="sr-only">
+                                    </label>
+                                @endif
+                            </div>
                         </div>
                     </div>
                 </div>
