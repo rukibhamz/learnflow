@@ -3,7 +3,18 @@
 @section('title', 'Admin Settings')
 
 @section('content')
-<div class="max-w-5xl mx-auto space-y-8" x-data="{ activeTab: 'general' }">
+@php
+    $currentCurrency = \App\Models\Setting::get('currency', \App\Models\Setting::get('payment_currency', 'USD'));
+@endphp
+<div class="max-w-5xl mx-auto space-y-8" x-data="{
+    activeTab: 'general',
+    currencyValue: '{{ $currentCurrency }}',
+    stripe: {{ \App\Models\Setting::get('stripe_enabled', '0') ? 'true' : 'false' }},
+    paypal: {{ \App\Models\Setting::get('paypal_enabled', '0') ? 'true' : 'false' }},
+    paystack: {{ \App\Models\Setting::get('paystack_enabled', '0') ? 'true' : 'false' }},
+    flutterwave: {{ \App\Models\Setting::get('flutterwave_enabled', '0') ? 'true' : 'false' }},
+    razorpay: {{ \App\Models\Setting::get('razorpay_enabled', '0') ? 'true' : 'false' }}
+}">
     <!-- Breadcrumbs & Header -->
     <div class="flex items-center justify-between">
         <div class="space-y-1">
@@ -66,8 +77,9 @@
     @endif
 
     <div class="bg-surface border border-rule rounded-xl overflow-hidden shadow-sm">
-        <form method="POST" action="{{ route('admin.settings.update') }}">
+        <form method="POST" action="{{ route('admin.settings.update') }}" @submit="document.getElementById('currency-hidden').value = currencyValue">
             @csrf
+            <input type="hidden" id="currency-hidden" name="currency" :value="currencyValue">
             
             <!-- General Tab -->
             <div x-show="activeTab === 'general'" class="p-10 space-y-12">
@@ -109,6 +121,29 @@
                                 <select name="timezone" class="w-full h-12 border border-rule rounded-lg px-4 font-sans text-[14px] focus:ring-1 focus:ring-primary/30 outline-none cursor-pointer">
                                     <option value="UTC" {{ \App\Models\Setting::get('timezone') == 'UTC' ? 'selected' : '' }}>UTC</option>
                                     <option value="America/New_York" {{ \App\Models\Setting::get('timezone') == 'America/New_York' ? 'selected' : '' }}>Eastern Time (US & Canada)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Currency -->
+                        <div class="flex flex-col md:flex-row md:items-start gap-6 pt-6 border-t border-rule/50">
+                            <div class="md:w-1/2 space-y-1">
+                                <label class="block text-[13px] font-bold text-ink font-poppins">Currency</label>
+                                <p class="text-[12px] text-ink3 font-sans leading-relaxed">Default currency for course prices, orders, and payouts across the platform.</p>
+                            </div>
+                            <div class="md:w-1/2">
+                                @php $currency = \App\Models\Setting::get('currency', \App\Models\Setting::get('payment_currency', 'USD')); @endphp
+                                <select name="currency_display" x-model="currencyValue" class="w-full h-12 border border-rule rounded-lg px-4 font-sans text-[14px] focus:ring-1 focus:ring-primary/30 outline-none cursor-pointer">
+                                    <option value="USD" {{ $currency === 'USD' ? 'selected' : '' }}>USD – US Dollar ($)</option>
+                                    <option value="EUR" {{ $currency === 'EUR' ? 'selected' : '' }}>EUR – Euro (€)</option>
+                                    <option value="GBP" {{ $currency === 'GBP' ? 'selected' : '' }}>GBP – British Pound (£)</option>
+                                    <option value="CAD" {{ $currency === 'CAD' ? 'selected' : '' }}>CAD – Canadian Dollar (CA$)</option>
+                                    <option value="AUD" {{ $currency === 'AUD' ? 'selected' : '' }}>AUD – Australian Dollar (A$)</option>
+                                    <option value="NGN" {{ $currency === 'NGN' ? 'selected' : '' }}>NGN – Nigerian Naira (₦)</option>
+                                    <option value="GHS" {{ $currency === 'GHS' ? 'selected' : '' }}>GHS – Ghanaian Cedi (₵)</option>
+                                    <option value="KES" {{ $currency === 'KES' ? 'selected' : '' }}>KES – Kenyan Shilling (KSh)</option>
+                                    <option value="ZAR" {{ $currency === 'ZAR' ? 'selected' : '' }}>ZAR – South African Rand (R)</option>
+                                    <option value="INR" {{ $currency === 'INR' ? 'selected' : '' }}>INR – Indian Rupee (₹)</option>
                                 </select>
                             </div>
                         </div>
@@ -260,14 +295,7 @@
             </div>
 
             <!-- Payment Tab -->
-            <div x-show="activeTab === 'payment'" class="p-10 space-y-12"
-                 x-data="{
-                    stripe: {{ \App\Models\Setting::get('stripe_enabled', '0') ? 'true' : 'false' }},
-                    paypal: {{ \App\Models\Setting::get('paypal_enabled', '0') ? 'true' : 'false' }},
-                    paystack: {{ \App\Models\Setting::get('paystack_enabled', '0') ? 'true' : 'false' }},
-                    flutterwave: {{ \App\Models\Setting::get('flutterwave_enabled', '0') ? 'true' : 'false' }},
-                    razorpay: {{ \App\Models\Setting::get('razorpay_enabled', '0') ? 'true' : 'false' }}
-                 }">
+            <div x-show="activeTab === 'payment'" class="p-10 space-y-12">
 
                 {{-- Default Gateway --}}
                 <div class="space-y-6">
@@ -294,8 +322,8 @@
                             <p class="text-[12px] text-ink3 font-sans leading-relaxed">The default currency for all transactions on the platform.</p>
                         </div>
                         <div class="md:w-1/2">
-                            <select name="payment_currency" class="w-full h-12 border border-rule rounded-lg px-4 font-sans text-[14px] focus:ring-1 focus:ring-primary/30 outline-none cursor-pointer">
-                                @php $currency = \App\Models\Setting::get('payment_currency', 'USD'); @endphp
+                            <select x-model="currencyValue" class="w-full h-12 border border-rule rounded-lg px-4 font-sans text-[14px] focus:ring-1 focus:ring-primary/30 outline-none cursor-pointer">
+                                @php $currency = \App\Models\Setting::get('currency', \App\Models\Setting::get('payment_currency', 'USD')); @endphp
                                 <option value="USD" {{ $currency === 'USD' ? 'selected' : '' }}>USD - US Dollar</option>
                                 <option value="EUR" {{ $currency === 'EUR' ? 'selected' : '' }}>EUR - Euro</option>
                                 <option value="GBP" {{ $currency === 'GBP' ? 'selected' : '' }}>GBP - British Pound</option>

@@ -6,7 +6,6 @@ use App\Models\User;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class InstallerService
@@ -24,17 +23,9 @@ class InstallerService
     public static function putInstallData(string $key, array $data): void
     {
         $path = self::installDataPath();
-        $dir = dirname($path);
-        Log::info('[INSTALL] putInstallData', [
-            'key' => $key,
-            'path' => $path,
-            'dir_writable' => is_dir($dir) && is_writable($dir),
-            'path_writable' => ! file_exists($path) || is_writable($path),
-        ]);
         $all = file_exists($path) ? (array) json_decode(file_get_contents($path), true) : [];
         $all[$key] = $data;
-        $written = file_put_contents($path, json_encode($all));
-        Log::info('[INSTALL] putInstallData write result', ['bytes_written' => $written, 'file_exists_after' => file_exists($path)]);
+        file_put_contents($path, json_encode($all));
     }
 
     public static function getInstallData(string $key): ?array
@@ -249,6 +240,10 @@ class InstallerService
         $envContent = self::setEnvValue($envContent, 'APP_ENV', 'production');
         $envContent = self::setEnvValue($envContent, 'APP_DEBUG', 'false');
 
+        // Use file-based session/cache/queue for fresh installs (works without Redis on shared hosting)
+        $envContent = self::setEnvValue($envContent, 'SESSION_DRIVER', 'file');
+        $envContent = self::setEnvValue($envContent, 'CACHE_STORE', 'file');
+        $envContent = self::setEnvValue($envContent, 'QUEUE_CONNECTION', 'sync');
         // Generate key if empty
         if (! preg_match('/APP_KEY=base64:[a-zA-Z0-9+\/=]+/', $envContent)) {
             $envContent = self::setEnvValue($envContent, 'APP_KEY', 'base64:' . base64_encode(Str::random(32)));
@@ -330,13 +325,27 @@ class InstallerService
             // Run migrations
             Artisan::call('migrate', ['--force' => true]);
 
-            // Create admin user
+            // Seed roles (required for Spatie Permission)
+            Artisan::call('db:seed', ['--class' => \Database\Seeders\RolesAndPermissionsSeeder::class, '--force' => true]);
+
+            // Create admin user with username and email verified
             $admin = $data['admin'];
-            User::create([
+            $username = self::generateUniqueUsername($admin['name'], $admin['email']);
+            $user = User::create([
                 'name' => $admin['name'],
+                'username' => $username,
                 'email' => $admin['email'],
                 'password' => Hash::make($admin['password']),
+                'email_verified_at' => now(),
             ]);
+            $user->assignRole('admin');
+
+            // Seed default settings
+            $app = $data['app'];
+            \App\Models\Setting::set('site_name', $app['name'] ?? 'LearnFlow');
+            \App\Models\Setting::set('currency', 'USD');
+            \App\Models\Setting::set('payment_currency', 'USD');
+            \App\Models\Setting::set('support_email', $admin['email']);
 
             // Mark as installed
             file_put_contents(self::getInstalledPath(), date('c'));
@@ -345,6 +354,20 @@ class InstallerService
         } catch (\Throwable $e) {
             return [$e->getMessage()];
         }
+    }
+
+    private static function generateUniqueUsername(string $name, string $email): string
+    {
+        $emailPart = explode('@', $email)[0] ?? '';
+        $base = preg_replace('/[^a-z0-9_-]/', '', strtolower(Str::slug($emailPart ?: $name) ?: 'admin')) ?: 'admin';
+        $username = $base;
+        $i = 1;
+        while (User::where('username', $username)->exists()) {
+            $username = $base . $i;
+            $i++;
+        }
+
+        return $username;
     }
 
     private static function setEnvValue(string $content, string $key, string $value): string

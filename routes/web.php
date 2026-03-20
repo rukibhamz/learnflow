@@ -176,6 +176,9 @@ Route::middleware(['web', \App\Http\Middleware\RedirectIfNotInstalled::class])->
         Route::get('courses/review', fn () => view('admin.courses.review'))->name('courses.review');
         Route::get('courses/{course}', [\App\Http\Controllers\Admin\CourseController::class, 'show'])->name('courses.show');
         Route::get('courses/{course}/edit', fn (\App\Models\Course $course) => view('admin.courses.edit', ['course' => $course]))->name('courses.edit');
+        Route::get('courses/{course}/curriculum', fn (\App\Models\Course $course) => view('admin.courses.curriculum', ['course' => $course]))->name('courses.curriculum');
+        Route::get('lessons/{lesson}/edit', fn (\App\Models\Lesson $lesson) => view('admin.lessons.edit', ['lesson' => $lesson]))->name('lessons.edit');
+        Route::get('lessons/{lesson}/quiz', fn (\App\Models\Lesson $lesson) => view('admin.quizzes.builder', ['lesson' => $lesson]))->name('lessons.quiz');
         Route::patch('courses/{course}/status', [\App\Http\Controllers\Admin\CourseController::class, 'updateStatus'])->name('courses.update-status');
         Route::delete('courses/{course}', [\App\Http\Controllers\Admin\CourseController::class, 'destroy'])->name('courses.destroy');
         Route::get('users', fn () => view('admin.users.index'))->name('users.index');

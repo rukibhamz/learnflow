@@ -74,7 +74,7 @@
                             @foreach($orders as $order)
                             <tr>
                                 <td class="px-5 py-3 text-ink font-medium">{{ $order->course?->title ?? '—' }}</td>
-                                <td class="px-5 py-3 text-ink2">${{ number_format($order->amount, 2) }}</td>
+                                <td class="px-5 py-3 text-ink2">{{ format_price($order->amount) }}</td>
                                 <td class="px-5 py-3">
                                     @php
                                         $colors = ['paid' => 'text-green-700 bg-green-50', 'pending' => 'text-amber-700 bg-amber-50', 'refunded' => 'text-blue-700 bg-blue-50', 'failed' => 'text-red-700 bg-red-50'];

@@ -12,6 +12,12 @@
             <h2 class="font-poppins font-bold text-lg tracking-tight text-ink mt-2">{{ $course->title }}</h2>
         </div>
         <div class="flex items-center gap-3">
+            <a href="{{ route('admin.courses.edit', $course) }}" class="h-10 px-4 bg-background-light border border-rule rounded-lg text-[13px] font-body font-medium text-ink2 hover:bg-bg transition-colors inline-flex items-center gap-2">
+                Edit Course
+            </a>
+            <a href="{{ route('admin.courses.curriculum', $course) }}" class="h-10 px-4 bg-primary/10 text-primary border border-primary/20 rounded-lg text-[13px] font-body font-medium hover:bg-primary/20 transition-colors inline-flex items-center gap-2">
+                Edit Curriculum
+            </a>
             <form method="POST" action="{{ route('admin.courses.update-status', $course) }}">
                 @csrf @method('PATCH')
                 <select name="status" onchange="this.form.submit()" class="h-10 bg-background-light border border-rule rounded-lg px-3 text-[13px] font-body focus:ring-1 focus:ring-primary/30 outline-none">
@@ -51,7 +57,7 @@
                     </div>
                     <div>
                         <p class="text-[11px] font-bold uppercase tracking-widest text-ink3">Price</p>
-                        <p class="text-[13px] text-ink font-body mt-1">${{ number_format($course->price, 2) }}</p>
+                        <p class="text-[13px] text-ink font-body mt-1">{{ format_price($course->price) }}</p>
                     </div>
                     <div>
                         <p class="text-[11px] font-bold uppercase tracking-widest text-ink3">Level</p>
@@ -69,10 +75,18 @@
                             <p class="text-[13px] font-bold text-ink font-body">{{ $section->title }}</p>
                         </div>
                         @foreach($section->lessons as $lesson)
+                            @php
+                                $type = is_object($lesson->type) ? $lesson->type->value : $lesson->type;
+                                $icon = match($type ?? '') {
+                                    'video' => 'play_circle',
+                                    'text' => 'article',
+                                    'pdf' => 'picture_as_pdf',
+                                    'embed' => 'code',
+                                    default => 'description',
+                                };
+                            @endphp
                             <div class="px-4 py-2.5 flex items-center gap-3 border-b border-rule last:border-0">
-                                <span class="material-symbols-outlined text-ink3 text-[16px]">
-                                    {{ $lesson->type === 'video' ? 'play_circle' : ($lesson->type === 'quiz' ? 'quiz' : 'article') }}
-                                </span>
+                                <span class="material-symbols-outlined text-ink3 text-[16px]">{{ $icon }}</span>
                                 <span class="text-[13px] text-ink2 font-body">{{ $lesson->title }}</span>
                             </div>
                         @endforeach

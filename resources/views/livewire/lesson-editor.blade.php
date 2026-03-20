@@ -9,7 +9,7 @@
     <div class="flex items-center justify-between mb-8">
         <div>
             <div class="flex items-center gap-3 mb-2">
-                <a href="{{ route('instructor.courses.curriculum', $lesson->section->course) }}" class="text-ink3 hover:text-ink transition-colors">
+                <a href="{{ $fromAdmin ? route('admin.courses.curriculum', $lesson->section->course) : route('instructor.courses.curriculum', $lesson->section->course) }}" class="text-ink3 hover:text-ink transition-colors">
                     <span class="material-symbols-outlined text-[20px]">arrow_back</span>
                 </a>
                 <h1 class="font-display font-extrabold text-2xl text-ink">Edit Lesson</h1>
@@ -246,6 +246,16 @@
 
         {{-- Sidebar --}}
         <div class="space-y-6">
+            {{-- Quiz Builder (primary action, first) --}}
+            <div class="bg-surface border border-rule rounded-lg p-6 space-y-3">
+                <h3 class="font-display font-bold text-sm text-ink uppercase tracking-widest">Quiz</h3>
+                <p class="text-xs text-ink3">Add or edit a quiz for this lesson. Students can take it after completing the lesson content.</p>
+                <a href="{{ $fromAdmin ? route('admin.lessons.quiz', $lesson) : route('instructor.lessons.quiz', $lesson) }}" class="inline-flex items-center gap-2 px-4 py-2.5 bg-ink text-white font-display font-bold text-sm rounded-lg hover:opacity-90 transition-opacity w-full justify-center">
+                    <span class="material-symbols-outlined text-[18px]">quiz</span>
+                    {{ $lesson->quiz ? 'Edit Quiz' : 'Add Quiz' }}
+                </a>
+            </div>
+
             {{-- Settings --}}
             <div class="bg-surface border border-rule rounded-lg p-6 space-y-4">
                 <h3 class="font-display font-bold text-sm text-ink uppercase tracking-widest">Settings</h3>
@@ -275,16 +285,6 @@
                     <p class="text-xs text-ink3 mt-1">Leave empty for immediate access</p>
                     @error('unlock_after_days') <span class="text-xs text-red-600 mt-1 block">{{ $message }}</span> @enderror
                 </div>
-            </div>
-
-            {{-- Quiz Builder --}}
-            <div class="bg-surface border border-rule rounded-lg p-6 space-y-3">
-                <h3 class="font-display font-bold text-sm text-ink uppercase tracking-widest">Quiz</h3>
-                <p class="text-xs text-ink3">Add or edit a quiz for this lesson. Students can take it after completing the lesson content.</p>
-                <a href="{{ route('instructor.lessons.quiz', $lesson) }}" class="inline-flex items-center gap-2 px-4 py-2.5 bg-ink text-white font-display font-bold text-sm rounded-lg hover:opacity-90 transition-opacity">
-                    <span class="material-symbols-outlined text-[18px]">quiz</span>
-                    {{ $lesson->quiz ? 'Edit Quiz' : 'Add Quiz' }}
-                </a>
             </div>
 
             {{-- Quick Info --}}

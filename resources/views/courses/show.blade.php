@@ -107,7 +107,7 @@
                             {{-- Price --}}
                             <div class="flex items-center gap-3 mb-6">
                                 <span class="font-display font-extrabold text-4xl {{ $course->price > 0 ? 'text-ink' : 'text-green-600' }}">
-                                    {{ $course->price > 0 ? '$' . number_format($course->price, 2) : 'Free' }}
+                                    {{ format_price($course->price) }}
                                 </span>
                             </div>
 
@@ -130,7 +130,7 @@
                                                 <div class="text-xs text-ink2 border border-rule rounded-lg p-3 bg-bg">
                                                     <div class="flex items-center justify-between">
                                                         <span>Subtotal</span>
-                                                        <span>${{ number_format((float) $course->price, 2) }}</span>
+                                                        <span>{{ format_price((float) $course->price) }}</span>
                                                     </div>
                                                     <div class="flex items-center justify-between mt-1">
                                                         <span>Discount ({{ strtoupper($couponValidation->code) }})</span>
@@ -138,7 +138,7 @@
                                                     </div>
                                                     <div class="flex items-center justify-between mt-2 pt-2 border-t border-rule">
                                                         <span class="font-bold">Total</span>
-                                                        <span class="font-bold">${{ number_format(max(0, (float) $course->price - $discountAmount), 2) }}</span>
+                                                        <span class="font-bold">{{ format_price(max(0, (float) $course->price - $discountAmount)) }}</span>
                                                     </div>
                                                 </div>
                                             @endif
@@ -193,7 +193,7 @@
         <div class="flex items-center justify-between gap-4">
             <div>
                 <span class="font-display font-extrabold text-2xl {{ $course->price > 0 ? 'text-ink' : 'text-green-600' }}">
-                    {{ $course->price > 0 ? '$' . number_format($course->price, 2) : 'Free' }}
+                    {{ format_price($course->price) }}
                 </span>
             </div>
             @auth

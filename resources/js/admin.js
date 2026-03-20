@@ -21,10 +21,11 @@ Chart.register(
 
 window.Chart = Chart;
 
-// Revenue line chart
-window.initRevenueChart = function (canvasId, labels, data) {
+// Revenue line chart (currencySymbol e.g. '$', '£', '€')
+window.initRevenueChart = function (canvasId, labels, data, currencySymbol = '$') {
     const ctx = document.getElementById(canvasId);
     if (!ctx) return;
+    const sym = currencySymbol || '$';
 
     return new Chart(ctx, {
         type: 'line',
@@ -54,7 +55,7 @@ window.initRevenueChart = function (canvasId, labels, data) {
                 legend: { display: false },
                 tooltip: {
                     callbacks: {
-                        label: (ctx) => ' $' + ctx.parsed.y.toLocaleString('en-US', { minimumFractionDigits: 2 }),
+                        label: (ctx) => ' ' + sym + ctx.parsed.y.toLocaleString('en-US', { minimumFractionDigits: 2 }),
                     },
                 },
             },
@@ -69,7 +70,7 @@ window.initRevenueChart = function (canvasId, labels, data) {
                     ticks: {
                         font: { family: 'Poppins', size: 10 },
                         color: '#9A9A94',
-                        callback: (v) => '$' + (v >= 1000 ? (v / 1000) + 'k' : v),
+                        callback: (v) => sym + (v >= 1000 ? (v / 1000) + 'k' : v),
                     },
                     border: { display: false },
                 },

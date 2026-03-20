@@ -64,7 +64,7 @@
                         </td>
                         <td class="px-5 py-3 text-ink2">
                             @if($coupon->discount_type->value === 'fixed')
-                                ${{ number_format((float) $coupon->amount, 2) }}
+                                {{ format_price((float) $coupon->amount) }}
                             @else
                                 {{ number_format((float) $coupon->amount, 0) }}%
                             @endif

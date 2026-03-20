@@ -80,7 +80,7 @@
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
         <div class="bg-surface border border-rule p-6">
             <p class="text-[10px] font-poppins font-bold uppercase tracking-widest text-ink3 mb-2">Total Revenue</p>
-            <p class="font-poppins font-extrabold text-2xl tracking-tight text-ink">${{ number_format($totalRevenue, 2) }}</p>
+            <p class="font-poppins font-extrabold text-2xl tracking-tight text-ink">{{ format_price($totalRevenue) }}</p>
             <p class="text-[10px] mt-2 font-bold text-green-600 uppercase tracking-tighter">All time · paid orders</p>
         </div>
         <div class="bg-surface border border-rule p-6">
@@ -105,7 +105,7 @@
                     <h2 class="font-poppins font-bold text-base tracking-tight text-ink">Revenue</h2>
                     <p class="text-[11px] text-ink3 mt-0.5">Last 30 days · paid orders</p>
                 </div>
-                <span class="text-[11px] font-poppins font-bold text-primary">${{ number_format($revenueValues->sum(), 2) }}</span>
+                <span class="text-[11px] font-poppins font-bold text-primary">{{ format_price($revenueValues->sum()) }}</span>
             </div>
             <div class="h-[220px]">
                 <canvas id="revenueChart"></canvas>
@@ -149,7 +149,7 @@
                             <td class="px-6 py-3 font-semibold text-ink">{{ $course->title }}</td>
                             <td class="px-6 py-3 text-ink2">{{ $course->instructor->name ?? '—' }}</td>
                             <td class="px-6 py-3 text-right text-ink2">{{ number_format($course->enrollments_count) }}</td>
-                            <td class="px-6 py-3 text-right font-poppins font-bold text-primary">${{ number_format($course->orders_sum_amount ?? 0, 2) }}</td>
+                            <td class="px-6 py-3 text-right font-poppins font-bold text-primary">{{ format_price($course->orders_sum_amount ?? 0) }}</td>
                         </tr>
                         @empty
                         <tr>
@@ -176,7 +176,7 @@
                     <p class="text-[13px] font-semibold text-ink leading-tight">{{ $order->user->name ?? 'Guest' }}</p>
                     <p class="text-[11px] text-ink2 mt-0.5 truncate">{{ optional($order->course)->title ?? '—' }}</p>
                     <div class="flex items-center justify-between mt-1">
-                        <span class="text-[11px] font-poppins font-bold text-primary">${{ number_format($order->amount, 2) }}</span>
+                        <span class="text-[11px] font-poppins font-bold text-primary">{{ format_price($order->amount) }}</span>
                         <span class="text-[10px] text-ink3">{{ $order->created_at->diffForHumans(null, true) }}</span>
                     </div>
                 </div>
@@ -193,7 +193,8 @@
     document.addEventListener('DOMContentLoaded', function () {
         initRevenueChart('revenueChart',
             {!! $revenueLabels->toJson() !!},
-            {!! $revenueValues->toJson() !!}
+            {!! $revenueValues->toJson() !!},
+            {!! json_encode(currency_symbol()) !!}
         );
         initEnrolmentsChart('enrolmentsChart',
             {!! $enrolLabels->toJson() !!},

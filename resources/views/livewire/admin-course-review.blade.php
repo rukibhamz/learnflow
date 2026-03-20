@@ -30,7 +30,7 @@
                     <span class="font-medium">{{ $course->instructor->name ?? 'Unknown' }}</span>
                 </p>
                 <p class="text-[11px] text-ink3 mb-3">
-                    {{ $course->sections_count }} sections • {{ $course->lessons_count }} lessons • ${{ number_format($course->price, 2) }}
+                    {{ $course->sections_count }} sections • {{ $course->lessons_count }} lessons • {{ format_price($course->price) }}
                 </p>
                 <p class="text-[11px] text-ink3">
                     Submitted {{ $course->updated_at->diffForHumans() }}

@@ -17,10 +17,17 @@ class SettingsController extends Controller
      */
     public function update(Request $request): RedirectResponse
     {
-        $settings = $request->except(['_token', 'test_email']);
+        $settings = $request->except(['_token', 'test_email', 'currency_display']);
         
         foreach ($settings as $key => $value) {
             Setting::set($key, $value);
+        }
+
+        // Keep currency and payment_currency in sync (currency from General tab takes precedence)
+        $currency = $request->input('currency') ?? $request->input('payment_currency');
+        if ($currency !== null) {
+            Setting::set('currency', $currency);
+            Setting::set('payment_currency', $currency);
         }
 
         return redirect()->route('admin.settings')->with('success', 'Settings updated successfully.');

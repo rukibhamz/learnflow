@@ -73,11 +73,11 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
         <div class="bg-surface border border-rule rounded-card p-6">
             <p class="text-[11px] font-bold uppercase tracking-widest text-ink3 mb-1">Total Revenue</p>
-            <p class="font-display font-extrabold text-2xl text-ink">${{ number_format($totalRevenue, 2) }}</p>
+            <p class="font-display font-extrabold text-2xl text-ink">{{ format_price($totalRevenue) }}</p>
         </div>
         <div class="bg-surface border border-rule rounded-card p-6">
             <p class="text-[11px] font-bold uppercase tracking-widest text-ink3 mb-1">This Month</p>
-            <p class="font-display font-extrabold text-2xl text-ink">${{ number_format($thisMonthRevenue, 2) }}</p>
+            <p class="font-display font-extrabold text-2xl text-ink">{{ format_price($thisMonthRevenue) }}</p>
             @if($monthGrowth !== 0)
                 <p class="text-[11px] mt-1 font-medium {{ $monthGrowth > 0 ? 'text-green-600' : 'text-red-600' }}">
                     {{ $monthGrowth > 0 ? '+' : '' }}{{ $monthGrowth }}% vs last month
@@ -120,7 +120,7 @@
                 <tr class="hover:bg-bg transition-colors">
                     <td class="px-6 py-3 font-medium text-ink">{{ $course->title }}</td>
                     <td class="px-6 py-3 text-right text-ink2">{{ $course->paid_orders_count ?? 0 }}</td>
-                    <td class="px-6 py-3 text-right font-display font-bold text-primary">${{ number_format($course->paid_orders_sum ?? 0, 2) }}</td>
+                    <td class="px-6 py-3 text-right font-display font-bold text-primary">{{ format_price($course->paid_orders_sum ?? 0) }}</td>
                 </tr>
                 @endforeach
             </tbody>
@@ -146,7 +146,7 @@
                     </div>
                 </div>
                 <div class="text-right">
-                    <span class="font-display font-bold text-sm text-ink">${{ number_format($order->amount, 2) }}</span>
+                    <span class="font-display font-bold text-sm text-ink">{{ format_price($order->amount) }}</span>
                     <p class="text-[10px] text-ink3">{{ $order->created_at->diffForHumans() }}</p>
                 </div>
             </div>
@@ -182,7 +182,7 @@ document.addEventListener('DOMContentLoaded', function () {
             plugins: { legend: { display: false } },
             scales: {
                 x: { grid: { display: false }, ticks: { font: { size: 11 } } },
-                y: { beginAtZero: true, grid: { color: '#f0f0f0' }, ticks: { font: { size: 10 }, callback: v => '$' + v } }
+                y: { beginAtZero: true, grid: { color: '#f0f0f0' }, ticks: { font: { size: 10 }, callback: v => '{{ addslashes(currency_symbol()) }}' + v } }
             }
         }
     });

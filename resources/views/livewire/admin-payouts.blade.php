@@ -24,9 +24,9 @@
                     <tr class="border-b border-rule last:border-0 hover:bg-bg/50">
                         <td class="px-5 py-3 text-sm font-medium text-ink">{{ $row->instructor->name }}</td>
                         <td class="px-5 py-3 text-sm text-ink3 text-right">{{ $row->share_percent }}%</td>
-                        <td class="px-5 py-3 text-sm text-ink text-right">${{ number_format($row->total_due / 100, 2) }}</td>
-                        <td class="px-5 py-3 text-sm text-green-600 text-right">${{ number_format($row->total_paid / 100, 2) }}</td>
-                        <td class="px-5 py-3 text-sm font-bold {{ $row->balance > 0 ? 'text-amber-600' : 'text-green-600' }} text-right">${{ number_format($row->balance / 100, 2) }}</td>
+                        <td class="px-5 py-3 text-sm text-ink text-right">{{ format_price($row->total_due / 100) }}</td>
+                        <td class="px-5 py-3 text-sm text-green-600 text-right">{{ format_price($row->total_paid / 100) }}</td>
+                        <td class="px-5 py-3 text-sm font-bold {{ $row->balance > 0 ? 'text-amber-600' : 'text-green-600' }} text-right">{{ format_price($row->balance / 100) }}</td>
                         <td class="px-5 py-3 text-right">
                             @if($row->balance > 0)
                                 <button wire:click="openCreate({{ $row->instructor->id }})" class="px-3 py-1 text-xs font-bold bg-ink text-white rounded hover:opacity-90">Create Payout</button>

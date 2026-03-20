@@ -11,6 +11,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
+    @stack('head')
+    @stack('styles')
     <style>[x-cloak]{display:none!important}</style>
 </head>
 <body class="min-h-screen bg-bg font-sans text-ink antialiased">
@@ -69,7 +71,21 @@
         {{-- Sidebar --}}
         <aside class="w-[180px] min-h-[calc(100vh-52px)] fixed left-0 top-[52px] bg-surface border-r border-rule py-6 overflow-y-auto">
             <nav class="space-y-1 px-0">
-                @if(isset($sidebar))
+                @if(request()->is('instructor*'))
+                    @php
+                        $instructorNav = [
+                            ['label' => 'Overview', 'url' => route('instructor.dashboard'), 'match' => 'instructor/dashboard'],
+                            ['label' => 'Courses', 'url' => route('instructor.courses.index'), 'match' => 'instructor/courses*'],
+                            ['label' => 'Earnings', 'url' => route('instructor.earnings'), 'match' => 'instructor/earnings*'],
+                        ];
+                    @endphp
+                    @foreach($instructorNav as $item)
+                        <a href="{{ $item['url'] }}"
+                           class="flex items-center px-4 py-2.5 text-[13px] font-medium transition-all duration-150 {{ request()->is($item['match']) ? 'bg-accent-bg text-accent border-r-2 border-accent' : 'text-ink2 hover:bg-bg hover:text-ink' }}">
+                            {{ $item['label'] }}
+                        </a>
+                    @endforeach
+                @elseif(isset($sidebar))
                     {{ $sidebar }}
                 @else
                     @php
@@ -80,7 +96,6 @@
                             ['label' => 'Settings', 'url' => url('/student/settings'), 'match' => 'student/settings*'],
                         ];
                     @endphp
-
                     @foreach($navItems as $item)
                         <a href="{{ $item['url'] }}" 
                            class="flex items-center px-4 py-2.5 text-[13px] font-medium transition-all duration-150 {{ request()->is($item['match']) ? 'bg-accent-bg text-accent border-r-2 border-accent' : 'text-ink2 hover:bg-bg hover:text-ink' }}">
@@ -97,6 +112,7 @@
         </main>
     </div>
 
+    @stack('scripts')
     @livewireScripts
 </body>
 </html>

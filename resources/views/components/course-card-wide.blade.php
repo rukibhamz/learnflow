@@ -17,7 +17,7 @@
             <div class="flex justify-between items-start gap-2 mb-1">
                 <h3 class="font-display font-bold text-sm text-ink truncate group-hover:text-accent transition-colors">{{ $course->title ?? 'Course Title' }}</h3>
                 <span class="font-display font-bold text-sm shrink-0 {{ ($course->price ?? 0) == 0 ? 'text-success' : 'text-ink' }}">
-                    {{ ($course->price ?? 0) == 0 ? 'Free' : '$' . number_format($course->price ?? 19, 2) }}
+                    {{ format_price($course->price ?? 19) }}
                 </span>
             </div>
             

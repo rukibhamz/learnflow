@@ -2,23 +2,6 @@
 
 @section('title', 'Instructor Dashboard')
 
-@prepend('sidebar')
-    @php
-        $instructorNav = [
-            ['label' => 'Overview', 'url' => route('instructor.dashboard'), 'match' => 'instructor/dashboard'],
-            ['label' => 'Courses', 'url' => route('instructor.courses.index'), 'match' => 'instructor/courses*'],
-            ['label' => 'Earnings', 'url' => route('instructor.earnings'), 'match' => 'instructor/earnings*'],
-        ];
-    @endphp
-
-    @foreach($instructorNav as $item)
-        <a href="{{ $item['url'] }}"
-           class="flex items-center px-4 py-2.5 text-[13px] font-medium transition-all duration-150 {{ request()->is($item['match']) ? 'bg-accent-bg text-accent border-r-2 border-accent' : 'text-ink2 hover:bg-bg hover:text-ink' }}">
-            {{ $item['label'] }}
-        </a>
-    @endforeach
-@endprepend
-
 @section('content')
 @php
     use App\Models\Order;
@@ -71,7 +54,7 @@
     <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
         <div class="bg-surface border border-rule rounded-card p-6">
             <span class="text-[10px] font-bold uppercase tracking-widest text-ink3 mb-2 block">Total Revenue</span>
-            <span class="font-display font-extrabold text-2xl text-ink">${{ number_format($totalRevenue, 2) }}</span>
+            <span class="font-display font-extrabold text-2xl text-ink">{{ format_price($totalRevenue) }}</span>
         </div>
         <div class="bg-surface border border-rule rounded-card p-6">
             <span class="text-[10px] font-bold uppercase tracking-widest text-ink3 mb-2 block">Enrollments</span>
@@ -94,7 +77,7 @@
                 <h3 class="font-display font-bold text-sm text-ink uppercase tracking-widest">Revenue</h3>
                 <p class="text-[11px] text-ink3 mt-0.5">Last 30 days</p>
             </div>
-            <span class="text-[11px] font-display font-bold text-primary">${{ number_format($revenueValues->sum(), 2) }}</span>
+            <span class="text-[11px] font-display font-bold text-primary">{{ format_price($revenueValues->sum()) }}</span>
         </div>
         <div class="h-[220px]">
             <canvas id="instructorRevenueChart"></canvas>
@@ -154,7 +137,7 @@ document.addEventListener('DOMContentLoaded', function () {
             plugins: { legend: { display: false } },
             scales: {
                 x: { grid: { display: false }, ticks: { maxTicksLimit: 8, font: { size: 10 } } },
-                y: { beginAtZero: true, grid: { color: '#f0f0f0' }, ticks: { font: { size: 10 }, callback: v => '$' + v } }
+                y: { beginAtZero: true, grid: { color: '#f0f0f0' }, ticks: { font: { size: 10 }, callback: v => '{{ addslashes(currency_symbol()) }}' + v } }
             }
         }
     });

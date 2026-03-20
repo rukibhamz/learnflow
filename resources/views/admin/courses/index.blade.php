@@ -15,8 +15,8 @@
         </a>
     </div>
 
-    <div class="bg-surface border border-rule rounded-none overflow-hidden">
-        <table class="w-full text-left">
+    <div class="bg-surface border border-rule rounded-none overflow-x-auto">
+        <table class="w-full text-left min-w-[640px]">
             <thead class="bg-background-light text-[11px] font-poppins font-bold uppercase tracking-widest text-ink3 border-b border-rule">
                 <tr>
                     <th class="px-6 h-[44px]">Course</th>
@@ -25,7 +25,7 @@
                     <th class="px-6 h-[44px] text-center">Enrolments</th>
                     <th class="px-6 h-[44px] text-right">Price</th>
                     <th class="px-6 h-[44px] text-center">Status</th>
-                    <th class="px-6 h-[44px] text-right">Actions</th>
+                    <th class="px-6 h-[44px] text-right whitespace-nowrap">Actions</th>
                 </tr>
             </thead>
             <tbody class="text-[13px] font-body">
@@ -51,7 +51,7 @@
                         <span class="text-ink2 capitalize">{{ $course->category ?? 'Uncategorized' }}</span>
                     </td>
                     <td class="px-6 py-4 text-center text-ink2">{{ number_format($course->enrollments_count ?? 0) }}</td>
-                    <td class="px-6 py-4 text-right font-medium text-ink">${{ number_format($course->price, 2) }}</td>
+                    <td class="px-6 py-4 text-right font-medium text-ink">{{ format_price($course->price) }}</td>
                     <td class="px-6 py-4 text-center">
                         @php
                             $statusColors = [
@@ -65,7 +65,7 @@
                             {{ ucfirst($course->status->value ?? $course->status) }}
                         </span>
                     </td>
-                    <td class="px-6 py-4 text-right">
+                    <td class="px-6 py-4 text-right whitespace-nowrap">
                         <div class="flex items-center justify-end gap-2">
                             <a href="{{ route('admin.courses.show', $course) }}" class="p-1.5 hover:bg-background-light rounded-lg text-ink3 hover:text-primary transition-colors" title="View Details">
                                 <span class="material-symbols-outlined text-[18px]">visibility</span>

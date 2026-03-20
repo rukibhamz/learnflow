@@ -15,6 +15,7 @@
     @livewireStyles
     <style>[x-cloak]{display:none!important}</style>
     @stack('head')
+    @stack('styles')
 </head>
 <body class="bg-background-light text-ink antialiased font-body">
 

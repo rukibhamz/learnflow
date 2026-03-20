@@ -92,9 +92,9 @@
 
     {{-- Form Modal --}}
     @if($showForm)
-    <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-[100] overflow-y-auto" wire:click.self="$set('showForm', false)">
+    <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-[100] overflow-y-auto" wire:click.self="cancel">
         <div class="bg-surface rounded-lg shadow-xl w-full max-w-3xl p-8 my-8 relative">
-            <button wire:click="$set('showForm', false)" class="absolute top-6 right-6 text-ink3 hover:text-ink transition-colors">
+            <button wire:click="cancel" class="absolute top-6 right-6 text-ink3 hover:text-ink transition-colors">
                 <span class="material-symbols-outlined text-[24px]">close</span>
             </button>
             
@@ -139,7 +139,7 @@
                 </div>
 
                 <div class="flex justify-end gap-3 pt-6 border-t border-rule mt-8">
-                    <button type="button" wire:click="$set('showForm', false)" class="px-6 py-3 border text-base border-rule rounded-lg font-medium text-ink2 hover:bg-bg transition-colors">Cancel</button>
+                    <button type="button" wire:click="cancel" class="px-6 py-3 border text-base border-rule rounded-lg font-medium text-ink2 hover:bg-bg transition-colors">Cancel</button>
                     <button type="submit" class="px-6 py-3 bg-primary text-white text-base rounded-lg font-bold hover:opacity-90 transition-opacity">
                         <span wire:loading.remove wire:target="image, save">Save Slide</span>
                         <span wire:loading wire:target="image, save">Saving...</span>

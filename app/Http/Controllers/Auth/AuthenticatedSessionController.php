@@ -76,6 +76,6 @@ class AuthenticatedSessionController extends Controller
     {
         $logout();
 
-        return redirect('/');
+        return redirect()->route('home');
     }
 }

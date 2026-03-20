@@ -6,9 +6,11 @@
  * requests to public/index.php so Laravel handles them.
  */
 
-$basePath = dirname($_SERVER['SCRIPT_NAME']);
-$requestUri = urldecode(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?? '');
-$path = substr($requestUri, strlen($basePath)) ?: '/';
+$basePath = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\');
+$requestUri = urldecode(parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?? '');
+$path = ($basePath !== '' && str_starts_with($requestUri, $basePath))
+    ? (substr($requestUri, strlen($basePath)) ?: '/')
+    : ($requestUri ?: '/');
 
 $publicFile = __DIR__ . '/public' . $path;
 
@@ -36,6 +38,15 @@ if ($path !== '/' && is_file($publicFile)) {
     }
     readfile($publicFile);
     exit;
+}
+
+// Strip subdirectory from REQUEST_URI so Laravel routing matches (e.g. /learnflow/login → /login)
+$reqUri = $_SERVER['REQUEST_URI'] ?? '/';
+$reqPath = parse_url($reqUri, PHP_URL_PATH) ?: '/';
+if ($basePath !== '' && $basePath !== '/' && str_starts_with($reqPath, $basePath)) {
+    $pathPart = substr($reqPath, strlen($basePath)) ?: '/';
+    $query = parse_url($reqUri, PHP_URL_QUERY);
+    $_SERVER['REQUEST_URI'] = $pathPart . ($query !== null && $query !== '' ? '?' . $query : '');
 }
 
 require __DIR__ . '/public/index.php';

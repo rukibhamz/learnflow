@@ -15,6 +15,8 @@ class LessonEditor extends Component
 
     public Lesson $lesson;
 
+    public bool $fromAdmin = false;
+
     public $title = '';
     public $type = '';
     public $content_url = '';
@@ -110,7 +112,7 @@ class LessonEditor extends Component
     public function saveAndReturn()
     {
         $this->save();
-        return redirect()->route('instructor.courses.curriculum', $this->lesson->section->course);
+        return redirect()->route($this->fromAdmin ? 'admin.courses.curriculum' : 'instructor.courses.curriculum', $this->lesson->section->course);
     }
 
     public function removePdf()

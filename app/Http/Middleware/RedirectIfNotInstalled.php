@@ -20,14 +20,6 @@ class RedirectIfNotInstalled
             return $next($request);
         }
 
-        $target = route('install.welcome');
-        \Illuminate\Support\Facades\Log::info('[INSTALL_DEBUG] RedirectIfNotInstalled redirect', [
-            'target' => $target,
-            'root' => $request->root(),
-            'url' => $request->url(),
-            'path' => $request->path(),
-            'fullUrl' => $request->fullUrl(),
-        ]);
-        return redirect()->to($target);
+        return redirect()->to(route('install.welcome'));
     }
 }

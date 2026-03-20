@@ -38,7 +38,7 @@
                         {{ strtoupper($result['code']) }} applied
                     </span>
                     <span class="font-bold">
-                        -${{ number_format($result['discount'], 2) }}
+                        -{{ format_price($result['discount']) }}
                     </span>
                 </div>
             </div>

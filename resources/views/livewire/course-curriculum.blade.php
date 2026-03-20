@@ -12,7 +12,7 @@
             <p class="text-sm text-ink3 mt-1">{{ $course->title }}</p>
         </div>
         <div class="flex items-center gap-3">
-            <a href="{{ route('instructor.courses.edit', $course) }}" class="px-4 py-2 border border-rule rounded-lg text-sm font-medium text-ink2 hover:bg-bg transition-colors">
+            <a href="{{ $fromAdmin ? route('admin.courses.edit', $course) : route('instructor.courses.edit', $course) }}" class="px-4 py-2 border border-rule rounded-lg text-sm font-medium text-ink2 hover:bg-bg transition-colors">
                 ← Back to Course
             </a>
             <button type="button" wire:click="openAddSectionModal" class="px-5 py-2 bg-ink text-white font-display font-bold text-sm rounded-lg hover:opacity-90 transition-opacity flex items-center gap-2">
@@ -140,10 +140,11 @@
                                 </div>
 
                                 <div class="flex items-center gap-1">
-                                    <a href="{{ route('instructor.lessons.quiz', $lesson) }}" class="p-1.5 hover:bg-background-light rounded-lg text-ink3 hover:text-primary transition-colors" title="{{ $lesson->quiz ? 'Edit Quiz' : 'Add Quiz' }}">
+                                    <a href="{{ $fromAdmin ? route('admin.lessons.quiz', $lesson) : route('instructor.lessons.quiz', $lesson) }}" class="inline-flex items-center gap-1.5 px-2 py-1.5 hover:bg-background-light rounded-lg text-ink3 hover:text-primary transition-colors" title="{{ $lesson->quiz ? 'Edit Quiz' : 'Add Quiz' }}">
                                         <span class="material-symbols-outlined text-[18px]">quiz</span>
+                                        <span class="text-xs font-medium">Quiz</span>
                                     </a>
-                                    <a href="{{ route('instructor.lessons.edit', $lesson) }}" class="p-1.5 hover:bg-background-light rounded-lg text-ink3 hover:text-primary transition-colors" title="Edit Lesson">
+                                    <a href="{{ $fromAdmin ? route('admin.lessons.edit', $lesson) : route('instructor.lessons.edit', $lesson) }}" class="p-1.5 hover:bg-background-light rounded-lg text-ink3 hover:text-primary transition-colors" title="Edit Lesson">
                                         <span class="material-symbols-outlined text-[18px]">edit</span>
                                     </a>
                                     <button type="button" wire:click="deleteLesson({{ $lesson->id }})" wire:confirm="Delete this lesson?" class="p-1.5 hover:bg-background-light rounded-lg text-ink3 hover:text-red-500 transition-colors" title="Delete Lesson">

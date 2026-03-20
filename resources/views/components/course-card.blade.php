@@ -24,7 +24,7 @@
 
         <div class="flex items-center justify-between">
             <span class="font-display font-bold text-sm {{ ($course->price ?? 0) == 0 ? 'text-success' : 'text-ink' }}">
-                {{ ($course->price ?? 0) == 0 ? 'Free' : '$' . number_format($course->price ?? 19, 2) }}
+                {{ format_price($course->price ?? 19) }}
             </span>
         </div>
     </div>

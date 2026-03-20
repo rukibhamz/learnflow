@@ -24,8 +24,8 @@
         </a>
     </div>
 
-    <div class="bg-surface border border-rule rounded-lg overflow-hidden">
-        <table class="w-full">
+    <div class="bg-surface border border-rule rounded-lg overflow-x-auto">
+        <table class="w-full min-w-[720px]">
             <thead>
                 <tr class="bg-bg border-b border-rule">
                     <th class="text-left py-4 px-6 font-display font-bold text-[10px] uppercase tracking-widest text-ink3">Course</th>
@@ -34,7 +34,7 @@
                     <th class="text-right py-4 px-6 font-display font-bold text-[10px] uppercase tracking-widest text-ink3">Price</th>
                     <th class="text-right py-4 px-6 font-display font-bold text-[10px] uppercase tracking-widest text-ink3">Revenue</th>
                     <th class="text-right py-4 px-6 font-display font-bold text-[10px] uppercase tracking-widest text-ink3">Created</th>
-                    <th class="text-right py-4 px-6 font-display font-bold text-[10px] uppercase tracking-widest text-ink3">Actions</th>
+                    <th class="text-right py-4 px-6 font-display font-bold text-[10px] uppercase tracking-widest text-ink3 whitespace-nowrap">Actions</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-rule">
@@ -72,14 +72,14 @@
                     <td class="py-4 px-6 text-center text-[13px] font-medium text-ink2">{{ number_format($course->enrollments_count) }}</td>
                     <td class="py-4 px-6 text-right text-[13px] font-medium text-ink2">
                         @if($course->price > 0)
-                            ${{ number_format($course->price, 2) }}
+                            {{ format_price($course->price) }}
                         @else
                             <span class="text-green-600">Free</span>
                         @endif
                     </td>
-                    <td class="py-4 px-6 text-right text-[13px] font-medium text-ink2">${{ number_format($course->orders_sum_amount ?? 0, 2) }}</td>
+                    <td class="py-4 px-6 text-right text-[13px] font-medium text-ink2">{{ format_price($course->orders_sum_amount ?? 0) }}</td>
                     <td class="py-4 px-6 text-right text-[13px] text-ink3">{{ $course->created_at->format('M j, Y') }}</td>
-                    <td class="py-4 px-6">
+                    <td class="py-4 px-6 whitespace-nowrap">
                         <div class="flex items-center justify-end gap-1">
                             {{-- Preview --}}
                             <a href="{{ route('courses.show', $course->slug) }}" target="_blank" class="p-1.5 hover:bg-background-light rounded-lg text-ink3 hover:text-primary transition-colors" title="Preview">

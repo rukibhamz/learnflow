@@ -16,6 +16,8 @@ class CourseForm extends Component
 
     public ?Course $course = null;
 
+    public bool $fromAdmin = false;
+
     public $title = '';
     public $slug = '';
     public $short_description = '';
@@ -200,8 +202,8 @@ class CourseForm extends Component
             session()->flash('success', 'Course saved successfully.');
         }
 
-        if (!request()->routeIs('instructor.courses.edit')) {
-            return redirect()->route('instructor.courses.edit', $this->course);
+        if (!request()->routeIs($this->fromAdmin ? 'admin.courses.edit' : 'instructor.courses.edit')) {
+            return redirect()->route($this->fromAdmin ? 'admin.courses.edit' : 'instructor.courses.edit', $this->course);
         }
     }
 

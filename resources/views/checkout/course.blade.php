@@ -28,7 +28,7 @@
                         <p class="text-xs text-ink3 mt-1">by {{ $course->instructor?->name }}</p>
                     </div>
                     <div class="shrink-0">
-                        <span class="font-display font-bold text-xl text-ink">${{ number_format($course->price, 2) }}</span>
+                        <span class="font-display font-bold text-xl text-ink">{{ format_price($course->price) }}</span>
                     </div>
                 </div>
             </div>
@@ -39,18 +39,18 @@
                 <div class="space-y-3">
                     <div class="flex justify-between text-sm">
                         <span class="text-ink2">Course Price</span>
-                        <span class="text-ink">${{ number_format($course->price, 2) }}</span>
+                        <span class="text-ink">{{ format_price($course->price) }}</span>
                     </div>
                     @if(session('coupon_discount'))
                         <div class="flex justify-between text-sm">
                             <span class="text-green-600">Coupon Discount</span>
-                            <span class="text-green-600">-${{ number_format(session('coupon_discount'), 2) }}</span>
+                            <span class="text-green-600">-{{ format_price(session('coupon_discount')) }}</span>
                         </div>
                     @endif
                     <div class="border-t border-rule pt-3 flex justify-between">
                         <span class="font-display font-bold text-ink">Total</span>
                         <span class="font-display font-bold text-xl text-ink">
-                            ${{ number_format(max(0, $course->price - (session('coupon_discount') ?? 0)), 2) }}
+                            {{ format_price(max(0, $course->price - (session('coupon_discount') ?? 0))) }}
                         </span>
                     </div>
                 </div>

@@ -57,11 +57,11 @@ class Payout extends Model
 
     public function formattedAmount(): string
     {
-        return '$' . number_format($this->amount / 100, 2);
+        return currency_symbol() . number_format($this->amount / 100, 2);
     }
 
     public function formattedFee(): string
     {
-        return '$' . number_format($this->platform_fee / 100, 2);
+        return currency_symbol() . number_format($this->platform_fee / 100, 2);
     }
 }

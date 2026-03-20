@@ -223,7 +223,7 @@
                             <div class="flex items-center justify-between mb-4">
                                 <span class="text-xs text-ink3">{{ number_format($course->enrollments_count) }} students</span>
                                 <span class="font-display font-bold text-lg {{ $course->price > 0 ? 'text-ink' : 'text-green-600' }}">
-                                    {{ $course->price > 0 ? '$' . number_format($course->price, 2) : 'Free' }}
+                                    {{ format_price($course->price) }}
                                 </span>
                             </div>
 

@@ -35,8 +35,15 @@ class AdminHeroSlides extends Component
 
     public function create()
     {
-        $this->reset(['slideId', 'tag', 'title', 'description', 'button_text', 'button_link', 'is_active', 'image']);
-        $this->order = HeroSlide::max('order') + 1;
+        $this->slideId = null;
+        $this->tag = '';
+        $this->title = '';
+        $this->description = '';
+        $this->button_text = '';
+        $this->button_link = '';
+        $this->is_active = true;
+        $this->image = null;
+        $this->order = (HeroSlide::max('order') ?? 0) + 1;
         $this->showForm = true;
     }
 
@@ -52,6 +59,12 @@ class AdminHeroSlides extends Component
         $this->order = $slide->order;
         $this->is_active = $slide->is_active;
         $this->showForm = true;
+    }
+
+    public function cancel()
+    {
+        $this->showForm = false;
+        $this->image = null;
     }
 
     public function save()
@@ -79,6 +92,7 @@ class AdminHeroSlides extends Component
         }
 
         $this->showForm = false;
+        $this->image = null;
         session()->flash('success', 'Hero slide saved successfully.');
     }
 

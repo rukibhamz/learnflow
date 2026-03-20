@@ -14,6 +14,6 @@
         <p class="text-[13px] font-body text-ink2 mt-1">Update course details and settings.</p>
     </div>
 
-    @livewire('course-form', ['course' => $course])
+    @livewire('course-form', ['course' => $course, 'fromAdmin' => true])
 </div>
 @endsection

@@ -2,24 +2,6 @@
 
 @section('title', 'Edit Course')
 
-@prepend('sidebar')
-    @php
-        $instructorNav = [
-            ['label' => 'Overview', 'url' => url('/instructor/dashboard'), 'match' => 'instructor/dashboard'],
-            ['label' => 'Courses', 'url' => url('/instructor/courses'), 'match' => 'instructor/courses*'],
-            ['label' => 'Payments', 'url' => '#', 'match' => 'instructor/payments*'],
-            ['label' => 'Settings', 'url' => '#', 'match' => 'instructor/settings*'],
-        ];
-    @endphp
-
-    @foreach($instructorNav as $item)
-        <a href="{{ $item['url'] }}" 
-           class="flex items-center px-4 py-2.5 text-[13px] font-medium transition-all duration-150 {{ request()->is($item['match']) ? 'bg-accent-bg text-accent border-r-2 border-accent' : 'text-ink2 hover:bg-bg hover:text-ink' }}">
-            {{ $item['label'] }}
-        </a>
-    @endforeach
-@endprepend
-
 @section('content')
 <div class="max-w-4xl mx-auto" x-data="{ section: 'basic' }">
     <div class="mb-10 flex items-center justify-between">

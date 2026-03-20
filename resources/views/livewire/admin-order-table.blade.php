@@ -42,7 +42,7 @@
                             <div class="text-[11px] text-ink3">{{ $order->user?->email }}</div>
                         </td>
                         <td class="px-5 py-3 text-ink2">{{ $order->course?->title }}</td>
-                        <td class="px-5 py-3 font-medium text-ink">${{ number_format($order->amount, 2) }}</td>
+                        <td class="px-5 py-3 font-medium text-ink">{{ format_price($order->amount) }}</td>
                         <td class="px-5 py-3">
                             @php
                                 $colors = ['paid' => 'bg-green-50 text-green-700', 'pending' => 'bg-amber-50 text-amber-700', 'refunded' => 'bg-blue-50 text-blue-700', 'failed' => 'bg-red-50 text-red-700'];

@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Services\InstallerService;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\View\View;
@@ -13,21 +12,11 @@ class InstallerController extends Controller
 {
     public function welcome(): View|RedirectResponse
     {
-        Log::info('[INSTALL_DEBUG] welcome()', [
-            'url' => request()->url(),
-            'root' => request()->root(),
-            'referer' => request()->header('Referer'),
-        ]);
         return view('install.welcome');
     }
 
     public function requirements(): View|RedirectResponse
     {
-        Log::info('[INSTALL_DEBUG] requirements()', [
-            'url' => request()->url(),
-            'root' => request()->root(),
-            'referer' => request()->header('Referer'),
-        ]);
         $requirements = InstallerService::getRequirements();
         $satisfied = InstallerService::requirementsSatisfied();
 
@@ -39,8 +28,6 @@ class InstallerController extends Controller
 
     public function database(): View|RedirectResponse
     {
-        Log::info('[INSTALL] database() GET');
-
         if (! InstallerService::requirementsSatisfied()) {
             return redirect()->route('install.requirements');
         }
@@ -50,12 +37,6 @@ class InstallerController extends Controller
 
     public function storeDatabase(Request $request): RedirectResponse
     {
-        Log::info('[INSTALL] storeDatabase called', [
-            'method' => $request->method(),
-            'url' => $request->fullUrl(),
-            'all' => $request->all()
-        ]);
-
         $driver = $request->input('db_connection', 'sqlite');
 
         $rules = [
@@ -87,7 +68,6 @@ class InstallerController extends Controller
         }
 
         $result = InstallerService::testDatabaseConnection($driver, $config);
-        Log::info('[INSTALL] testDatabaseConnection result', ['success' => $result['success'], 'message' => $result['message'] ?? null]);
 
         if (! $result['success']) {
             $message = $result['message'] ?? 'Could not connect to the database. Please check your credentials.';
@@ -98,7 +78,6 @@ class InstallerController extends Controller
         }
 
         InstallerService::putInstallData('database', $config);
-        Log::info('[INSTALL] putInstallData(database) done', ['path' => InstallerService::installDataPath(), 'file_exists' => file_exists(InstallerService::installDataPath())]);
 
         return redirect()->route('install.application');
     }
@@ -106,17 +85,8 @@ class InstallerController extends Controller
     public function application(): View|RedirectResponse
     {
         $dbData = InstallerService::getInstallData('database');
-        $path = InstallerService::installDataPath();
-        Log::info('[INSTALL] application()', [
-            'has_db_data' => (bool) $dbData,
-            'install_data_path' => $path,
-            'file_exists' => file_exists($path),
-            'file_contents_preview' => file_exists($path) ? substr(file_get_contents($path), 0, 200) : 'n/a',
-        ]);
 
         if (! $dbData) {
-            Log::warning('[INSTALL] application() redirecting to database - no install data');
-
             return redirect()->route('install.database');
         }
 

@@ -23,7 +23,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        require_once app_path('helpers.php');
     }
 
     /**
@@ -91,6 +91,12 @@ class AppServiceProvider extends ServiceProvider
             if ($appUrl && str_starts_with($appUrl, 'https:')) {
                 URL::forceScheme('https');
             }
+        }
+
+        // Force root URL to include subdirectory prefix (e.g. /learnflow)
+        $appUrl = config('app.url');
+        if ($appUrl) {
+            URL::forceRootUrl($appUrl);
         }
     }
 }

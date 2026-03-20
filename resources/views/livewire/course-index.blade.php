@@ -138,7 +138,7 @@
                                     <span></span>
                                 @endif
                                 <span class="text-sm font-bold text-slate-900">
-                                    {{ $course->price > 0 ? '$'.number_format($course->price, 2) : 'Free' }}
+                                    {{ format_price((float) $course->price) }}
                                 </span>
                             </div>
                             <h3 class="text-xl font-bold text-slate-900 mb-2 leading-tight">

@@ -12,6 +12,8 @@ class CourseCurriculum extends Component
 {
     public Course $course;
 
+    public bool $fromAdmin = false;
+
     public $showSectionModal = false;
     public $editingSectionId = null;
     public $sectionTitle = '';

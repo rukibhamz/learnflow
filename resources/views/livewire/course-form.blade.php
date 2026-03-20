@@ -151,31 +151,50 @@
         {{-- Full Description with Rich Text --}}
         <div class="bg-surface border border-rule rounded-lg p-6 space-y-4">
             <h3 class="font-display font-bold text-sm text-ink uppercase tracking-widest">Full Description</h3>
-            
+            <p class="text-xs text-ink3">Write a detailed course description. HTML formatting is supported.</p>
+
             <div x-data="{ 
                 content: @entangle('description'),
+                useFallback: false,
                 init() {
-                    const quill = new Quill(this.$refs.editor, {
-                        theme: 'snow',
-                        placeholder: 'Write a detailed course description...',
-                        modules: {
-                            toolbar: [
-                                [{ 'header': [1, 2, 3, false] }],
-                                ['bold', 'italic', 'underline', 'strike'],
-                                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                                ['blockquote', 'code-block'],
-                                ['link'],
-                                ['clean']
-                            ]
+                    this.$nextTick(() => {
+                        if (typeof Quill === 'undefined') {
+                            this.useFallback = true;
+                            return;
                         }
-                    });
-                    quill.root.innerHTML = this.content;
-                    quill.on('text-change', () => {
-                        this.content = quill.root.innerHTML;
+                        try {
+                            const quill = new Quill(this.$refs.editor, {
+                                theme: 'snow',
+                                placeholder: 'Write a detailed course description...',
+                                modules: {
+                                    toolbar: [
+                                        [{ 'header': [1, 2, 3, false] }],
+                                        ['bold', 'italic', 'underline', 'strike'],
+                                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                                        ['blockquote', 'code-block'],
+                                        ['link'],
+                                        ['clean']
+                                    ]
+                                }
+                            });
+                            quill.root.innerHTML = this.content || '';
+                            quill.on('text-change', () => {
+                                this.content = quill.root.innerHTML;
+                            });
+                        } catch (e) {
+                            this.useFallback = true;
+                        }
                     });
                 }
             }">
-                <div x-ref="editor" class="bg-bg border border-rule rounded-lg min-h-[200px]"></div>
+                <div x-show="!useFallback" x-cloak>
+                    <div x-ref="editor" class="bg-bg border border-rule rounded-lg min-h-[200px] [&_.ql-editor]:min-h-[180px]"></div>
+                </div>
+                <div x-show="useFallback" x-cloak>
+                    <textarea wire:model.live.debounce.300ms="description" rows="8"
+                        class="w-full bg-bg border border-rule rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-primary font-body text-ink resize-y"
+                        placeholder="Write a detailed course description..."></textarea>
+                </div>
             </div>
             @error('description') <span class="text-xs text-red-600 mt-1 block">{{ $message }}</span> @enderror
         </div>
@@ -317,12 +336,12 @@
 
         {{-- Bottom Actions --}}
         <div class="flex items-center justify-between pt-4">
-            <a href="{{ route('instructor.courses.index') }}" class="text-sm text-ink2 hover:text-ink transition-colors">
+            <a href="{{ $fromAdmin ? route('admin.courses.index') : route('instructor.courses.index') }}" class="text-sm text-ink2 hover:text-ink transition-colors">
                 ← Back to Courses
             </a>
             <div class="flex items-center gap-3">
                 @if($course)
-                    <a href="{{ route('instructor.courses.curriculum', $course) }}" class="px-5 py-2.5 border border-rule rounded-lg text-sm font-medium text-ink2 hover:bg-bg transition-colors">
+                    <a href="{{ $fromAdmin ? route('admin.courses.curriculum', $course) : route('instructor.courses.curriculum', $course) }}" class="px-5 py-2.5 border border-rule rounded-lg text-sm font-medium text-ink2 hover:bg-bg transition-colors">
                         Edit Curriculum →
                     </a>
                 @endif
