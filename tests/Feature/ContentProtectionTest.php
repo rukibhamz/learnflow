@@ -7,6 +7,7 @@ use App\Models\Enrollment;
 use App\Models\Lesson;
 use App\Models\Section;
 use App\Models\User;
+use Database\Seeders\RolesAndPermissionsSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -14,10 +15,18 @@ class ContentProtectionTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->seed(RolesAndPermissionsSeeder::class);
+    }
+
     private function createEnrolledStudentWithLesson(): array
     {
-        $instructor = User::factory()->create(['role' => 'instructor']);
-        $student = User::factory()->create(['role' => 'student']);
+        $instructor = User::factory()->create();
+        $instructor->assignRole('instructor');
+        $student = User::factory()->create();
+        $student->assignRole('student');
         $course = Course::factory()->create([
             'instructor_id' => $instructor->id,
             'status' => 'published',
@@ -37,6 +46,7 @@ class ContentProtectionTest extends TestCase
         Enrollment::create([
             'user_id' => $student->id,
             'course_id' => $course->id,
+            'enrolled_at' => now(),
         ]);
 
         return compact('student', 'course', 'lesson', 'instructor');
@@ -59,7 +69,8 @@ class ContentProtectionTest extends TestCase
     public function test_unenrolled_user_cannot_access_learn_page()
     {
         $data = $this->createEnrolledStudentWithLesson();
-        $stranger = User::factory()->create(['role' => 'student']);
+        $stranger = User::factory()->create();
+        $stranger->assignRole('student');
 
         $response = $this->actingAs($stranger)
             ->get(route('learn.show', $data['course']->slug));
@@ -70,7 +81,8 @@ class ContentProtectionTest extends TestCase
     public function test_protected_video_endpoint_requires_enrollment()
     {
         $data = $this->createEnrolledStudentWithLesson();
-        $stranger = User::factory()->create(['role' => 'student']);
+        $stranger = User::factory()->create();
+        $stranger->assignRole('student');
 
         $response = $this->actingAs($stranger)
             ->get(route('media.lesson.video', $data['lesson']));
@@ -101,7 +113,8 @@ class ContentProtectionTest extends TestCase
     public function test_admin_can_access_any_course_media()
     {
         $data = $this->createEnrolledStudentWithLesson();
-        $admin = User::factory()->create(['role' => 'admin']);
+        $admin = User::factory()->create();
+        $admin->assignRole('admin');
 
         $response = $this->actingAs($admin)
             ->get(route('media.lesson.video', $data['lesson']));
@@ -112,7 +125,8 @@ class ContentProtectionTest extends TestCase
     public function test_pdf_endpoint_returns_403_for_unenrolled()
     {
         $data = $this->createEnrolledStudentWithLesson();
-        $stranger = User::factory()->create(['role' => 'student']);
+        $stranger = User::factory()->create();
+        $stranger->assignRole('student');
 
         $response = $this->actingAs($stranger)
             ->get(route('media.lesson.pdf', $data['lesson']));

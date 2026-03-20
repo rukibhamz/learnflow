@@ -7,6 +7,7 @@ use App\Models\Order;
 use App\Models\Payout;
 use App\Models\User;
 use App\Services\PayoutService;
+use Database\Seeders\RolesAndPermissionsSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -14,9 +15,16 @@ class PayoutTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->seed(RolesAndPermissionsSeeder::class);
+    }
+
     public function test_payout_can_be_created()
     {
-        $instructor = User::factory()->create(['role' => 'instructor']);
+        $instructor = User::factory()->create();
+        $instructor->assignRole('instructor');
         $payout = Payout::create([
             'instructor_id' => $instructor->id,
             'amount' => 5000,
@@ -34,7 +42,8 @@ class PayoutTest extends TestCase
 
     public function test_payout_can_be_marked_paid()
     {
-        $instructor = User::factory()->create(['role' => 'instructor']);
+        $instructor = User::factory()->create();
+        $instructor->assignRole('instructor');
         $payout = Payout::create([
             'instructor_id' => $instructor->id,
             'amount' => 3000,
@@ -54,7 +63,8 @@ class PayoutTest extends TestCase
 
     public function test_payout_belongs_to_instructor()
     {
-        $instructor = User::factory()->create(['role' => 'instructor']);
+        $instructor = User::factory()->create();
+        $instructor->assignRole('instructor');
         $payout = Payout::create([
             'instructor_id' => $instructor->id,
             'amount' => 1000,
@@ -69,7 +79,9 @@ class PayoutTest extends TestCase
 
     public function test_payout_service_calculates_earnings()
     {
-        $instructor = User::factory()->create(['role' => 'instructor', 'revenue_share_percent' => 70]);
+        $instructor = User::factory()->create();
+        $instructor->assignRole('instructor');
+        $instructor->forceFill(['revenue_share_percent' => 70])->save();
         $course = Course::factory()->create(['instructor_id' => $instructor->id]);
 
         Order::create([
@@ -90,7 +102,9 @@ class PayoutTest extends TestCase
 
     public function test_payout_service_creates_payout()
     {
-        $instructor = User::factory()->create(['role' => 'instructor', 'revenue_share_percent' => 80]);
+        $instructor = User::factory()->create();
+        $instructor->assignRole('instructor');
+        $instructor->forceFill(['revenue_share_percent' => 80])->save();
         $course = Course::factory()->create(['instructor_id' => $instructor->id]);
 
         Order::create([
@@ -110,7 +124,8 @@ class PayoutTest extends TestCase
 
     public function test_payout_service_returns_null_for_no_earnings()
     {
-        $instructor = User::factory()->create(['role' => 'instructor']);
+        $instructor = User::factory()->create();
+        $instructor->assignRole('instructor');
 
         $service = new PayoutService();
         $payout = $service->createPayout($instructor, now()->subMonth()->toDateString(), now()->toDateString());

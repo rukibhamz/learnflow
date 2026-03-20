@@ -277,6 +277,16 @@
                 </div>
             </div>
 
+            {{-- Quiz Builder --}}
+            <div class="bg-surface border border-rule rounded-lg p-6 space-y-3">
+                <h3 class="font-display font-bold text-sm text-ink uppercase tracking-widest">Quiz</h3>
+                <p class="text-xs text-ink3">Add or edit a quiz for this lesson. Students can take it after completing the lesson content.</p>
+                <a href="{{ route('instructor.lessons.quiz', $lesson) }}" class="inline-flex items-center gap-2 px-4 py-2.5 bg-ink text-white font-display font-bold text-sm rounded-lg hover:opacity-90 transition-opacity">
+                    <span class="material-symbols-outlined text-[18px]">quiz</span>
+                    {{ $lesson->quiz ? 'Edit Quiz' : 'Add Quiz' }}
+                </a>
+            </div>
+
             {{-- Quick Info --}}
             <div class="bg-surface border border-rule rounded-lg p-6 space-y-3">
                 <h3 class="font-display font-bold text-sm text-ink uppercase tracking-widest">Info</h3>

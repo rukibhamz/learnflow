@@ -47,7 +47,7 @@ class StripeCheckoutTest extends TestCase
             'stripe_session_id' => 'cs_test_123',
         ]);
 
-        $payload = json_encode([
+        $payload = [
             'id' => 'evt_test_123',
             'type' => 'checkout.session.completed',
             'data' => [
@@ -56,13 +56,13 @@ class StripeCheckoutTest extends TestCase
                     'payment_intent' => 'pi_test_123',
                 ],
             ],
-        ]);
+        ];
 
         // Bypass signature verification in test by setting secret to empty
         config(['cashier.webhook.secret' => 'test_secret']);
 
         $response = $this->withHeader('Stripe-Signature', 't=1,v1=test')
-            ->post('/webhooks/stripe', [], [], [], [], $payload);
+            ->postJson('/webhooks/stripe', $payload);
 
         $response->assertStatus(200);
 

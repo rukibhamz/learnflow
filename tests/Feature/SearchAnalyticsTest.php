@@ -4,12 +4,19 @@ namespace Tests\Feature;
 
 use App\Models\SearchLog;
 use App\Models\User;
+use Database\Seeders\RolesAndPermissionsSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class SearchAnalyticsTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->seed(RolesAndPermissionsSeeder::class);
+    }
 
     public function test_search_log_records_term()
     {
@@ -57,11 +64,12 @@ class SearchAnalyticsTest extends TestCase
 
     public function test_popular_terms_respects_date_range()
     {
-        SearchLog::create([
+        $old = SearchLog::create([
             'term' => 'old search',
             'results_count' => 10,
-            'created_at' => now()->subDays(60),
         ]);
+        $old->forceFill(['created_at' => now()->subDays(60)])->save();
+
         SearchLog::log('recent search', 5);
 
         $popular = SearchLog::popularTerms(10, 30);
@@ -72,7 +80,8 @@ class SearchAnalyticsTest extends TestCase
 
     public function test_admin_search_analytics_page_loads()
     {
-        $admin = User::factory()->create(['role' => 'admin']);
+        $admin = User::factory()->create();
+        $admin->assignRole('admin');
 
         $response = $this->actingAs($admin)->get(route('admin.search-analytics'));
         $response->assertOk();

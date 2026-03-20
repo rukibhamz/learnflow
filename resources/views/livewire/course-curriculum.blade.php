@@ -140,6 +140,9 @@
                                 </div>
 
                                 <div class="flex items-center gap-1">
+                                    <a href="{{ route('instructor.lessons.quiz', $lesson) }}" class="p-1.5 hover:bg-background-light rounded-lg text-ink3 hover:text-primary transition-colors" title="{{ $lesson->quiz ? 'Edit Quiz' : 'Add Quiz' }}">
+                                        <span class="material-symbols-outlined text-[18px]">quiz</span>
+                                    </a>
                                     <a href="{{ route('instructor.lessons.edit', $lesson) }}" class="p-1.5 hover:bg-background-light rounded-lg text-ink3 hover:text-primary transition-colors" title="Edit Lesson">
                                         <span class="material-symbols-outlined text-[18px]">edit</span>
                                     </a>

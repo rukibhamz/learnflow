@@ -12,6 +12,7 @@ use App\Notifications\NewEnrollmentNotification;
 use Database\Seeders\RolesAndPermissionsSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Queue;
 use Tests\TestCase;
 
 class NotificationTest extends TestCase
@@ -47,6 +48,7 @@ class NotificationTest extends TestCase
 
     public function test_student_receives_course_completed_notification(): void
     {
+        Queue::fake();
         Notification::fake();
 
         $student = User::factory()->create();

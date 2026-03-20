@@ -5,16 +5,20 @@ namespace App\Services;
 use App\Models\Order;
 use App\Models\Payout;
 use App\Models\User;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
 
 class PayoutService
 {
     public function calculateEarnings(User $instructor, string $from, string $to): array
     {
+        // `$from`/`$to` come in as date strings; treat them as full-day boundaries.
+        $fromDate = Carbon::parse($from)->startOfDay();
+        $toDate = Carbon::parse($to)->endOfDay();
+
         $grossRevenue = Order::paid()
             ->whereHas('course', fn ($q) => $q->where('instructor_id', $instructor->id))
-            ->whereBetween('created_at', [$from, $to])
+            ->whereBetween('created_at', [$fromDate, $toDate])
             ->sum('amount');
 
         $sharePercent = $instructor->revenue_share_percent ?? 70;

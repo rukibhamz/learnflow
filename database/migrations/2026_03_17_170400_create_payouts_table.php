@@ -28,7 +28,8 @@ return new class extends Migration
 
         Schema::table('users', function (Blueprint $table) {
             if (!Schema::hasColumn('users', 'revenue_share_percent')) {
-                $table->unsignedTinyInteger('revenue_share_percent')->default(70)->after('role');
+                // Spatie roles are stored in pivot tables; `users.role` column does not exist.
+                $table->unsignedTinyInteger('revenue_share_percent')->default(70);
             }
             if (!Schema::hasColumn('users', 'stripe_connect_id')) {
                 $table->string('stripe_connect_id')->nullable()->after('revenue_share_percent');
