@@ -341,7 +341,14 @@ class InstallerService
             DB::purge('installer_final');
 
             // Run migrations
-            Artisan::call('migrate', ['--force' => true]);
+            try {
+                Artisan::call('migrate', ['--force' => true]);
+            } catch (\Throwable $e) {
+                if (str_contains($e->getMessage(), 'already exists')) {
+                    return ["The database is not empty (Table 'users' already exists). Please clear your database tables and click 'Run Installation' again for a clean setup."];
+                }
+                throw $e;
+            }
 
             // Create storage link for public files (e.g. logo)
             try {
