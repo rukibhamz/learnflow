@@ -34,6 +34,10 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
+        if (config('settings.mail_require_verification') === '0') {
+            return redirect()->route('home');
+        }
+
         return redirect()->route('verification.notice');
     }
 }

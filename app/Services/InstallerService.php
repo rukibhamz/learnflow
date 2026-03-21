@@ -379,6 +379,7 @@ class InstallerService
             \App\Models\Setting::set('currency', 'USD');
             \App\Models\Setting::set('payment_currency', 'USD');
             \App\Models\Setting::set('support_email', $admin['email']);
+            \App\Models\Setting::set('mail_require_verification', '1');
 
             // Mark as installed
             file_put_contents(self::getInstalledPath(), date('c'));

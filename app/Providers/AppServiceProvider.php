@@ -89,6 +89,11 @@ class AppServiceProvider extends ServiceProvider
                     }
                 }
             }
+
+            // Ensure default for email verification
+            if (! config()->has('settings.mail_require_verification')) {
+                config(['settings.mail_require_verification' => \App\Models\Setting::get('mail_require_verification', '1')]);
+            }
         } catch (\Throwable $e) {
             // Database not yet available (e.g. during install)
         }

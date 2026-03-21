@@ -149,10 +149,26 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail
     }
 
     /**
+     * Determine if the user has verified their email address.
+     */
+    public function hasVerifiedEmail(): bool
+    {
+        if (config('settings.mail_require_verification') === '0') {
+            return true;
+        }
+
+        return parent::hasVerifiedEmail();
+    }
+
+    /**
      * Send the email verification notification (queued).
      */
     public function sendEmailVerificationNotification(): void
     {
+        if (config('settings.mail_require_verification') === '0') {
+            return;
+        }
+
         $this->notify(new \App\Notifications\QueuedVerifyEmail);
     }
 }

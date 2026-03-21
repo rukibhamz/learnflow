@@ -346,6 +346,18 @@
 
                         <div class="flex items-center justify-between pt-8 border-t border-rule">
                             <div class="space-y-1">
+                                <span class="text-[13px] font-bold text-ink font-poppins">Require Email Verification</span>
+                                <p class="text-[12px] text-ink3 font-sans leading-relaxed">Force new users to verify their email before using the platform.</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="hidden" name="mail_require_verification" value="0">
+                                <input type="checkbox" name="mail_require_verification" value="1" {{ \App\Models\Setting::get('mail_require_verification', '1') ? 'checked' : '' }} class="sr-only peer">
+                                <div class="w-11 h-6 bg-rule peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                            </label>
+                        </div>
+
+                        <div class="flex items-center justify-between pt-8 border-t border-rule">
+                            <div class="space-y-1">
                                 <span class="text-[13px] font-bold text-ink font-poppins">Enable SSL/TLS</span>
                                 <p class="text-[12px] text-ink3 font-sans leading-relaxed">Encrypt connection between LMS and mail server.</p>
                             </div>
