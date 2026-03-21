@@ -21,54 +21,75 @@
     <form method="POST" action="{{ route('install.database.store') }}" id="db-form">
         @csrf
 
-        <div class="mb-4">
+        <div class="mb-4 text-left">
             <label class="block text-sm font-medium text-slate-700 mb-2">Database type</label>
             <select name="db_connection" id="db_connection"
-                    class="w-full rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                    class="w-full rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 @error('db_connection') border-red-500 @enderror">
                 <option value="sqlite" {{ old('db_connection', 'sqlite') === 'sqlite' ? 'selected' : '' }}>SQLite</option>
                 <option value="mysql" {{ old('db_connection') === 'mysql' ? 'selected' : '' }}>MySQL</option>
                 <option value="mariadb" {{ old('db_connection') === 'mariadb' ? 'selected' : '' }}>MariaDB</option>
                 <option value="pgsql" {{ old('db_connection') === 'pgsql' ? 'selected' : '' }}>PostgreSQL</option>
             </select>
+            @error('db_connection')
+                <p class="mt-1 text-xs text-red-600 font-medium">{{ $message }}</p>
+            @enderror
         </div>
 
         {{-- SQLite --}}
-        <div id="sqlite-fields" class="mb-4">
+        <div id="sqlite-fields" class="mb-4 text-left">
             <label class="block text-sm font-medium text-slate-700 mb-2">Database file path</label>
             <input type="text" name="db_database"
                    value="{{ old('db_database', database_path('database.sqlite')) }}"
                    placeholder="{{ database_path('database.sqlite') }}"
-                   class="w-full rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                   class="w-full rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 @error('db_database') border-red-500 @enderror">
+            @error('db_database')
+                <p class="mt-1 text-xs text-red-600 font-medium">{{ $message }}</p>
+            @enderror
             <p class="mt-1 text-xs text-slate-500">Leave default or enter full path. File will be created if it doesn't exist.</p>
         </div>
 
         {{-- MySQL / MariaDB / PostgreSQL --}}
-        <div id="server-fields" class="space-y-4" style="display: none;">
+        <div id="server-fields" class="space-y-4 text-left" style="display: none;">
             <div>
                 <label class="block text-sm font-medium text-slate-700 mb-2">Host</label>
                 <input type="text" name="db_host" value="{{ old('db_host', '127.0.0.1') }}"
-                       class="w-full rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                       class="w-full rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 @error('db_host') border-red-500 @enderror">
+                @error('db_host')
+                    <p class="mt-1 text-xs text-red-600 font-medium">{{ $message }}</p>
+                @enderror
             </div>
             <div>
                 <label class="block text-sm font-medium text-slate-700 mb-2">Port</label>
                 <input type="text" name="db_port" value="{{ old('db_port', '') }}"
                        placeholder="{{ old('db_connection') === 'pgsql' ? '5432' : '3306' }}"
-                       class="w-full rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                       class="w-full rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 @error('db_port') border-red-500 @enderror">
+                @error('db_port')
+                    <p class="mt-1 text-xs text-red-600 font-medium">{{ $message }}</p>
+                @enderror
             </div>
             <div>
                 <label class="block text-sm font-medium text-slate-700 mb-2">Database name</label>
                 <input type="text" name="db_database" value="{{ old('db_database', 'learnflow') }}"
-                       class="w-full rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                       class="w-full rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 @error('db_database') border-red-500 @enderror">
+                @error('db_database')
+                    <p class="mt-1 text-xs text-red-600 font-medium">{{ $message }}</p>
+                @enderror
             </div>
             <div>
                 <label class="block text-sm font-medium text-slate-700 mb-2">Username</label>
                 <input type="text" name="db_username" value="{{ old('db_username') }}"
-                       class="w-full rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                       class="w-full rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 @error('db_username') border-red-500 @enderror">
+                @error('db_username')
+                    <p class="mt-1 text-xs text-red-600 font-medium">{{ $message }}</p>
+                @enderror
             </div>
             <div>
                 <label class="block text-sm font-medium text-slate-700 mb-2">Password</label>
                 <input type="password" name="db_password" value="{{ old('db_password') }}"
-                       class="w-full rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                       class="w-full rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 @error('db_password') border-red-500 @enderror">
+                @error('db_password')
+                    <p class="mt-1 text-xs text-red-600 font-medium">{{ $message }}</p>
+                @enderror
             </div>
         </div>
 
