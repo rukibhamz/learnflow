@@ -85,6 +85,13 @@ if ($step === 'fix') {
     if (file_exists($baseDir . '/vendor/autoload.php')) {
         echo "\nRunning Laravel Maintenance Commands:\n";
         
+        // Ensure SQLite file exists if configured
+        if (!file_exists($baseDir . '/database/database.sqlite')) {
+             @touch($baseDir . '/database/database.sqlite');
+             @chmod($baseDir . '/database/database.sqlite', 0664);
+             echo "Created database/database.sqlite\n";
+        }
+
         passthru("php artisan key:generate --ansi");
         passthru("php artisan config:clear");
         passthru("php artisan storage:link");
