@@ -48,6 +48,10 @@ if (!$hasKey || !file_exists(__DIR__ . '/storage/framework/installed')) {
                 $envContent .= "\nAPP_KEY=$key\n";
             }
             file_put_contents(__DIR__ . '/.env', $envContent);
+            // If we generated a new key, we MUST ensure the app doesn't think it's installed
+            if (file_exists(__DIR__ . '/storage/framework/installed')) {
+                @unlink(__DIR__ . '/storage/framework/installed');
+            }
         }
     }
 
