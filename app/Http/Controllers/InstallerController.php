@@ -134,7 +134,7 @@ class InstallerController extends Controller
         return view('install.run');
     }
 
-    public function execute(): RedirectResponse
+    public function executeRun(): RedirectResponse
     {
         $data = InstallerService::getInstallData('application');
         if (! $data) {
