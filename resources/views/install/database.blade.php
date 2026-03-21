@@ -123,6 +123,10 @@
                 var isSqlite = sel.value === 'sqlite';
                 sqlite.style.display = isSqlite ? 'block' : 'none';
                 server.style.display = isSqlite ? 'none' : 'block';
+
+                // Ensure hidden fields are disabled so they aren't submitted
+                sqlite.querySelectorAll('input, select, textarea').forEach(el => el.disabled = !isSqlite);
+                server.querySelectorAll('input, select, textarea').forEach(el => el.disabled = isSqlite);
             }
             sel.addEventListener('change', toggle);
             toggle();
