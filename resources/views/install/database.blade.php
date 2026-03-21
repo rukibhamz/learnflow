@@ -131,15 +131,27 @@
                 testStatus.innerHTML = '<div class="p-3 bg-blue-50 text-blue-700 text-xs rounded border border-blue-100 italic">Testing connection...</div>';
                 
                 var formData = new FormData(document.getElementById('db-form'));
-                
-                fetch('{{ route("install.database.test") }}', {
+                var testUrl = '{{ route("install.database.test") }}';
+                console.log('Testing connection to:', testUrl);
+
+                fetch(testUrl, {
                     method: 'POST',
                     body: formData,
                     headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
                     }
                 })
-                .then(response => response.json())
+                .then(response => {
+                    console.log('Response status:', response.status);
+                    if (!response.ok) {
+                        return response.text().then(text => {
+                            throw new Error('Server returned ' + response.status + ': ' + text.substring(0, 100));
+                        });
+                    }
+                    return response.json();
+                })
                 .then(data => {
                     if (data.success) {
                         testStatus.innerHTML = '<div class="p-3 bg-green-50 text-green-700 text-xs rounded border border-green-100 font-medium">✔ ' + data.message + '</div>';
@@ -148,7 +160,8 @@
                     }
                 })
                 .catch(error => {
-                    testStatus.innerHTML = '<div class="p-3 bg-red-50 text-red-700 text-xs rounded border border-red-100 font-medium">✖ Connection failed or server error.</div>';
+                    console.error('AJAX Error:', error);
+                    testStatus.innerHTML = '<div class="p-3 bg-red-50 text-red-700 text-xs rounded border border-red-100 font-medium">✖ Connection failed or server error. Check browser console for details.</div>';
                 });
             });
         })();
