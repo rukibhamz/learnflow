@@ -33,6 +33,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Schema::defaultStringLength(191);
         Gate::policy(Course::class, CoursePolicy::class);
         Gate::policy(Enrollment::class, EnrollmentPolicy::class);
         Gate::policy(QuizAttempt::class, QuizAttemptPolicy::class);
