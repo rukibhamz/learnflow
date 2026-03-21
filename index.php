@@ -37,9 +37,12 @@ if (!$hasKey || !file_exists(__DIR__ . '/storage/framework/installed')) {
         copy(__DIR__ . '/.env.example', __DIR__ . '/.env');
     }
 
-    // 2. Ensure APP_KEY exists
+    // 2. Ensure APP_KEY exists and APP_URL is correct
     if (file_exists(__DIR__ . '/.env')) {
         $envContent = file_get_contents(__DIR__ . '/.env');
+        $modified = false;
+
+        // Generate APP_KEY if missing
         if (!str_contains($envContent, 'APP_KEY=base64:')) {
             $key = 'base64:'.base64_encode(random_bytes(32));
             if (str_contains($envContent, 'APP_KEY=')) {
@@ -47,8 +50,23 @@ if (!$hasKey || !file_exists(__DIR__ . '/storage/framework/installed')) {
             } else {
                 $envContent .= "\nAPP_KEY=$key\n";
             }
+            $modified = true;
+        }
+
+        // Fix APP_URL if it's localhost or placeholder
+        if (str_contains($envContent, 'localhost') || str_contains($envContent, 'example.com')) {
+            $scheme = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? "https" : "http";
+            $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+            $detectUrl = "$scheme://$host$basePath";
+            
+            $envContent = preg_replace('/^APP_URL=.*$/m', "APP_URL=\"$detectUrl\"", $envContent);
+            $envContent = preg_replace('/^ASSET_URL=.*$/m', "ASSET_URL=\"$detectUrl\"", $envContent);
+            $modified = true;
+        }
+
+        if ($modified) {
             file_put_contents(__DIR__ . '/.env', $envContent);
-            // If we generated a new key, we MUST ensure the app doesn't think it's installed
+            // If we modified critical env, clear "installed" to be safe
             if (file_exists(__DIR__ . '/storage/framework/installed')) {
                 @unlink(__DIR__ . '/storage/framework/installed');
             }
