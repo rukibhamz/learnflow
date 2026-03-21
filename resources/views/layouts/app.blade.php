@@ -48,5 +48,38 @@
         <x-footer />
     </div>
     @livewireScripts
+    <style>
+        [x-cloak] { display: none !important; }
+        
+        /* Global Animations */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const reveals = document.querySelectorAll('.reveal');
+            const observerOptions = { threshold: 0.15, rootMargin: '0px 0px -50px 0px' };
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                        // Optional: unobserve after reveal
+                        // observer.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+            
+            reveals.forEach(el => observer.observe(el));
+        });
+    </script>
 </body>
 </html>
