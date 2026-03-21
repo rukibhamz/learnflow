@@ -131,12 +131,17 @@ class AppServiceProvider extends ServiceProvider
                     $siteLogoUrl = $logoPath && Storage::disk('public')->exists($logoPath)
                         ? Storage::disk('public')->url($logoPath)
                         : null;
+                    
+                    $faviconPath = \App\Models\Setting::get('site_favicon');
+                    $siteFaviconUrl = $faviconPath && Storage::disk('public')->exists($faviconPath)
+                        ? Storage::disk('public')->url($faviconPath)
+                        : null;
                 }
             } catch (\Throwable $e) {
                 // Database not yet available
             }
 
-            $view->with(compact('siteName', 'siteColor', 'siteLogoUrl'));
+            $view->with(compact('siteName', 'siteColor', 'siteLogoUrl', 'siteFaviconUrl'));
         });
     }
 }

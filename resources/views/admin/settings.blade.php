@@ -230,6 +230,38 @@
                                 @endif
                             </div>
                         </div>
+
+                        <!-- Favicon -->
+                        <div class="flex flex-col md:flex-row md:items-start gap-6 pt-6 border-t border-rule/50">
+                            <div class="md:w-1/2 space-y-1">
+                                <label class="block text-[13px] font-bold text-ink font-poppins">Favicon</label>
+                                <p class="text-[12px] text-ink3 font-sans leading-relaxed">Upload a favicon for your browser tab. Recommended: 32x32px, PNG or ICO format.</p>
+                            </div>
+                            <div class="md:w-1/2 space-y-4">
+                                @php $faviconUrl = \App\Models\Setting::get('site_favicon') ? \Illuminate\Support\Facades\Storage::disk('public')->url(\App\Models\Setting::get('site_favicon')) : null; @endphp
+                                @if($faviconUrl)
+                                    <div class="flex items-center gap-4">
+                                        <img src="{{ $faviconUrl }}" alt="Current favicon" class="size-10 object-contain border border-rule rounded-lg p-2 bg-white">
+                                        <label class="cursor-pointer">
+                                            <span class="inline-flex items-center px-4 py-2 border border-rule rounded-lg text-sm font-medium hover:bg-bg transition-colors">Replace</span>
+                                            <input type="file" name="site_favicon" accept="image/*" class="sr-only">
+                                        </label>
+                                        <label class="inline-flex items-center gap-2 cursor-pointer">
+                                            <input type="checkbox" name="remove_favicon" value="1" class="rounded border-rule text-red-600 focus:ring-red-500">
+                                            <span class="text-sm font-medium text-red-600">Remove favicon</span>
+                                        </label>
+                                    </div>
+                                @else
+                                    <label class="cursor-pointer block">
+                                        <span class="inline-flex items-center gap-2 px-4 py-3 border-2 border-dashed border-rule rounded-lg text-sm font-medium text-ink3 hover:border-ink2 hover:text-ink2 transition-colors">
+                                            <span class="material-symbols-outlined text-[20px]">upload</span>
+                                            Choose favicon file
+                                        </span>
+                                        <input type="file" name="site_favicon" accept="image/*" class="sr-only">
+                                    </label>
+                                @endif
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

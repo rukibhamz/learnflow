@@ -56,6 +56,29 @@ class SettingsController extends Controller
             Setting::set('site_logo', $path);
         }
 
+        // Handle favicon removal
+        if ($request->boolean('remove_favicon')) {
+            $oldPath = Setting::get('site_favicon');
+            if ($oldPath && Storage::disk('public')->exists($oldPath)) {
+                Storage::disk('public')->delete($oldPath);
+            }
+            Setting::set('site_favicon', '');
+        }
+
+        // Handle favicon upload
+        if ($request->hasFile('site_favicon')) {
+            $request->validate(['site_favicon' => ['image', 'max:1024', 'mimes:png,ico,svg,webp']]);
+
+            // Delete old favicon
+            $oldPath = Setting::get('site_favicon');
+            if ($oldPath && Storage::disk('public')->exists($oldPath)) {
+                Storage::disk('public')->delete($oldPath);
+            }
+
+            $path = $request->file('site_favicon')->store('settings', 'public');
+            Setting::set('site_favicon', $path);
+        }
+
         return redirect()->route('admin.settings')->with('success', 'Settings updated successfully.');
     }
 
