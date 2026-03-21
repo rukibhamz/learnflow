@@ -1,6 +1,6 @@
 <IfModule mod_rewrite.c>
     RewriteEngine On
-    RewriteBase /learnflow/
+    # RewriteBase /learnflow/
 
     # Redirect trailing slashes (only for non-directory URIs)
     RewriteCond %{REQUEST_URI} (.+)/$

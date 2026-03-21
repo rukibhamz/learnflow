@@ -5,7 +5,7 @@
 
     RewriteEngine On
 
-    RewriteBase /learnflow/
+    # RewriteBase /learnflow/
 
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .

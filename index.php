@@ -7,6 +7,27 @@
  */
 
 $basePath = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\');
+
+// Health Check: Ensure vendor exists
+if (!file_exists(__DIR__ . '/vendor/autoload.php')) {
+    http_response_code(500);
+    echo "<h1>Configuration Error</h1>";
+    echo "<p>The <code>vendor</code> directory is missing. Please run <code>composer install</code> or upload the <code>vendor</code> folder.</p>";
+    if (file_exists(__DIR__ . '/setup.php')) {
+        echo "<p><a href='setup.php'>Click here to run the Setup Assistant</a></p>";
+    }
+    exit;
+}
+
+// Health Check: Ensure .env exists
+if (!file_exists(__DIR__ . '/.env') && !file_exists(__DIR__ . '/storage/framework/installed')) {
+    if (file_exists(__DIR__ . '/.env.example')) {
+        copy(__DIR__ . '/.env.example', __DIR__ . '/.env');
+    }
+}
+
+require __DIR__ . '/vendor/autoload.php';
+
 $requestUri = urldecode(parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?? '');
 $path = ($basePath !== '' && str_starts_with($requestUri, $basePath))
     ? (substr($requestUri, strlen($basePath)) ?: '/')
