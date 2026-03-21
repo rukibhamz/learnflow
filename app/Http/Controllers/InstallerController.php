@@ -82,6 +82,24 @@ class InstallerController extends Controller
         return redirect()->route('install.application');
     }
 
+    public function testDatabase(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $driver = $request->input('db_connection', 'sqlite');
+        
+        $config = [
+            'driver' => $driver,
+            'database' => $request->input('db_database') ?? database_path('database.sqlite'),
+            'host' => $request->input('db_host'),
+            'port' => $request->input('db_port'),
+            'username' => $request->input('db_username'),
+            'password' => $request->input('db_password') ?? '',
+        ];
+
+        $result = InstallerService::testDatabaseConnection($driver, $config);
+
+        return response()->json($result);
+    }
+
     public function application(): View|RedirectResponse
     {
         $dbData = InstallerService::getInstallData('database');
