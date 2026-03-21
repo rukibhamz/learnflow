@@ -75,7 +75,7 @@ return [
 
         'slack' => [
             'driver' => 'slack',
-            'url' => env('SLACK_WEBHOOK_URL', env('LOG_SLACK_WEBHOOK_URL')),
+            'url' => str_starts_with(env('SLACK_WEBHOOK_URL', env('LOG_SLACK_WEBHOOK_URL')) ?? '', 'http') ? env('SLACK_WEBHOOK_URL', env('LOG_SLACK_WEBHOOK_URL')) : null,
             'username' => env('LOG_SLACK_USERNAME', 'Laravel Log'),
             'emoji' => env('LOG_SLACK_EMOJI', ':boom:'),
             'level' => env('LOG_SLACK_LEVEL', 'error'),
