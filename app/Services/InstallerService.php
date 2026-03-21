@@ -51,7 +51,15 @@ class InstallerService
     {
         $path = storage_path('framework/' . self::INSTALLED_FILE);
 
-        return file_exists($path);
+        if (! file_exists($path)) {
+            return false;
+        }
+
+        try {
+            return \Illuminate\Support\Facades\Schema::hasTable('settings');
+        } catch (\Throwable $e) {
+            return false;
+        }
     }
 
     public static function getInstalledPath(): string
