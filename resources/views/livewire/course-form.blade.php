@@ -243,10 +243,13 @@
 
                 <div>
                     <label class="block text-[11px] font-bold uppercase tracking-widest text-ink3 mb-2">Category</label>
-                    <input type="text" wire:model="category" 
-                        class="w-full h-11 bg-bg border border-rule rounded-lg px-4 text-sm focus:outline-none focus:border-primary" 
-                        placeholder="e.g. Development">
-                    @error('category') <span class="text-xs text-red-600 mt-1 block">{{ $message }}</span> @enderror
+                    <select wire:model="category_id" class="w-full h-11 bg-bg border border-rule rounded-lg px-4 text-sm focus:outline-none focus:border-primary">
+                        <option value="">Select Category</option>
+                        @foreach(\App\Models\Category::where('is_active', true)->orderBy('order')->get() as $cat)
+                            <option value="{{ $cat->id }}">{{ $cat->name }}</option>
+                        @endforeach
+                    </select>
+                    @error('category_id') <span class="text-xs text-red-600 mt-1 block">{{ $message }}</span> @enderror
                 </div>
             </div>
         </div>

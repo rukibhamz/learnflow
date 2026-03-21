@@ -61,6 +61,7 @@ class Course extends Model implements HasMedia
 
     protected $fillable = [
         'instructor_id',
+        'category_id',
         'title',
         'category',
         'slug',
@@ -177,6 +178,8 @@ class Course extends Model implements HasMedia
             'price'             => (float) $this->price,
             'average_rating'    => (float) $this->getAverageRatingAttribute(),
             'enrolled_count'    => $this->getEnrolledCountAttribute(),
+            'category_id'       => $this->category_id,
+            'category'          => $this->category?->name,
             'status'            => $this->status?->value,
             'created_at'        => $this->created_at?->timestamp,
         ];
@@ -200,6 +203,11 @@ class Course extends Model implements HasMedia
     public function instructor(): BelongsTo
     {
         return $this->belongsTo(User::class, 'instructor_id');
+    }
+
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(Category::class);
     }
 
     public function sections(): HasMany
@@ -307,14 +315,12 @@ class Course extends Model implements HasMedia
 
     public static function cachedCategories(int $ttlSeconds = 3600): \Illuminate\Support\Collection
     {
-        $key = 'courses:filters:categories:v1';
-        $callback = fn () => self::published()
-            ->whereNotNull('category')
-            ->distinct()
-            ->orderBy('category')
-            ->pluck('category')
-            ->filter()
-            ->values();
+        $key = 'courses:filters:categories:v2';
+        $callback = fn () => Category::where('is_active', true)
+            ->whereHas('courses', fn($q) => $q->published())
+            ->orderBy('order')
+            ->orderBy('name')
+            ->get();
 
         try {
             return Cache::tags(['courses', 'filters'])->remember($key, $ttlSeconds, $callback);

@@ -192,6 +192,13 @@ Route::middleware(['web', \App\Http\Middleware\RedirectIfNotInstalled::class])->
         Route::get('settings', fn () => view('admin.settings'))->name('settings');
         Route::post('settings', [\App\Http\Controllers\Admin\SettingsController::class, 'update'])->name('settings.update');
         Route::post('settings/test-email', [\App\Http\Controllers\Admin\SettingsController::class, 'sendTestEmail'])->name('settings.test-email');
+
+        // Course Categories
+        Route::get('categories', fn () => view('admin.categories.index'))->name('categories.index');
+        Route::get('categories/create', fn () => view('admin.categories.create'))->name('categories.create');
+        Route::get('categories/{category}/edit', function (\App\Models\Category $category) {
+            return view('admin.categories.edit', ['category' => $category]);
+        })->name('categories.edit');
         
         // Blog CMS
         Route::get('blogs', fn () => view('admin.blogs.index'))->name('blogs.index');

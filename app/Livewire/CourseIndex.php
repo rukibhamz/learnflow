@@ -221,7 +221,9 @@ class CourseIndex extends Component
         }
 
         if ($this->categoryFilter) {
-            $query->where('category', $this->categoryFilter);
+            $query->whereHas('category', function ($q) {
+                $q->where('slug', $this->categoryFilter);
+            });
         }
 
         match ($this->sort) {

@@ -25,7 +25,7 @@ class CourseForm extends Component
     public $price = 0;
     public $level = 'beginner';
     public $language = 'en';
-    public $category = '';
+    public $category_id = '';
     public $requirements = [];
     public $outcomes = [];
     public $thumbnail;
@@ -53,7 +53,7 @@ class CourseForm extends Component
             $this->price = $course->price;
             $this->level = $course->level?->value ?? 'beginner';
             $this->language = $course->language ?? 'en';
-            $this->category = $course->category ?? '';
+            $this->category_id = $course->category_id ?? '';
             $this->requirements = $course->requirements ?? [];
             $this->outcomes = $course->outcomes ?? [];
             $this->existingThumbnail = $course->getFirstMediaUrl('thumbnail', 'thumb');
@@ -150,7 +150,7 @@ class CourseForm extends Component
             'price' => 'required|numeric|min:0',
             'level' => 'required|in:beginner,intermediate,advanced',
             'language' => 'nullable|string|max:10',
-            'category' => 'nullable|string|max:100',
+            'category_id' => 'nullable|exists:categories,id',
             'thumbnail' => 'nullable|image|max:2048',
             'prerequisite_ids' => 'nullable|array',
             'prerequisite_ids.*' => 'integer|exists:courses,id',
@@ -164,7 +164,7 @@ class CourseForm extends Component
             'price' => $this->price,
             'level' => CourseLevel::from($this->level),
             'language' => $this->language,
-            'category' => $this->category,
+            'category_id' => $this->category_id ?: null,
             'requirements' => array_values(array_filter($this->requirements)),
             'outcomes' => array_values(array_filter($this->outcomes)),
             'prerequisite_ids' => array_values(array_filter(array_map('intval', $this->prerequisite_ids))),

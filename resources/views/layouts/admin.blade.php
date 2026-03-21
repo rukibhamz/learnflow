@@ -57,6 +57,12 @@
                 <span class="text-sm font-medium">Courses</span>
             </a>
 
+            <a href="{{ route('admin.categories.index') }}"
+               class="flex items-center gap-3 px-3 py-2 rounded-lg group {{ request()->routeIs('admin.categories.*') ? 'bg-primary/10 text-primary' : 'text-ink hover:bg-background-light' }}">
+                <span class="material-symbols-outlined text-[20px] {{ request()->routeIs('admin.categories.*') ? 'text-primary' : 'text-ink3 group-hover:text-ink' }}">category</span>
+                <span class="text-sm font-medium">Categories</span>
+            </a>
+
             <a href="{{ route('admin.users.index') }}"
                class="flex items-center gap-3 px-3 py-2 rounded-lg group {{ request()->routeIs('admin.users.*') ? 'bg-primary/10 text-primary' : 'text-ink hover:bg-background-light' }}">
                 <span class="material-symbols-outlined text-[20px] {{ request()->routeIs('admin.users.*') ? 'text-primary' : 'text-ink3 group-hover:text-ink' }}">group</span>

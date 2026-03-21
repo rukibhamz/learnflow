@@ -53,10 +53,10 @@
                         @foreach($categories as $cat)
                             <label class="flex items-center gap-3 cursor-pointer group">
                                 <input type="checkbox"
-                                       wire:click="$set('categoryFilter', '{{ $categoryFilter === $cat ? '' : $cat }}')"
-                                       @checked($categoryFilter === $cat)
+                                       wire:click="$set('categoryFilter', '{{ $categoryFilter === $cat->slug ? '' : $cat->slug }}')"
+                                       @checked($categoryFilter === $cat->slug)
                                        class="custom-checkbox h-4 w-4 rounded border-slate-300 text-primary focus:ring-primary focus:ring-offset-0 bg-transparent transition-all">
-                                <span class="text-sm text-slate-600 group-hover:text-primary">{{ $cat }}</span>
+                                <span class="text-sm text-slate-600 group-hover:text-primary">{{ $cat->name }}</span>
                             </label>
                         @endforeach
                     </div>
@@ -131,7 +131,7 @@
                     <div class="flex-1 p-6 flex flex-col justify-between">
                         <div>
                             <div class="flex justify-between items-start mb-2">
-                                @php $badge = $course->category ?: ucfirst($course->level?->value ?? ''); @endphp
+                                @php $badge = $course->category?->name ?: ucfirst($course->level?->value ?? ''); @endphp
                                 @if($badge)
                                     <span class="text-xs font-bold uppercase tracking-widest text-primary bg-primary/10 px-2 py-1 rounded">{{ $badge }}</span>
                                 @else
