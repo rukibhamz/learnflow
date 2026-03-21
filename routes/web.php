@@ -16,7 +16,7 @@ Route::middleware(['web'])->group(function () {
     Route::post('install/application', [InstallerController::class, 'storeApplication'])->name('install.application.store');
     Route::get('install/database', [InstallerController::class, 'database'])->name('install.database');
     Route::post('install/database', [InstallerController::class, 'storeDatabase'])->name('install.database.store');
-    Route::post('install/database/test', [InstallerController::class, 'testDatabase'])->name('install.database.test');
+    Route::post('install-database-test', [InstallerController::class, 'testDatabase'])->name('install.database.test');
     Route::get('install/run', [InstallerController::class, 'run'])->name('install.run');
     Route::post('install/run', [InstallerController::class, 'executeRun'])->name('install.run.execute');
     Route::get('install/complete', [InstallerController::class, 'complete'])->name('install.complete');

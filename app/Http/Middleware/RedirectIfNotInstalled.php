@@ -16,7 +16,7 @@ class RedirectIfNotInstalled
         }
 
         // Check if the current route is an installation route
-        if ($request->is('install') || $request->is('install/*') || $request->routeIs('install.*')) {
+        if ($request->is('install*') || $request->routeIs('install*')) {
             return $next($request);
         }
 
