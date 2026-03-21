@@ -25,7 +25,11 @@ class InstallerService
         $path = self::installDataPath();
         $all = file_exists($path) ? (array) json_decode(file_get_contents($path), true) : [];
         $all[$key] = $data;
-        file_put_contents($path, json_encode($all));
+        
+        $result = @file_put_contents($path, json_encode($all));
+        if ($result === false) {
+            throw new \RuntimeException("Could not write to installation data file. Please ensure 'storage/framework' is writable.");
+        }
     }
 
     public static function getInstallData(string $key): ?array
@@ -202,7 +206,7 @@ class InstallerService
             DB::connection('installer_test')->getPdo();
             DB::purge('installer_test');
 
-            return ['success' => true];
+            return ['success' => true, 'message' => 'Database connection successful!'];
         } catch (\Throwable $e) {
             return ['success' => false, 'message' => $e->getMessage()];
         }

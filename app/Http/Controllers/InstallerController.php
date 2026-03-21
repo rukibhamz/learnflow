@@ -78,6 +78,11 @@ class InstallerController extends Controller
         }
 
         InstallerService::putInstallData('database', $config);
+        } catch (\Throwable $e) {
+            return back()->withInput()->withErrors([
+                'db_connection' => 'Persistence Error: ' . $e->getMessage(),
+            ]);
+        }
 
         return redirect()->route('install.application');
     }
