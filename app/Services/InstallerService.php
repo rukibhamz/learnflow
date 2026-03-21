@@ -173,6 +173,9 @@ class InstallerService
                     'charset' => 'utf8mb4',
                     'collation' => 'utf8mb4_unicode_ci',
                     'prefix' => '',
+                    'options' => [
+                        \PDO::ATTR_TIMEOUT => 5, // 5 second timeout
+                    ],
                 ],
                 'pgsql' => [
                     'driver' => 'pgsql',
@@ -184,6 +187,9 @@ class InstallerService
                     'charset' => 'utf8',
                     'prefix' => '',
                     'search_path' => 'public',
+                    'options' => [
+                        \PDO::ATTR_TIMEOUT => 5,
+                    ],
                 ],
                 default => [
                     'driver' => 'sqlite',

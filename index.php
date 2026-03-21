@@ -61,6 +61,14 @@ if (!$hasKey || !file_exists(__DIR__ . '/storage/framework/installed')) {
             
             $envContent = preg_replace('/^APP_URL=.*$/m', "APP_URL=\"$detectUrl\"", $envContent);
             $envContent = preg_replace('/^ASSET_URL=.*$/m', "ASSET_URL=\"$detectUrl\"", $envContent);
+            
+            // Also force absolute path for SQLite to prevent connection errors
+            $dbPath = __DIR__ . '/database/database.sqlite';
+            if (file_exists($dbPath)) {
+                $absPath = realpath($dbPath);
+                $envContent = preg_replace('/^DB_DATABASE=.*$/m', "DB_DATABASE=\"$absPath\"", $envContent);
+            }
+            
             $modified = true;
         }
 
