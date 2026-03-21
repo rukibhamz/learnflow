@@ -738,8 +738,71 @@
 
             <!-- Notifications Tab -->
             <div x-show="activeTab === 'notifications'" class="p-10 space-y-12">
-                <div class="flex items-center justify-center p-12 text-ink3 font-sans text-[13px] italic">
-                    Notification settings coming soon...
+                <div class="space-y-10">
+                    <h3 class="font-poppins font-bold text-[11px] uppercase tracking-widest text-ink3 border-b border-rule pb-3">Student Email Notifications</h3>
+                    <div class="space-y-6">
+                        <div class="flex items-center justify-between">
+                            <div class="space-y-1">
+                                <span class="text-[13px] font-bold text-ink font-poppins">Welcome Email</span>
+                                <p class="text-[12px] text-ink3 font-sans leading-relaxed">Send a welcome message when a student registers.</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="hidden" name="notify_welcome_email" value="0">
+                                <input type="checkbox" name="notify_welcome_email" value="1" {{ \App\Models\Setting::get('notify_welcome_email', '1') ? 'checked' : '' }} class="sr-only peer">
+                                <div class="w-11 h-6 bg-rule peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                            </label>
+                        </div>
+                        <div class="flex items-center justify-between pt-6 border-t border-rule/50">
+                            <div class="space-y-1">
+                                <span class="text-[13px] font-bold text-ink font-poppins">Enrollment Confirmation</span>
+                                <p class="text-[12px] text-ink3 font-sans leading-relaxed">Notify student when they enroll in a course.</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="hidden" name="notify_enrollment_confirmation" value="0">
+                                <input type="checkbox" name="notify_enrollment_confirmation" value="1" {{ \App\Models\Setting::get('notify_enrollment_confirmation', '1') ? 'checked' : '' }} class="sr-only peer">
+                                <div class="w-11 h-6 bg-rule peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                            </label>
+                        </div>
+                        <div class="flex items-center justify-between pt-6 border-t border-rule/50">
+                            <div class="space-y-1">
+                                <span class="text-[13px] font-bold text-ink font-poppins">Course Completion</span>
+                                <p class="text-[12px] text-ink3 font-sans leading-relaxed">Notify student when they complete a course.</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="hidden" name="notify_course_completion" value="0">
+                                <input type="checkbox" name="notify_course_completion" value="1" {{ \App\Models\Setting::get('notify_course_completion', '1') ? 'checked' : '' }} class="sr-only peer">
+                                <div class="w-11 h-6 bg-rule peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                            </label>
+                        </div>
+                        <div class="flex items-center justify-between pt-6 border-t border-rule/50">
+                            <div class="space-y-1">
+                                <span class="text-[13px] font-bold text-ink font-poppins">Certificate Issued</span>
+                                <p class="text-[12px] text-ink3 font-sans leading-relaxed">Notify student when a certificate is available.</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="hidden" name="notify_certificate_issued" value="0">
+                                <input type="checkbox" name="notify_certificate_issued" value="1" {{ \App\Models\Setting::get('notify_certificate_issued', '1') ? 'checked' : '' }} class="sr-only peer">
+                                <div class="w-11 h-6 bg-rule peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-10 pt-10 border-t border-rule">
+                    <h3 class="font-poppins font-bold text-[11px] uppercase tracking-widest text-ink3 border-b border-rule pb-3">Instructor Email Notifications</h3>
+                    <div class="space-y-6">
+                        <div class="flex items-center justify-between">
+                            <div class="space-y-1">
+                                <span class="text-[13px] font-bold text-ink font-poppins">New Student Enrollment</span>
+                                <p class="text-[12px] text-ink3 font-sans leading-relaxed">Notify instructor when a new student joins their course.</p>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="hidden" name="notify_instructor_new_enrollment" value="0">
+                                <input type="checkbox" name="notify_instructor_new_enrollment" value="1" {{ \App\Models\Setting::get('notify_instructor_new_enrollment', '1') ? 'checked' : '' }} class="sr-only peer">
+                                <div class="w-11 h-6 bg-rule peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                            </label>
+                        </div>
+                    </div>
                 </div>
             </div>
 

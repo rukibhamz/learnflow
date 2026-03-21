@@ -380,6 +380,11 @@ class InstallerService
             \App\Models\Setting::set('payment_currency', 'USD');
             \App\Models\Setting::set('support_email', $admin['email']);
             \App\Models\Setting::set('mail_require_verification', '1');
+            \App\Models\Setting::set('notify_welcome_email', '1');
+            \App\Models\Setting::set('notify_enrollment_confirmation', '1');
+            \App\Models\Setting::set('notify_course_completion', '1');
+            \App\Models\Setting::set('notify_certificate_issued', '1');
+            \App\Models\Setting::set('notify_instructor_new_enrollment', '1');
 
             // Mark as installed
             file_put_contents(self::getInstalledPath(), date('c'));

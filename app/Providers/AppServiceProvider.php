@@ -45,13 +45,19 @@ class AppServiceProvider extends ServiceProvider
 
         Event::listen(\App\Events\UserEnrolled::class, function (\App\Events\UserEnrolled $event) {
             $instructor = $event->enrollment->course->instructor;
-            if ($instructor) {
+            if ($instructor && config('settings.notify_instructor_new_enrollment', '1')) {
                 $instructor->notify(new \App\Notifications\NewEnrollmentNotification($event->enrollment));
+            }
+
+            if (config('settings.notify_enrollment_confirmation', '1')) {
+                $event->enrollment->user->notify(new \App\Notifications\CourseEnrolledNotification($event->enrollment));
             }
         });
 
         Event::listen(\App\Events\CourseCompleted::class, function (\App\Events\CourseCompleted $event) {
-            $event->user->notify(new \App\Notifications\CourseCompletedNotification($event->course));
+            if (config('settings.notify_course_completion', '1')) {
+                $event->user->notify(new \App\Notifications\CourseCompletedNotification($event->course));
+            }
         });
 
         // Load settings into config
