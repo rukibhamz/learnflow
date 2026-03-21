@@ -310,7 +310,7 @@
                                 <div class="flex flex-col md:flex-row md:items-start gap-6">
                                     <div class="md:w-1/2 space-y-1">
                                         <label class="block text-[13px] font-bold text-ink font-poppins">SMTP Host</label>
-                                        <p class="text-[12px] text-ink3 font-sans leading-relaxed">Your mail server address.</p>
+                                        <p class="text-[12px] text-ink3 font-sans leading-relaxed">Your mail server address (e.g., <code>mail.example.com</code>). <strong>Do not include <code>ssl://</code></strong>.</p>
                                     </div>
                                     <div class="md:w-1/2">
                                         <input type="text" name="mail_host" value="{{ \App\Models\Setting::get('mail_host', config('mail.mailers.smtp.host')) }}" 
@@ -320,7 +320,7 @@
                                 <div class="flex flex-col md:flex-row md:items-start gap-6 pt-6 border-t border-rule/50">
                                     <div class="md:w-1/2 space-y-1">
                                         <label class="block text-[13px] font-bold text-ink font-poppins">SMTP Port</label>
-                                        <p class="text-[12px] text-ink3 font-sans leading-relaxed">Outgoing port for your SMTP server.</p>
+                                        <p class="text-[12px] text-ink2 font-sans leading-relaxed"><strong>Common Ports:</strong><br>• 465 (requires <strong>SSL</strong> encryption)<br>• 587 (requires <strong>TLS</strong> encryption)</p>
                                     </div>
                                     <div class="md:w-1/2">
                                         <input type="text" name="mail_port" value="{{ \App\Models\Setting::get('mail_port', config('mail.mailers.smtp.port')) }}" 

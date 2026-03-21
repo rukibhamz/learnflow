@@ -22,6 +22,11 @@ class SettingsController extends Controller
         
         foreach ($settings as $key => $value) {
             if ($value !== null && $value !== '') {
+                // Sanitize mail host to remove protocol/port if present
+                if ($key === 'mail_host') {
+                    $value = str_replace(['ssl://', 'tls://'], '', $value);
+                    $value = preg_replace('/:(\d+)$/', '', $value); // Remove trailing :port
+                }
                 Setting::set($key, $value);
             }
         }
@@ -103,8 +108,16 @@ class SettingsController extends Controller
             );
             return back()->with('success', 'Test email sent successfully to ' . $to);
         } catch (\Throwable $e) {
-            Log::error('Mailer test failed', ['error' => $e->getMessage()]);
-            return back()->with('error', 'Failed to send test email: ' . $e->getMessage());
+            Log::error('Mailer test failed', ['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
+            
+            $errorMessage = $e->getMessage();
+            if (str_contains($errorMessage, 'Connection timed out')) {
+                $errorMessage .= ' – TIP: Check if your server allows outgoing connections on this port. Try switching between Port 465 (SSL) and Port 587 (TLS).';
+            } elseif (str_contains($errorMessage, 'Authentication failed')) {
+                $errorMessage .= ' – TIP: Double check your SMTP username and password.';
+            }
+
+            return back()->with('error', 'Failed to send test email: ' . $errorMessage);
         }
     }
 }
