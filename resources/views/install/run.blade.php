@@ -15,8 +15,27 @@
 @section('content')
     <h2 class="text-xl font-semibold mb-2">Ready to install</h2>
     <p class="text-slate-600 text-sm mb-6">
-        Everything is configured. Click the button below to run the installation.
+        Review your configuration before proceeding. If anything looks incorrect, go back and fix it.
     </p>
+
+    <div class="mb-8 p-4 bg-slate-50 border border-slate-200 rounded-lg text-sm">
+        <h3 class="font-bold text-slate-800 mb-2 uppercase text-[10px] tracking-widest leading-none">Database Summary</h3>
+        <ul class="space-y-1 text-slate-600">
+            <li><span class="font-medium text-slate-900">Type:</span> {{ strtoupper($db['driver'] ?? 'unknown') }}</li>
+            @if(($db['driver'] ?? '') !== 'sqlite')
+                <li><span class="font-medium text-slate-900">Host:</span> {{ $db['host'] ?? '-' }}</li>
+                <li><span class="font-medium text-slate-900">Database:</span> {{ $db['database'] ?? '-' }}</li>
+                <li><span class="font-medium text-slate-900">User:</span> {{ $db['username'] ?? '-' }}</li>
+            @else
+                <li><span class="font-medium text-slate-900">Path:</span> {{ $db['database'] ?? '-' }}</li>
+            @endif
+        </ul>
+        <div class="mt-4 pt-4 border-t border-slate-200">
+            <a href="{{ route('install.database') }}" class="text-indigo-600 hover:text-indigo-800 font-medium">
+                Change database settings
+            </a>
+        </div>
+    </div>
 
     <form method="POST" action="{{ route('install.run.execute') }}" id="install-form">
         @csrf

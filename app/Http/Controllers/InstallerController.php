@@ -151,11 +151,11 @@ class InstallerController extends Controller
 
     public function run(): View|RedirectResponse
     {
-        if (! InstallerService::getInstallData('application')) {
-            return redirect()->route('install.application');
-        }
-
-        return view('install.run');
+        $dbData = InstallerService::getInstallData('database');
+        
+        return view('install.run', [
+            'db' => $dbData
+        ]);
     }
 
     public function executeRun(): RedirectResponse
