@@ -92,6 +92,19 @@ if ($step === 'fix') {
              echo "Created database/database.sqlite\n";
         }
 
+        // 2. Manual APP_KEY generation if missing
+        $envContent = file_get_contents($baseDir . '/.env');
+        if (!str_contains($envContent, 'APP_KEY=') || strlen(trim(explode("\n", explode('APP_KEY=', $envContent)[1] ?? '')[0])) < 10) {
+            $key = 'base64:'.base64_encode(random_bytes(32));
+            if (str_contains($envContent, 'APP_KEY=')) {
+                $envContent = preg_replace('/^APP_KEY=.*$/m', "APP_KEY=$key", $envContent);
+            } else {
+                $envContent .= "\nAPP_KEY=$key\n";
+            }
+            file_put_contents($baseDir . '/.env', $envContent);
+            echo "Manually generated and saved APP_KEY to .env\n";
+        }
+
         passthru("php artisan key:generate --ansi");
         passthru("php artisan config:clear");
         passthru("php artisan storage:link");

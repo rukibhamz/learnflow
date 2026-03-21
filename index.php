@@ -19,10 +19,31 @@ if (!file_exists(__DIR__ . '/vendor/autoload.php')) {
     exit;
 }
 
-// Health Check: Ensure .env exists
-if (!file_exists(__DIR__ . '/.env') && !file_exists(__DIR__ . '/storage/framework/installed')) {
-    if (file_exists(__DIR__ . '/.env.example')) {
+// Health Check: Automation for new installations
+if (!file_exists(__DIR__ . '/storage/framework/installed')) {
+    // 1. Ensure .env exists
+    if (!file_exists(__DIR__ . '/.env') && file_exists(__DIR__ . '/.env.example')) {
         copy(__DIR__ . '/.env.example', __DIR__ . '/.env');
+    }
+
+    // 2. Ensure APP_KEY exists
+    if (file_exists(__DIR__ . '/.env')) {
+        $envContent = file_get_contents(__DIR__ . '/.env');
+        if (!str_contains($envContent, 'APP_KEY=') || strlen(trim(explode("\n", explode('APP_KEY=', $envContent)[1] ?? '')[0])) < 10) {
+            $key = 'base64:'.base64_encode(random_bytes(32));
+            if (str_contains($envContent, 'APP_KEY=')) {
+                $envContent = preg_replace('/^APP_KEY=.*$/m', "APP_KEY=$key", $envContent);
+            } else {
+                $envContent .= "\nAPP_KEY=$key\n";
+            }
+            file_put_contents(__DIR__ . '/.env', $envContent);
+        }
+    }
+
+    // 3. Ensure SQLite database exists
+    if (!file_exists(__DIR__ . '/database/database.sqlite')) {
+        @touch(__DIR__ . '/database/database.sqlite');
+        @chmod(__DIR__ . '/database/database.sqlite', 0664);
     }
 }
 
