@@ -85,6 +85,33 @@ if (!$hasKey || !file_exists(__DIR__ . '/storage/framework/installed')) {
     }
 }
 
+// Definitive APP_URL fix: Detect host and ensure Laravel uses it
+$envFile = __DIR__ . '/.env';
+if (file_exists($envFile)) {
+    $detectScheme = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? "https" : "http";
+    $detectHost = $_SERVER['HTTP_HOST'] ?? 'localhost';
+    $detectUrl = "$detectScheme://$detectHost$basePath";
+
+    // 1. Immediate override for current request (bypasses cache/env file lag)
+    $_ENV['APP_URL'] = $detectUrl;
+    $_ENV['ASSET_URL'] = $detectUrl;
+    putenv("APP_URL=$detectUrl");
+    putenv("ASSET_URL=$detectUrl");
+
+    // 2. Persistent fix in .env if it contains localhost or example.com
+    $envContent = file_get_contents($envFile);
+    if (str_contains($envContent, 'localhost') || str_contains($envContent, 'example.com')) {
+        $envContent = preg_replace('/^APP_URL=.*$/m', "APP_URL=\"$detectUrl\"", $envContent);
+        $envContent = preg_replace('/^ASSET_URL=.*$/m', "ASSET_URL=\"$detectUrl\"", $envContent);
+        file_put_contents($envFile, $envContent);
+        
+        // Clear caches to ensure the new .env is recognized in future requests
+        foreach (glob(__DIR__ . '/bootstrap/cache/*.php') as $cacheFile) {
+            @unlink($cacheFile);
+        }
+    }
+}
+
 require __DIR__ . '/vendor/autoload.php';
 
 $requestUri = urldecode(parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?? '');
