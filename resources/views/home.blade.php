@@ -8,7 +8,7 @@
         activeSlide: 1,
         autoplayInterval: null,
         autoplaySpeed: {{ \App\Models\Setting::get('hero_autoplay_speed', 6000) }},
-        animationsEnabled: {{ \App\Models\Setting::get('hero_animations_enabled', '1') ? 'true' : 'false' }},
+        animationsEnabled: {{ \App\Models\Setting::get('hero_animations_enabled', '1') == '1' ? 'true' : 'false' }},
         slides: [
             @forelse($slides as $slide)
             {
@@ -62,26 +62,26 @@
                         <!-- Content Side -->
                         <div class="flex flex-col gap-8 order-2 lg:order-1">
                             <div class="flex flex-col gap-6">
-                                <span x-show="animationsEnabled" 
+                                <span x-show="activeSlide === index + 1" 
                                       x-transition:enter="transition ease-out duration-700 delay-300"
                                       x-transition:enter-start="opacity-0 -translate-y-4"
                                       x-transition:enter-end="opacity-100 translate-y-0"
                                       class="text-accent font-bold tracking-[0.2em] text-xs uppercase" x-text="slide.tag"></span>
                                 
-                                <h1 x-show="animationsEnabled"
+                                <h1 x-show="activeSlide === index + 1"
                                     x-transition:enter="transition ease-out duration-700 delay-500"
                                     x-transition:enter-start="opacity-0 translate-y-8"
                                     x-transition:enter-end="opacity-100 translate-y-0"
                                     class="text-5xl sm:text-6xl lg:text-7xl font-extrabold leading-tight text-ink" x-html="slide.title"></h1>
                                 
-                                <p x-show="animationsEnabled"
+                                <p x-show="activeSlide === index + 1"
                                    x-transition:enter="transition ease-out duration-700 delay-700"
                                    x-transition:enter-start="opacity-0 translate-y-8"
                                    x-transition:enter-end="opacity-100 translate-y-0"
                                    class="text-lg sm:text-xl text-ink2 max-w-lg leading-relaxed font-body" x-text="slide.desc"></p>
                             </div>
                             
-                            <div x-show="animationsEnabled"
+                            <div x-show="activeSlide === index + 1"
                                  x-transition:enter="transition ease-out duration-700 delay-1000"
                                  x-transition:enter-start="opacity-0 translate-y-8"
                                  x-transition:enter-end="opacity-100 translate-y-0"
@@ -98,7 +98,7 @@
 
                         <!-- Image Side -->
                         <div class="relative order-1 lg:order-2">
-                            <div x-show="animationsEnabled"
+                            <div x-show="activeSlide === index + 1"
                                  x-transition:enter="transition ease-out duration-1000 delay-300"
                                  x-transition:enter-start="opacity-0 scale-90 rotate-3"
                                  x-transition:enter-end="opacity-100 scale-100 rotate-0"
@@ -137,8 +137,6 @@
                 <span class="material-symbols-outlined text-[28px] group-hover:translate-x-1 transition-transform">chevron_right</span>
             </button>
         </div>
-    </section>
-
     </section>
 
     <!-- Stats Bar -->
