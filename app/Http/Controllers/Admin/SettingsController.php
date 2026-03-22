@@ -97,8 +97,27 @@ class SettingsController extends Controller
         ]);
 
         $to = $request->test_email;
+        $config = config('mail.mailers.smtp');
+        $host = $config['host'] ?? 'null';
+        $port = $config['port'] ?? 'null';
+        $scheme = $config['scheme'] ?? 'null';
+
+        // 1. Definitively check connectivity first via raw sockets
+        $connectionOk = false;
+        $connectionError = '';
+        $fp = @fsockopen($host, (int)$port, $errno, $errstr, 5); // 5 second timeout
+        if ($fp) {
+            $connectionOk = true;
+            fclose($fp);
+        } else {
+            $connectionError = "Network/Firewall Issue: Could not open connection to $host on Port $port ($errstr). This usually means your server's hosting provider is blocking outgoing email traffic on this port.";
+        }
 
         try {
+            if (!$connectionOk) {
+                throw new \Exception($connectionError);
+            }
+
             Mail::raw(
                 'This is a test email from LearnFlow. If you received this, your mailer configuration is working correctly.',
                 function ($message) use ($to) {
@@ -108,11 +127,26 @@ class SettingsController extends Controller
             );
             return back()->with('success', 'Test email sent successfully to ' . $to);
         } catch (\Throwable $e) {
-            Log::error('Mailer test failed', ['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
+            Log::error('Mailer test failed', [
+                'error' => $e->getMessage(),
+                'config' => [
+                    'host' => $host,
+                    'port' => $port,
+                    'scheme' => $scheme,
+                    'user' => $config['username'] ?? 'null'
+                ]
+            ]);
             
             $errorMessage = $e->getMessage();
-            if (str_contains($errorMessage, 'Connection timed out')) {
-                $errorMessage .= ' – TIP: Check if your server allows outgoing connections on this port. Try switching between Port 465 (SSL) and Port 587 (TLS).';
+            if (str_contains($errorMessage, 'Connection timed out') || str_contains($errorMessage, 'Network/Firewall Issue')) {
+                $hint = ($port == 465 ? "TIP: Try Port 587 with TLS if 465 is blocked." : "TIP: Try Port 465 with SSL if 587 is blocked.");
+                
+                if (str_contains($host, 'jellyfish.systems')) {
+                    $hint .= " WARNING: '$host' appears to be an incoming mail filter (MX). For outgoing mail (SMTP), you should likely use your primary mail server (e.g., mail.yourdomain.com).";
+                }
+
+                $errorMessage = "CONNECTION ERROR: Port $port is unreachable on $host. " . $hint . 
+                               " If both fail, contact your hosting provider to 'unblock outgoing SMTP ports'.";
             } elseif (str_contains($errorMessage, 'Authentication failed')) {
                 $errorMessage .= ' – TIP: Double check your SMTP username and password.';
             }

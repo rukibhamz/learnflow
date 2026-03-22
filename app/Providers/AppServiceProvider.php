@@ -94,9 +94,7 @@ class AppServiceProvider extends ServiceProvider
                         config(['settings.' . $setting->key => $setting->value]);
                     }
                 }
-            }
-
-            // Ensure default for email verification
+                // Ensure default for email verification
             if (! config()->has('settings.mail_require_verification')) {
                 config(['settings.mail_require_verification' => \App\Models\Setting::get('mail_require_verification', '1')]);
             }
