@@ -134,7 +134,7 @@
                                                     </div>
                                                     <div class="flex items-center justify-between mt-1">
                                                         <span>Discount ({{ strtoupper($couponValidation->code) }})</span>
-                                                        <span class="text-green-700 font-medium">-${{ number_format($discountAmount, 2) }}</span>
+                                                        <span class="text-green-700 font-medium">-{{ format_price($discountAmount) }}</span>
                                                     </div>
                                                     <div class="flex items-center justify-between mt-2 pt-2 border-t border-rule">
                                                         <span class="font-bold">Total</span>

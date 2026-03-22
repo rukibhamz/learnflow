@@ -2,90 +2,83 @@
 
 @section('title', 'Learn Without Limits')
 
-@section('content')
-    <!-- Hero Slider Section -->
-    <section x-data="{ 
-        activeSlide: 1,
-        autoplayInterval: null,
-        autoplaySpeed: {{ \App\Models\Setting::get('hero_autoplay_speed', 6000) }},
-        animationsEnabled: {{ \App\Models\Setting::get('hero_animations_enabled', '1') == '1' ? 'true' : 'false' }},
-        slides: [
-            @forelse($slides as $slide)
-            {
-                tag: '{{ $slide->tag }}',
-                title: '{!! addslashes($slide->title) !!}',
-                desc: '{{ addslashes($slide->description) }}',
-                img: '{{ $slide->getFirstMediaUrl('background') ?: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=2671&auto=format&fit=crop' }}'
+@push('head')
+<script>
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('heroSlider', () => ({
+            activeSlide: 1,
+            autoplayInterval: null,
+            autoplaySpeed: window._heroAutoplaySpeed || 6000,
+            totalSlides: window._heroTotalSlides || 1,
+
+            init() {
+                if (this.totalSlides > 1) {
+                    this.startAutoplay();
+                }
             },
-            @empty
-            {
-                tag: 'Online Learning Platform',
-                title: 'Learn without <span class=\'text-accent\'>limits.</span>',
-                desc: 'Experience the future of education with our expert-led courses designed for your success.',
-                img: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=2671&auto=format&fit=crop'
+
+            next() {
+                this.activeSlide = this.activeSlide === this.totalSlides ? 1 : this.activeSlide + 1;
+            },
+
+            prev() {
+                this.activeSlide = this.activeSlide === 1 ? this.totalSlides : this.activeSlide - 1;
+            },
+
+            startAutoplay() {
+                if (this.autoplayInterval) return;
+                this.autoplayInterval = setInterval(() => this.next(), this.autoplaySpeed);
+            },
+
+            stopAutoplay() {
+                clearInterval(this.autoplayInterval);
+                this.autoplayInterval = null;
+            },
+
+            resetAutoplay() {
+                this.stopAutoplay();
+                this.startAutoplay();
             }
-            @endforelse
-        ],
-        next() { this.activeSlide = this.activeSlide === this.slides.length ? 1 : this.activeSlide + 1; },
-        prev() { this.activeSlide = this.activeSlide === 1 ? this.slides.length : this.activeSlide - 1; },
-        startAutoplay() { 
-            if (this.autoplayInterval) return;
-            this.autoplayInterval = setInterval(() => this.next(), this.autoplaySpeed); 
-        },
-        stopAutoplay() {
-            clearInterval(this.autoplayInterval);
-            this.autoplayInterval = null;
-        },
-        resetAutoplay() {
-            this.stopAutoplay();
-            this.startAutoplay();
-        }
-    }" 
-    x-init="startAutoplay()"
-    @mouseenter="stopAutoplay()"
-    @mouseleave="startAutoplay()"
-    class="relative overflow-hidden w-full bg-surface min-h-[600px] lg:min-h-[700px]">
+        }));
+    });
+</script>
+@endpush
+
+@section('content')
+    <script>
+        window._heroTotalSlides = {{ $slides->count() ?: 1 }};
+        window._heroAutoplaySpeed = {{ \App\Models\Setting::get('hero_autoplay_speed', 6000) }};
+    </script>
+    <!-- Hero Slider Section -->
+    <section x-data="heroSlider" 
+             @mouseenter="stopAutoplay()"
+             @mouseleave="startAutoplay()"
+             class="relative overflow-hidden w-full bg-surface" style="min-height:600px">
         
         <!-- Slider Track -->
-        <div class="relative w-full h-full">
-            <template x-for="(slide, index) in slides" :key="index">
-                <div x-show="activeSlide === index + 1"
-                     class="absolute inset-0 w-full"
-                     x-transition:enter="transition ease-out duration-1000"
+        <div class="relative w-full" style="min-height:600px">
+            @forelse($slides as $index => $slide)
+                <div x-show="activeSlide === {{ $index + 1 }}"
+                     x-transition:enter="transition ease-out duration-700"
                      x-transition:enter-start="opacity-0 translate-x-full"
                      x-transition:enter-end="opacity-100 translate-x-0"
-                     x-transition:leave="transition ease-in duration-1000"
+                     x-transition:leave="transition ease-in duration-700"
                      x-transition:leave-start="opacity-100 translate-x-0"
-                     x-transition:leave-end="opacity-0 -translate-x-full">
+                     x-transition:leave-end="opacity-0 -translate-x-full"
+                     class="absolute inset-0 w-full h-full flex items-center">
                     
-                    <div class="max-w-7xl mx-auto px-6 py-16 lg:py-32 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+                    <div class="w-full max-w-7xl mx-auto px-6 py-16 lg:py-32 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
                         <!-- Content Side -->
                         <div class="flex flex-col gap-8 order-2 lg:order-1">
                             <div class="flex flex-col gap-6">
-                                <span x-show="activeSlide === index + 1" 
-                                      x-transition:enter="transition ease-out duration-700 delay-300"
-                                      x-transition:enter-start="opacity-0 -translate-y-4"
-                                      x-transition:enter-end="opacity-100 translate-y-0"
-                                      class="text-accent font-bold tracking-[0.2em] text-xs uppercase" x-text="slide.tag"></span>
+                                <span class="text-accent font-bold tracking-[0.2em] text-xs uppercase">{{ $slide->tag }}</span>
                                 
-                                <h1 x-show="activeSlide === index + 1"
-                                    x-transition:enter="transition ease-out duration-700 delay-500"
-                                    x-transition:enter-start="opacity-0 translate-y-8"
-                                    x-transition:enter-end="opacity-100 translate-y-0"
-                                    class="text-5xl sm:text-6xl lg:text-7xl font-extrabold leading-tight text-ink" x-html="slide.title"></h1>
+                                <h1 class="text-5xl sm:text-6xl lg:text-7xl font-extrabold leading-tight text-ink">{!! $slide->title !!}</h1>
                                 
-                                <p x-show="activeSlide === index + 1"
-                                   x-transition:enter="transition ease-out duration-700 delay-700"
-                                   x-transition:enter-start="opacity-0 translate-y-8"
-                                   x-transition:enter-end="opacity-100 translate-y-0"
-                                   class="text-lg sm:text-xl text-ink2 max-w-lg leading-relaxed font-body" x-text="slide.desc"></p>
+                                <p class="text-lg sm:text-xl text-ink2 max-w-lg leading-relaxed font-body">{{ $slide->description }}</p>
                             </div>
                             
-                            <div x-show="activeSlide === index + 1"
-                                 x-transition:enter="transition ease-out duration-700 delay-1000"
-                                 x-transition:enter-start="opacity-0 translate-y-8"
-                                 x-transition:enter-end="opacity-100 translate-y-0"
-                                 class="flex flex-wrap gap-4 pt-2">
+                            <div class="flex flex-wrap gap-4 pt-2">
                                 <a href="{{ route('register') }}" class="bg-primary text-white px-8 py-4 text-sm sm:text-base font-bold flex items-center gap-2 rounded-lg hover:opacity-90 hover:-translate-y-1 transition-all shadow-lg shadow-primary/20">
                                     Get Started
                                     <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
@@ -98,12 +91,10 @@
 
                         <!-- Image Side -->
                         <div class="relative order-1 lg:order-2">
-                            <div x-show="activeSlide === index + 1"
-                                 x-transition:enter="transition ease-out duration-1000 delay-300"
-                                 x-transition:enter-start="opacity-0 scale-90 rotate-3"
-                                 x-transition:enter-end="opacity-100 scale-100 rotate-0"
-                                 class="aspect-[4/3] lg:aspect-square bg-background-light border border-rule overflow-hidden rounded-2xl shadow-2xl group cursor-zoom-in">
-                                <img :src="slide.img" :alt="slide.tag" class="w-full h-full object-cover grayscale-[0.1] group-hover:grayscale-0 group-hover:scale-110 transition-all duration-1000" />
+                            <div class="aspect-[4/3] lg:aspect-square bg-background-light border border-rule overflow-hidden rounded-2xl shadow-2xl group cursor-zoom-in">
+                                <img src="{{ $slide->getFirstMediaUrl('background') ?: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=2671&auto=format&fit=crop' }}" 
+                                     alt="{{ $slide->tag }}" 
+                                     class="w-full h-full object-cover grayscale-[0.1] group-hover:grayscale-0 group-hover:scale-110 transition-all duration-700" />
                             </div>
                             <!-- Abstract decorative elements -->
                             <div class="hidden sm:block absolute -bottom-8 -right-8 w-40 h-40 border-2 border-primary/10 -z-10 rounded-full animate-pulse"></div>
@@ -111,20 +102,60 @@
                         </div>
                     </div>
                 </div>
-            </template>
+            @empty
+                <div class="absolute inset-0 w-full h-full flex items-center">
+                    <div class="w-full max-w-7xl mx-auto px-6 py-16 lg:py-32 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+                        <!-- Content Side -->
+                        <div class="flex flex-col gap-8 order-2 lg:order-1">
+                            <div class="flex flex-col gap-6">
+                                <span class="text-accent font-bold tracking-[0.2em] text-xs uppercase">Online Learning Platform</span>
+                                
+                                <h1 class="text-5xl sm:text-6xl lg:text-7xl font-extrabold leading-tight text-ink">Learn without <span class="text-accent">limits.</span></h1>
+                                
+                                <p class="text-lg sm:text-xl text-ink2 max-w-lg leading-relaxed font-body">Experience the future of education with our expert-led courses designed for your success.</p>
+                            </div>
+                            
+                            <div class="flex flex-wrap gap-4 pt-2">
+                                <a href="{{ route('register') }}" class="bg-primary text-white px-8 py-4 text-sm sm:text-base font-bold flex items-center gap-2 rounded-lg hover:opacity-90 hover:-translate-y-1 transition-all shadow-lg shadow-primary/20">
+                                    Get Started
+                                    <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+                                </a>
+                                <a href="{{ route('courses.index') }}" class="border-2 border-rule text-ink px-8 py-4 text-sm sm:text-base font-bold rounded-lg hover:bg-ink hover:text-white hover:-translate-y-1 transition-all">
+                                    View Courses
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Image Side -->
+                        <div class="relative order-1 lg:order-2">
+                            <div class="aspect-[4/3] lg:aspect-square bg-background-light border border-rule overflow-hidden rounded-2xl shadow-2xl group cursor-zoom-in">
+                                <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=2671&auto=format&fit=crop" 
+                                     alt="Online Learning Platform" 
+                                     class="w-full h-full object-cover grayscale-[0.1] group-hover:grayscale-0 group-hover:scale-110 transition-all duration-700" />
+                            </div>
+                            <!-- Abstract decorative elements -->
+                            <div class="hidden sm:block absolute -bottom-8 -right-8 w-40 h-40 border-2 border-primary/10 -z-10 rounded-full animate-pulse"></div>
+                            <div class="hidden sm:block absolute -top-8 -left-8 w-24 h-24 bg-accent/5 -z-10 rounded-xl rotate-12"></div>
+                        </div>
+                    </div>
+                </div>
+            @endforelse
         </div>
 
         <!-- Pagination Dots -->
+        @if($slides->count() > 1)
         <div class="absolute bottom-10 left-1/2 -translate-x-1/2 flex items-center gap-4 z-40">
-            <template x-for="(slide, index) in slides" :key="index">
-                <button @click="activeSlide = index + 1; resetAutoplay();" 
+            @foreach($slides as $index => $slide)
+                <button @click="activeSlide = {{ $index + 1 }}; resetAutoplay();" 
                         class="h-1.5 rounded-full transition-all duration-500"
-                        :class="activeSlide === index + 1 ? 'w-10 bg-primary' : 'w-4 bg-rule hover:bg-ink/20'"
-                        :aria-label="`Go to slide ${index + 1}`"></button>
-            </template>
+                        :class="activeSlide === {{ $index + 1 }} ? 'w-10 bg-primary' : 'w-4 bg-rule hover:bg-ink/20'"
+                        aria-label="Go to slide {{ $index + 1 }}"></button>
+            @endforeach
         </div>
+        @endif
 
         <!-- Navigation Arrows -->
+        @if($slides->count() > 1)
         <div class="hidden md:flex absolute inset-y-0 left-0 right-0 items-center justify-between px-8 pointer-events-none z-50">
             <button @click="prev(); resetAutoplay();" 
                     class="pointer-events-auto group relative size-14 flex items-center justify-center rounded-full bg-white/90 backdrop-blur-md border border-rule shadow-xl hover:bg-primary hover:text-white transition-all transform hover:scale-110 active:scale-95"
@@ -137,6 +168,7 @@
                 <span class="material-symbols-outlined text-[28px] group-hover:translate-x-1 transition-transform">chevron_right</span>
             </button>
         </div>
+        @endif
     </section>
 
     <!-- Stats Bar -->

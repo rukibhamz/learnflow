@@ -74,10 +74,6 @@ if (!$hasKey || !file_exists(__DIR__ . '/storage/framework/installed')) {
 
         if ($modified) {
             file_put_contents(__DIR__ . '/.env', $envContent);
-            // If we modified critical env, clear "installed" to be safe
-            if (file_exists(__DIR__ . '/storage/framework/installed')) {
-                @unlink(__DIR__ . '/storage/framework/installed');
-            }
         }
     }
 

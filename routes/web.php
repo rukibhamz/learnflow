@@ -37,7 +37,7 @@ Route::middleware(['web'])->group(function () {
 Route::post('webhooks/stripe', [StripeWebhookController::class, 'handle'])
     ->name('webhooks.stripe');
 
-Route::middleware(['web', \App\Http\Middleware\RedirectIfNotInstalled::class])->group(function () {
+Route::middleware(['web'])->group(function () {
     // Public routes
     Route::get('/', function () {
         $slides = \App\Models\HeroSlide::where('is_active', true)->orderBy('order')->get();
