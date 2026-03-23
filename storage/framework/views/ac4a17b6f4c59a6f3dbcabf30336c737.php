@@ -1,26 +1,27 @@
-@extends('layouts.admin')
 
-@section('title', 'Admin Settings')
 
-@section('content')
-@php
+<?php $__env->startSection('title', 'Admin Settings'); ?>
+
+<?php $__env->startSection('content'); ?>
+<?php
     $currentCurrency = \App\Models\Setting::get('currency', \App\Models\Setting::get('payment_currency', 'USD'));
-@endphp
+?>
 <div class="max-w-5xl mx-auto space-y-8" x-data="{
     activeTab: 'general',
-    currencyValue: '{{ $currentCurrency }}',
-    siteColor: '{{ \App\Models\Setting::get('site_color', '#1a42e0') }}',
-    stripe: {{ \App\Models\Setting::get('stripe_enabled', '0') ? 'true' : 'false' }},
-    paypal: {{ \App\Models\Setting::get('paypal_enabled', '0') ? 'true' : 'false' }},
-    paystack: {{ \App\Models\Setting::get('paystack_enabled', '0') ? 'true' : 'false' }},
-    flutterwave: {{ \App\Models\Setting::get('flutterwave_enabled', '0') ? 'true' : 'false' }},
-    razorpay: {{ \App\Models\Setting::get('razorpay_enabled', '0') ? 'true' : 'false' }}
+    currencyValue: '<?php echo e($currentCurrency); ?>',
+    siteColor: '<?php echo e(\App\Models\Setting::get('site_color', '#1a42e0')); ?>',
+    stripe: <?php echo e(\App\Models\Setting::get('stripe_enabled', '0') ? 'true' : 'false'); ?>,
+    paypal: <?php echo e(\App\Models\Setting::get('paypal_enabled', '0') ? 'true' : 'false'); ?>,
+    paystack: <?php echo e(\App\Models\Setting::get('paystack_enabled', '0') ? 'true' : 'false'); ?>,
+    flutterwave: <?php echo e(\App\Models\Setting::get('flutterwave_enabled', '0') ? 'true' : 'false'); ?>,
+    razorpay: <?php echo e(\App\Models\Setting::get('razorpay_enabled', '0') ? 'true' : 'false'); ?>
+
 }">
     <!-- Breadcrumbs & Header -->
     <div class="flex items-center justify-between">
         <div class="space-y-1">
             <nav class="flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-ink3 mb-2 font-poppins">
-                <a href="{{ route('admin.dashboard') }}" class="hover:text-primary transition-colors uppercase">Admin</a>
+                <a href="<?php echo e(route('admin.dashboard')); ?>" class="hover:text-primary transition-colors uppercase">Admin</a>
                 <span class="material-symbols-outlined text-[14px]">chevron_right</span>
                 <span class="text-ink uppercase">Settings</span>
             </nav>
@@ -68,23 +69,25 @@
         </button>
     </div>
 
-    @if (session('success'))
+    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(session('success')): ?>
         <div class="p-4 bg-green-50 border border-green-100 rounded-lg text-sm text-green-800 font-sans flex items-center gap-3">
             <span class="material-symbols-outlined text-[18px]">check_circle</span>
-            {{ session('success') }}
+            <?php echo e(session('success')); ?>
+
         </div>
-    @endif
+    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
     
-    @if (session('error'))
+    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(session('error')): ?>
         <div class="p-4 bg-red-50 border border-red-100 rounded-lg text-sm text-red-800 font-sans flex items-center gap-3">
             <span class="material-symbols-outlined text-[18px]">error</span>
-            {{ session('error') }}
+            <?php echo e(session('error')); ?>
+
         </div>
-    @endif
+    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
     <div class="bg-surface border border-rule rounded-xl overflow-hidden shadow-sm">
-        <form method="POST" action="{{ route('admin.settings.update') }}" enctype="multipart/form-data" @submit="document.getElementById('currency-hidden').value = currencyValue">
-            @csrf
+        <form method="POST" action="<?php echo e(route('admin.settings.update')); ?>" enctype="multipart/form-data" @submit="document.getElementById('currency-hidden').value = currencyValue">
+            <?php echo csrf_field(); ?>
             <input type="hidden" id="currency-hidden" name="currency" :value="currencyValue">
             
             <!-- General Tab -->
@@ -102,7 +105,7 @@
                                 <p class="text-[12px] text-ink3 font-sans leading-relaxed">The primary contact address for student inquiries.</p>
                             </div>
                             <div class="md:w-1/2">
-                                <input type="email" name="support_email" value="{{ \App\Models\Setting::get('support_email', 'support@learnflow.ai') }}" 
+                                <input type="email" name="support_email" value="<?php echo e(\App\Models\Setting::get('support_email', 'support@learnflow.ai')); ?>" 
                                        class="w-full h-12 border border-rule rounded-lg px-4 font-sans text-[14px] focus:ring-1 focus:ring-primary/30 outline-none transition-shadow" placeholder="support@learnflow.edu">
                             </div>
                         </div>
@@ -115,8 +118,8 @@
                             </div>
                             <div class="md:w-1/2">
                                 <select name="timezone" class="w-full h-12 border border-rule rounded-lg px-4 font-sans text-[14px] focus:ring-1 focus:ring-primary/30 outline-none cursor-pointer">
-                                    <option value="UTC" {{ \App\Models\Setting::get('timezone') == 'UTC' ? 'selected' : '' }}>UTC</option>
-                                    <option value="America/New_York" {{ \App\Models\Setting::get('timezone') == 'America/New_York' ? 'selected' : '' }}>Eastern Time (US & Canada)</option>
+                                    <option value="UTC" <?php echo e(\App\Models\Setting::get('timezone') == 'UTC' ? 'selected' : ''); ?>>UTC</option>
+                                    <option value="America/New_York" <?php echo e(\App\Models\Setting::get('timezone') == 'America/New_York' ? 'selected' : ''); ?>>Eastern Time (US & Canada)</option>
                                 </select>
                             </div>
                         </div>
@@ -128,18 +131,18 @@
                                 <p class="text-[12px] text-ink3 font-sans leading-relaxed">Default currency for course prices, orders, and payouts across the platform.</p>
                             </div>
                             <div class="md:w-1/2">
-                                @php $currency = \App\Models\Setting::get('currency', \App\Models\Setting::get('payment_currency', 'USD')); @endphp
+                                <?php $currency = \App\Models\Setting::get('currency', \App\Models\Setting::get('payment_currency', 'USD')); ?>
                                 <select name="currency_display" x-model="currencyValue" class="w-full h-12 border border-rule rounded-lg px-4 font-sans text-[14px] focus:ring-1 focus:ring-primary/30 outline-none cursor-pointer">
-                                    <option value="USD" {{ $currency === 'USD' ? 'selected' : '' }}>USD – US Dollar ($)</option>
-                                    <option value="EUR" {{ $currency === 'EUR' ? 'selected' : '' }}>EUR – Euro (€)</option>
-                                    <option value="GBP" {{ $currency === 'GBP' ? 'selected' : '' }}>GBP – British Pound (£)</option>
-                                    <option value="CAD" {{ $currency === 'CAD' ? 'selected' : '' }}>CAD – Canadian Dollar (CA$)</option>
-                                    <option value="AUD" {{ $currency === 'AUD' ? 'selected' : '' }}>AUD – Australian Dollar (A$)</option>
-                                    <option value="NGN" {{ $currency === 'NGN' ? 'selected' : '' }}>NGN – Nigerian Naira (₦)</option>
-                                    <option value="GHS" {{ $currency === 'GHS' ? 'selected' : '' }}>GHS – Ghanaian Cedi (₵)</option>
-                                    <option value="KES" {{ $currency === 'KES' ? 'selected' : '' }}>KES – Kenyan Shilling (KSh)</option>
-                                    <option value="ZAR" {{ $currency === 'ZAR' ? 'selected' : '' }}>ZAR – South African Rand (R)</option>
-                                    <option value="INR" {{ $currency === 'INR' ? 'selected' : '' }}>INR – Indian Rupee (₹)</option>
+                                    <option value="USD" <?php echo e($currency === 'USD' ? 'selected' : ''); ?>>USD – US Dollar ($)</option>
+                                    <option value="EUR" <?php echo e($currency === 'EUR' ? 'selected' : ''); ?>>EUR – Euro (€)</option>
+                                    <option value="GBP" <?php echo e($currency === 'GBP' ? 'selected' : ''); ?>>GBP – British Pound (£)</option>
+                                    <option value="CAD" <?php echo e($currency === 'CAD' ? 'selected' : ''); ?>>CAD – Canadian Dollar (CA$)</option>
+                                    <option value="AUD" <?php echo e($currency === 'AUD' ? 'selected' : ''); ?>>AUD – Australian Dollar (A$)</option>
+                                    <option value="NGN" <?php echo e($currency === 'NGN' ? 'selected' : ''); ?>>NGN – Nigerian Naira (₦)</option>
+                                    <option value="GHS" <?php echo e($currency === 'GHS' ? 'selected' : ''); ?>>GHS – Ghanaian Cedi (₵)</option>
+                                    <option value="KES" <?php echo e($currency === 'KES' ? 'selected' : ''); ?>>KES – Kenyan Shilling (KSh)</option>
+                                    <option value="ZAR" <?php echo e($currency === 'ZAR' ? 'selected' : ''); ?>>ZAR – South African Rand (R)</option>
+                                    <option value="INR" <?php echo e($currency === 'INR' ? 'selected' : ''); ?>>INR – Indian Rupee (₹)</option>
                                 </select>
                             </div>
                         </div>
@@ -157,7 +160,7 @@
                             </div>
                             <label class="relative inline-flex items-center cursor-pointer">
                                 <input type="hidden" name="maintenance_mode" value="0">
-                                <input type="checkbox" name="maintenance_mode" value="1" {{ \App\Models\Setting::get('maintenance_mode') ? 'checked' : '' }} class="sr-only peer">
+                                <input type="checkbox" name="maintenance_mode" value="1" <?php echo e(\App\Models\Setting::get('maintenance_mode') ? 'checked' : ''); ?> class="sr-only peer">
                                 <div class="w-11 h-6 bg-rule peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
                             </label>
                         </div>
@@ -170,7 +173,7 @@
                             </div>
                             <div class="md:w-1/2">
                                 <input type="text" name="maintenance_coming_soon_title"
-                                    value="{{ \App\Models\Setting::get('maintenance_coming_soon_title', 'Coming Soon') }}"
+                                    value="<?php echo e(\App\Models\Setting::get('maintenance_coming_soon_title', 'Coming Soon')); ?>"
                                     class="w-full h-12 border border-rule rounded-lg px-4 font-sans text-[14px] focus:ring-1 focus:ring-primary/30 outline-none transition-shadow"
                                     placeholder="Coming Soon">
                             </div>
@@ -184,7 +187,7 @@
                             <div class="md:w-1/2">
                                 <textarea name="maintenance_coming_soon_message" rows="3"
                                     class="w-full border border-rule rounded-lg px-4 py-3 font-sans text-[14px] focus:ring-1 focus:ring-primary/30 outline-none transition-shadow resize-none"
-                                    placeholder="Our courses are coming soon. We're working hard to bring you something great — check back soon.">{{ \App\Models\Setting::get('maintenance_coming_soon_message', '') }}</textarea>
+                                    placeholder="Our courses are coming soon. We're working hard to bring you something great — check back soon."><?php echo e(\App\Models\Setting::get('maintenance_coming_soon_message', '')); ?></textarea>
                             </div>
                         </div>
                     </div>
@@ -204,7 +207,7 @@
                                 <p class="text-[12px] text-ink3 font-sans leading-relaxed">Replaces "LearnFlow" throughout the site (header, footer, titles).</p>
                             </div>
                             <div class="md:w-1/2">
-                                <input type="text" name="site_name" value="{{ \App\Models\Setting::get('site_name', config('app.name')) }}" 
+                                <input type="text" name="site_name" value="<?php echo e(\App\Models\Setting::get('site_name', config('app.name'))); ?>" 
                                        class="w-full h-12 border border-rule rounded-lg px-4 font-sans text-[14px] focus:ring-1 focus:ring-primary/30 outline-none transition-shadow" placeholder="LearnFlow Academy">
                             </div>
                         </div>
@@ -232,10 +235,10 @@
                                 <p class="text-[12px] text-ink3 font-sans leading-relaxed">Upload a logo to replace the site name in the header. Recommended: PNG or SVG, max height 40px.</p>
                             </div>
                             <div class="md:w-1/2 space-y-4">
-                                @php $logoUrl = \App\Models\Setting::get('site_logo') ? \Illuminate\Support\Facades\Storage::disk('public')->url(\App\Models\Setting::get('site_logo')) : null; @endphp
-                                @if($logoUrl)
+                                <?php $logoUrl = \App\Models\Setting::get('site_logo') ? \Illuminate\Support\Facades\Storage::disk('public')->url(\App\Models\Setting::get('site_logo')) : null; ?>
+                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($logoUrl): ?>
                                     <div class="flex items-center gap-4">
-                                        <img src="{{ $logoUrl }}" alt="Current logo" class="h-10 object-contain object-left max-w-[200px] border border-rule rounded-lg p-1 bg-white">
+                                        <img src="<?php echo e($logoUrl); ?>" alt="Current logo" class="h-10 object-contain object-left max-w-[200px] border border-rule rounded-lg p-1 bg-white">
                                         <label class="cursor-pointer">
                                             <span class="inline-flex items-center px-4 py-2 border border-rule rounded-lg text-sm font-medium hover:bg-bg transition-colors">Replace</span>
                                             <input type="file" name="site_logo" accept="image/*" class="sr-only">
@@ -245,7 +248,7 @@
                                             <span class="text-sm font-medium text-red-600">Remove logo</span>
                                         </label>
                                     </div>
-                                @else
+                                <?php else: ?>
                                     <label class="cursor-pointer block">
                                         <span class="inline-flex items-center gap-2 px-4 py-3 border-2 border-dashed border-rule rounded-lg text-sm font-medium text-ink3 hover:border-ink2 hover:text-ink2 transition-colors">
                                             <span class="material-symbols-outlined text-[20px]">upload</span>
@@ -253,7 +256,7 @@
                                         </span>
                                         <input type="file" name="site_logo" accept="image/*" class="sr-only">
                                     </label>
-                                @endif
+                                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                             </div>
                         </div>
 
@@ -264,10 +267,10 @@
                                 <p class="text-[12px] text-ink3 font-sans leading-relaxed">Upload a favicon for your browser tab. Recommended: 32x32px, PNG or ICO format.</p>
                             </div>
                             <div class="md:w-1/2 space-y-4">
-                                @php $faviconUrl = \App\Models\Setting::get('site_favicon') ? \Illuminate\Support\Facades\Storage::disk('public')->url(\App\Models\Setting::get('site_favicon')) : null; @endphp
-                                @if($faviconUrl)
+                                <?php $faviconUrl = \App\Models\Setting::get('site_favicon') ? \Illuminate\Support\Facades\Storage::disk('public')->url(\App\Models\Setting::get('site_favicon')) : null; ?>
+                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($faviconUrl): ?>
                                     <div class="flex items-center gap-4">
-                                        <img src="{{ $faviconUrl }}" alt="Current favicon" class="size-10 object-contain border border-rule rounded-lg p-2 bg-white">
+                                        <img src="<?php echo e($faviconUrl); ?>" alt="Current favicon" class="size-10 object-contain border border-rule rounded-lg p-2 bg-white">
                                         <label class="cursor-pointer">
                                             <span class="inline-flex items-center px-4 py-2 border border-rule rounded-lg text-sm font-medium hover:bg-bg transition-colors">Replace</span>
                                             <input type="file" name="site_favicon" accept="image/*" class="sr-only">
@@ -277,7 +280,7 @@
                                             <span class="text-sm font-medium text-red-600">Remove favicon</span>
                                         </label>
                                     </div>
-                                @else
+                                <?php else: ?>
                                     <label class="cursor-pointer block">
                                         <span class="inline-flex items-center gap-2 px-4 py-3 border-2 border-dashed border-rule rounded-lg text-sm font-medium text-ink3 hover:border-ink2 hover:text-ink2 transition-colors">
                                             <span class="material-symbols-outlined text-[20px]">upload</span>
@@ -285,7 +288,7 @@
                                         </span>
                                         <input type="file" name="site_favicon" accept="image/*" class="sr-only">
                                     </label>
-                                @endif
+                                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                             </div>
                         </div>
                     </div>
@@ -294,7 +297,7 @@
 
             <!-- Email Tab -->
             <div x-show="activeTab === 'email'" class="p-10 space-y-12">
-                <div class="space-y-10" x-data="{ mailer: '{{ \App\Models\Setting::get('mail_mailer', config('mail.default')) }}' }">
+                <div class="space-y-10" x-data="{ mailer: '<?php echo e(\App\Models\Setting::get('mail_mailer', config('mail.default'))); ?>' }">
                     <div class="flex items-center justify-between border-b border-rule pb-3">
                         <h3 class="font-poppins font-bold text-[11px] uppercase tracking-widest text-ink3">SMTP Settings</h3>
                         <button type="button" @click="$dispatch('open-modal', 'test-email-modal')" class="text-[10px] font-bold text-primary uppercase tracking-widest hover:opacity-80 transition-opacity font-poppins">Send Test Email</button>
@@ -324,9 +327,9 @@
                             </div>
                             <div class="md:w-1/2">
                                 <select name="mail_encryption" class="w-full h-12 border border-rule rounded-lg px-4 font-sans text-[14px] focus:ring-1 focus:ring-primary/30 outline-none">
-                                    <option value="tls" {{ \App\Models\Setting::get('mail_encryption') == 'tls' ? 'selected' : '' }}>TLS</option>
-                                    <option value="ssl" {{ \App\Models\Setting::get('mail_encryption') == 'ssl' ? 'selected' : '' }}>SSL</option>
-                                    <option value="null" {{ \App\Models\Setting::get('mail_encryption') == 'null' ? 'selected' : '' }}>None</option>
+                                    <option value="tls" <?php echo e(\App\Models\Setting::get('mail_encryption') == 'tls' ? 'selected' : ''); ?>>TLS</option>
+                                    <option value="ssl" <?php echo e(\App\Models\Setting::get('mail_encryption') == 'ssl' ? 'selected' : ''); ?>>SSL</option>
+                                    <option value="null" <?php echo e(\App\Models\Setting::get('mail_encryption') == 'null' ? 'selected' : ''); ?>>None</option>
                                 </select>
                             </div>
                         </div>
@@ -339,7 +342,7 @@
                                         <p class="text-[12px] text-ink3 font-sans leading-relaxed">Your mail server address (e.g., <code>mail.example.com</code>). <strong>Do not include <code>ssl://</code></strong>.</p>
                                     </div>
                                     <div class="md:w-1/2">
-                                        <input type="text" name="mail_host" value="{{ \App\Models\Setting::get('mail_host', config('mail.mailers.smtp.host')) }}" 
+                                        <input type="text" name="mail_host" value="<?php echo e(\App\Models\Setting::get('mail_host', config('mail.mailers.smtp.host'))); ?>" 
                                                class="w-full h-12 border border-rule rounded-lg px-4 font-sans text-[14px] focus:ring-1 focus:ring-primary/30 outline-none transition-shadow" placeholder="smtp.postmarkapp.com">
                                     </div>
                                 </div>
@@ -349,7 +352,7 @@
                                         <p class="text-[12px] text-ink2 font-sans leading-relaxed"><strong>Common Ports:</strong><br>• 465 (requires <strong>SSL</strong> encryption)<br>• 587 (requires <strong>TLS</strong> encryption)</p>
                                     </div>
                                     <div class="md:w-1/2">
-                                        <input type="text" name="mail_port" value="{{ \App\Models\Setting::get('mail_port', config('mail.mailers.smtp.port')) }}" 
+                                        <input type="text" name="mail_port" value="<?php echo e(\App\Models\Setting::get('mail_port', config('mail.mailers.smtp.port'))); ?>" 
                                                class="w-full h-12 border border-rule rounded-lg px-4 font-sans text-[14px] focus:ring-1 focus:ring-primary/30 outline-none transition-shadow" placeholder="587">
                                     </div>
                                 </div>
@@ -359,7 +362,7 @@
                                         <p class="text-[12px] text-ink3 font-sans leading-relaxed">Your SMTP server username.</p>
                                     </div>
                                     <div class="md:w-1/2">
-                                        <input type="text" name="mail_username" value="{{ \App\Models\Setting::get('mail_username', config('mail.mailers.smtp.username')) }}" 
+                                        <input type="text" name="mail_username" value="<?php echo e(\App\Models\Setting::get('mail_username', config('mail.mailers.smtp.username'))); ?>" 
                                                class="w-full h-12 border border-rule rounded-lg px-4 font-sans text-[14px] focus:ring-1 focus:ring-primary/30 outline-none transition-shadow" placeholder="username@example.com">
                                     </div>
                                 </div>
@@ -369,7 +372,7 @@
                                         <p class="text-[12px] text-ink3 font-sans leading-relaxed">Your SMTP server password.</p>
                                     </div>
                                     <div class="md:w-1/2">
-                                        <input type="password" name="mail_password" value="{{ \App\Models\Setting::get('mail_password', config('mail.mailers.smtp.password')) }}" 
+                                        <input type="password" name="mail_password" value="<?php echo e(\App\Models\Setting::get('mail_password', config('mail.mailers.smtp.password'))); ?>" 
                                                class="w-full h-12 border border-rule rounded-lg px-4 font-sans text-[14px] focus:ring-1 focus:ring-primary/30 outline-none transition-shadow" placeholder="••••••••••••">
                                     </div>
                                 </div>
@@ -385,7 +388,7 @@
                                     <p class="text-[12px] text-ink3 font-sans leading-relaxed">The email address system emails are sent from.</p>
                                 </div>
                                 <div class="md:w-1/2">
-                                    <input type="email" name="mail_from_address" value="{{ \App\Models\Setting::get('mail_from_address', config('mail.from.address')) }}" 
+                                    <input type="email" name="mail_from_address" value="<?php echo e(\App\Models\Setting::get('mail_from_address', config('mail.from.address'))); ?>" 
                                            class="w-full h-12 border border-rule rounded-lg px-4 font-sans text-[14px] focus:ring-1 focus:ring-primary/30 outline-none transition-shadow" placeholder="noreply@learnflow.ai">
                                 </div>
                             </div>
@@ -396,7 +399,7 @@
                                     <p class="text-[12px] text-ink3 font-sans leading-relaxed">The name system emails are sent from.</p>
                                 </div>
                                 <div class="md:w-1/2">
-                                    <input type="text" name="mail_from_name" value="{{ \App\Models\Setting::get('mail_from_name', config('mail.from.name')) }}" 
+                                    <input type="text" name="mail_from_name" value="<?php echo e(\App\Models\Setting::get('mail_from_name', config('mail.from.name'))); ?>" 
                                            class="w-full h-12 border border-rule rounded-lg px-4 font-sans text-[14px] focus:ring-1 focus:ring-primary/30 outline-none transition-shadow" placeholder="LearnFlow Academy">
                                 </div>
                             </div>
@@ -409,7 +412,7 @@
                             </div>
                             <label class="relative inline-flex items-center cursor-pointer">
                                 <input type="hidden" name="mail_require_verification" value="0">
-                                <input type="checkbox" name="mail_require_verification" value="1" {{ \App\Models\Setting::get('mail_require_verification', '1') ? 'checked' : '' }} class="sr-only peer">
+                                <input type="checkbox" name="mail_require_verification" value="1" <?php echo e(\App\Models\Setting::get('mail_require_verification', '1') ? 'checked' : ''); ?> class="sr-only peer">
                                 <div class="w-11 h-6 bg-rule peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
                             </label>
                         </div>
@@ -421,7 +424,7 @@
                             </div>
                             <label class="relative inline-flex items-center cursor-pointer">
                                 <input type="hidden" name="mail_use_ssl" value="0">
-                                <input type="checkbox" name="mail_use_ssl" value="1" {{ \App\Models\Setting::get('mail_use_ssl') ? 'checked' : '' }} class="sr-only peer">
+                                <input type="checkbox" name="mail_use_ssl" value="1" <?php echo e(\App\Models\Setting::get('mail_use_ssl') ? 'checked' : ''); ?> class="sr-only peer">
                                 <div class="w-11 h-6 bg-rule peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
                             </label>
                         </div>
@@ -432,7 +435,7 @@
             <!-- Payment Tab -->
             <div x-show="activeTab === 'payment'" class="p-10 space-y-12">
 
-                {{-- Default Gateway --}}
+                
                 <div class="space-y-6">
                     <h3 class="font-poppins font-bold text-[11px] uppercase tracking-widest text-ink3 border-b border-rule pb-3">Default Payment Gateway</h3>
                     <div class="flex flex-col md:flex-row md:items-start gap-6">
@@ -442,12 +445,12 @@
                         </div>
                         <div class="md:w-1/2">
                             <select name="default_payment_gateway" class="w-full h-12 border border-rule rounded-lg px-4 font-sans text-[14px] focus:ring-1 focus:ring-primary/30 outline-none cursor-pointer">
-                                @php $defaultGw = \App\Models\Setting::get('default_payment_gateway', 'stripe'); @endphp
-                                <option value="stripe" {{ $defaultGw === 'stripe' ? 'selected' : '' }}>Stripe</option>
-                                <option value="paypal" {{ $defaultGw === 'paypal' ? 'selected' : '' }}>PayPal</option>
-                                <option value="paystack" {{ $defaultGw === 'paystack' ? 'selected' : '' }}>Paystack</option>
-                                <option value="flutterwave" {{ $defaultGw === 'flutterwave' ? 'selected' : '' }}>Flutterwave</option>
-                                <option value="razorpay" {{ $defaultGw === 'razorpay' ? 'selected' : '' }}>Razorpay</option>
+                                <?php $defaultGw = \App\Models\Setting::get('default_payment_gateway', 'stripe'); ?>
+                                <option value="stripe" <?php echo e($defaultGw === 'stripe' ? 'selected' : ''); ?>>Stripe</option>
+                                <option value="paypal" <?php echo e($defaultGw === 'paypal' ? 'selected' : ''); ?>>PayPal</option>
+                                <option value="paystack" <?php echo e($defaultGw === 'paystack' ? 'selected' : ''); ?>>Paystack</option>
+                                <option value="flutterwave" <?php echo e($defaultGw === 'flutterwave' ? 'selected' : ''); ?>>Flutterwave</option>
+                                <option value="razorpay" <?php echo e($defaultGw === 'razorpay' ? 'selected' : ''); ?>>Razorpay</option>
                             </select>
                         </div>
                     </div>
@@ -458,23 +461,23 @@
                         </div>
                         <div class="md:w-1/2">
                             <select x-model="currencyValue" class="w-full h-12 border border-rule rounded-lg px-4 font-sans text-[14px] focus:ring-1 focus:ring-primary/30 outline-none cursor-pointer">
-                                @php $currency = \App\Models\Setting::get('currency', \App\Models\Setting::get('payment_currency', 'USD')); @endphp
-                                <option value="USD" {{ $currency === 'USD' ? 'selected' : '' }}>USD - US Dollar</option>
-                                <option value="EUR" {{ $currency === 'EUR' ? 'selected' : '' }}>EUR - Euro</option>
-                                <option value="GBP" {{ $currency === 'GBP' ? 'selected' : '' }}>GBP - British Pound</option>
-                                <option value="NGN" {{ $currency === 'NGN' ? 'selected' : '' }}>NGN - Nigerian Naira</option>
-                                <option value="GHS" {{ $currency === 'GHS' ? 'selected' : '' }}>GHS - Ghanaian Cedi</option>
-                                <option value="KES" {{ $currency === 'KES' ? 'selected' : '' }}>KES - Kenyan Shilling</option>
-                                <option value="ZAR" {{ $currency === 'ZAR' ? 'selected' : '' }}>ZAR - South African Rand</option>
-                                <option value="INR" {{ $currency === 'INR' ? 'selected' : '' }}>INR - Indian Rupee</option>
-                                <option value="CAD" {{ $currency === 'CAD' ? 'selected' : '' }}>CAD - Canadian Dollar</option>
-                                <option value="AUD" {{ $currency === 'AUD' ? 'selected' : '' }}>AUD - Australian Dollar</option>
+                                <?php $currency = \App\Models\Setting::get('currency', \App\Models\Setting::get('payment_currency', 'USD')); ?>
+                                <option value="USD" <?php echo e($currency === 'USD' ? 'selected' : ''); ?>>USD - US Dollar</option>
+                                <option value="EUR" <?php echo e($currency === 'EUR' ? 'selected' : ''); ?>>EUR - Euro</option>
+                                <option value="GBP" <?php echo e($currency === 'GBP' ? 'selected' : ''); ?>>GBP - British Pound</option>
+                                <option value="NGN" <?php echo e($currency === 'NGN' ? 'selected' : ''); ?>>NGN - Nigerian Naira</option>
+                                <option value="GHS" <?php echo e($currency === 'GHS' ? 'selected' : ''); ?>>GHS - Ghanaian Cedi</option>
+                                <option value="KES" <?php echo e($currency === 'KES' ? 'selected' : ''); ?>>KES - Kenyan Shilling</option>
+                                <option value="ZAR" <?php echo e($currency === 'ZAR' ? 'selected' : ''); ?>>ZAR - South African Rand</option>
+                                <option value="INR" <?php echo e($currency === 'INR' ? 'selected' : ''); ?>>INR - Indian Rupee</option>
+                                <option value="CAD" <?php echo e($currency === 'CAD' ? 'selected' : ''); ?>>CAD - Canadian Dollar</option>
+                                <option value="AUD" <?php echo e($currency === 'AUD' ? 'selected' : ''); ?>>AUD - Australian Dollar</option>
                             </select>
                         </div>
                     </div>
                 </div>
 
-                {{-- ===== STRIPE ===== --}}
+                
                 <div class="space-y-6 pt-4 border-t border-rule">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-4">
@@ -499,7 +502,7 @@
                                 <p class="text-[12px] text-ink3 font-sans leading-relaxed">Used for client-side tokenization.</p>
                             </div>
                             <div class="md:w-1/2">
-                                <input type="text" name="stripe_publishable_key" value="{{ \App\Models\Setting::get('stripe_publishable_key') }}"
+                                <input type="text" name="stripe_publishable_key" value="<?php echo e(\App\Models\Setting::get('stripe_publishable_key')); ?>"
                                        class="w-full h-12 border border-rule rounded-lg px-4 font-sans text-[14px] focus:ring-1 focus:ring-primary/30 outline-none transition-shadow" placeholder="pk_live_...">
                             </div>
                         </div>
@@ -509,7 +512,7 @@
                                 <p class="text-[12px] text-ink3 font-sans leading-relaxed">Used for server-side API requests.</p>
                             </div>
                             <div class="md:w-1/2">
-                                <input type="password" name="stripe_secret_key" value="{{ \App\Models\Setting::get('stripe_secret_key') }}"
+                                <input type="password" name="stripe_secret_key" value="<?php echo e(\App\Models\Setting::get('stripe_secret_key')); ?>"
                                        class="w-full h-12 border border-rule rounded-lg px-4 font-sans text-[14px] focus:ring-1 focus:ring-primary/30 outline-none transition-shadow" placeholder="sk_live_...">
                             </div>
                         </div>
@@ -519,14 +522,14 @@
                                 <p class="text-[12px] text-ink3 font-sans leading-relaxed">Securely verify Stripe webhooks.</p>
                             </div>
                             <div class="md:w-1/2">
-                                <input type="password" name="stripe_webhook_secret" value="{{ \App\Models\Setting::get('stripe_webhook_secret') }}"
+                                <input type="password" name="stripe_webhook_secret" value="<?php echo e(\App\Models\Setting::get('stripe_webhook_secret')); ?>"
                                        class="w-full h-12 border border-rule rounded-lg px-4 font-sans text-[14px] focus:ring-1 focus:ring-primary/30 outline-none transition-shadow" placeholder="whsec_...">
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {{-- ===== PAYPAL ===== --}}
+                
                 <div class="space-y-6 pt-4 border-t border-rule">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-4">
@@ -552,9 +555,9 @@
                             </div>
                             <div class="md:w-1/2">
                                 <select name="paypal_mode" class="w-full h-12 border border-rule rounded-lg px-4 font-sans text-[14px] focus:ring-1 focus:ring-primary/30 outline-none cursor-pointer">
-                                    @php $ppMode = \App\Models\Setting::get('paypal_mode', 'sandbox'); @endphp
-                                    <option value="sandbox" {{ $ppMode === 'sandbox' ? 'selected' : '' }}>Sandbox</option>
-                                    <option value="live" {{ $ppMode === 'live' ? 'selected' : '' }}>Live</option>
+                                    <?php $ppMode = \App\Models\Setting::get('paypal_mode', 'sandbox'); ?>
+                                    <option value="sandbox" <?php echo e($ppMode === 'sandbox' ? 'selected' : ''); ?>>Sandbox</option>
+                                    <option value="live" <?php echo e($ppMode === 'live' ? 'selected' : ''); ?>>Live</option>
                                 </select>
                             </div>
                         </div>
@@ -564,7 +567,7 @@
                                 <p class="text-[12px] text-ink3 font-sans leading-relaxed">From your PayPal Developer application credentials.</p>
                             </div>
                             <div class="md:w-1/2">
-                                <input type="text" name="paypal_client_id" value="{{ \App\Models\Setting::get('paypal_client_id') }}"
+                                <input type="text" name="paypal_client_id" value="<?php echo e(\App\Models\Setting::get('paypal_client_id')); ?>"
                                        class="w-full h-12 border border-rule rounded-lg px-4 font-sans text-[14px] focus:ring-1 focus:ring-primary/30 outline-none transition-shadow" placeholder="AZ...">
                             </div>
                         </div>
@@ -574,7 +577,7 @@
                                 <p class="text-[12px] text-ink3 font-sans leading-relaxed">Secret key from your PayPal Developer application.</p>
                             </div>
                             <div class="md:w-1/2">
-                                <input type="password" name="paypal_client_secret" value="{{ \App\Models\Setting::get('paypal_client_secret') }}"
+                                <input type="password" name="paypal_client_secret" value="<?php echo e(\App\Models\Setting::get('paypal_client_secret')); ?>"
                                        class="w-full h-12 border border-rule rounded-lg px-4 font-sans text-[14px] focus:ring-1 focus:ring-primary/30 outline-none transition-shadow" placeholder="EG...">
                             </div>
                         </div>
@@ -584,14 +587,14 @@
                                 <p class="text-[12px] text-ink3 font-sans leading-relaxed">Used to verify PayPal webhook event signatures.</p>
                             </div>
                             <div class="md:w-1/2">
-                                <input type="text" name="paypal_webhook_id" value="{{ \App\Models\Setting::get('paypal_webhook_id') }}"
+                                <input type="text" name="paypal_webhook_id" value="<?php echo e(\App\Models\Setting::get('paypal_webhook_id')); ?>"
                                        class="w-full h-12 border border-rule rounded-lg px-4 font-sans text-[14px] focus:ring-1 focus:ring-primary/30 outline-none transition-shadow" placeholder="WH-...">
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {{-- ===== PAYSTACK ===== --}}
+                
                 <div class="space-y-6 pt-4 border-t border-rule">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-4">
@@ -616,7 +619,7 @@
                                 <p class="text-[12px] text-ink3 font-sans leading-relaxed">Used to initialize Paystack inline checkout.</p>
                             </div>
                             <div class="md:w-1/2">
-                                <input type="text" name="paystack_public_key" value="{{ \App\Models\Setting::get('paystack_public_key') }}"
+                                <input type="text" name="paystack_public_key" value="<?php echo e(\App\Models\Setting::get('paystack_public_key')); ?>"
                                        class="w-full h-12 border border-rule rounded-lg px-4 font-sans text-[14px] focus:ring-1 focus:ring-primary/30 outline-none transition-shadow" placeholder="pk_live_...">
                             </div>
                         </div>
@@ -626,7 +629,7 @@
                                 <p class="text-[12px] text-ink3 font-sans leading-relaxed">Used for server-side API calls to Paystack.</p>
                             </div>
                             <div class="md:w-1/2">
-                                <input type="password" name="paystack_secret_key" value="{{ \App\Models\Setting::get('paystack_secret_key') }}"
+                                <input type="password" name="paystack_secret_key" value="<?php echo e(\App\Models\Setting::get('paystack_secret_key')); ?>"
                                        class="w-full h-12 border border-rule rounded-lg px-4 font-sans text-[14px] focus:ring-1 focus:ring-primary/30 outline-none transition-shadow" placeholder="sk_live_...">
                             </div>
                         </div>
@@ -636,14 +639,14 @@
                                 <p class="text-[12px] text-ink3 font-sans leading-relaxed">Validate incoming Paystack webhook payloads.</p>
                             </div>
                             <div class="md:w-1/2">
-                                <input type="password" name="paystack_webhook_secret" value="{{ \App\Models\Setting::get('paystack_webhook_secret') }}"
+                                <input type="password" name="paystack_webhook_secret" value="<?php echo e(\App\Models\Setting::get('paystack_webhook_secret')); ?>"
                                        class="w-full h-12 border border-rule rounded-lg px-4 font-sans text-[14px] focus:ring-1 focus:ring-primary/30 outline-none transition-shadow" placeholder="whsec_...">
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {{-- ===== FLUTTERWAVE ===== --}}
+                
                 <div class="space-y-6 pt-4 border-t border-rule">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-4">
@@ -668,7 +671,7 @@
                                 <p class="text-[12px] text-ink3 font-sans leading-relaxed">Used to initialize Flutterwave inline checkout.</p>
                             </div>
                             <div class="md:w-1/2">
-                                <input type="text" name="flutterwave_public_key" value="{{ \App\Models\Setting::get('flutterwave_public_key') }}"
+                                <input type="text" name="flutterwave_public_key" value="<?php echo e(\App\Models\Setting::get('flutterwave_public_key')); ?>"
                                        class="w-full h-12 border border-rule rounded-lg px-4 font-sans text-[14px] focus:ring-1 focus:ring-primary/30 outline-none transition-shadow" placeholder="FLWPUBK-...">
                             </div>
                         </div>
@@ -678,7 +681,7 @@
                                 <p class="text-[12px] text-ink3 font-sans leading-relaxed">Used for server-side verification and API calls.</p>
                             </div>
                             <div class="md:w-1/2">
-                                <input type="password" name="flutterwave_secret_key" value="{{ \App\Models\Setting::get('flutterwave_secret_key') }}"
+                                <input type="password" name="flutterwave_secret_key" value="<?php echo e(\App\Models\Setting::get('flutterwave_secret_key')); ?>"
                                        class="w-full h-12 border border-rule rounded-lg px-4 font-sans text-[14px] focus:ring-1 focus:ring-primary/30 outline-none transition-shadow" placeholder="FLWSECK-...">
                             </div>
                         </div>
@@ -688,7 +691,7 @@
                                 <p class="text-[12px] text-ink3 font-sans leading-relaxed">Used to encrypt payment payloads for extra security.</p>
                             </div>
                             <div class="md:w-1/2">
-                                <input type="password" name="flutterwave_encryption_key" value="{{ \App\Models\Setting::get('flutterwave_encryption_key') }}"
+                                <input type="password" name="flutterwave_encryption_key" value="<?php echo e(\App\Models\Setting::get('flutterwave_encryption_key')); ?>"
                                        class="w-full h-12 border border-rule rounded-lg px-4 font-sans text-[14px] focus:ring-1 focus:ring-primary/30 outline-none transition-shadow" placeholder="FLWSECK_...">
                             </div>
                         </div>
@@ -698,14 +701,14 @@
                                 <p class="text-[12px] text-ink3 font-sans leading-relaxed">Secret hash to verify Flutterwave webhook signatures.</p>
                             </div>
                             <div class="md:w-1/2">
-                                <input type="password" name="flutterwave_webhook_hash" value="{{ \App\Models\Setting::get('flutterwave_webhook_hash') }}"
+                                <input type="password" name="flutterwave_webhook_hash" value="<?php echo e(\App\Models\Setting::get('flutterwave_webhook_hash')); ?>"
                                        class="w-full h-12 border border-rule rounded-lg px-4 font-sans text-[14px] focus:ring-1 focus:ring-primary/30 outline-none transition-shadow" placeholder="your-secret-hash">
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {{-- ===== RAZORPAY ===== --}}
+                
                 <div class="space-y-6 pt-4 border-t border-rule">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-4">
@@ -730,7 +733,7 @@
                                 <p class="text-[12px] text-ink3 font-sans leading-relaxed">Your Razorpay API Key ID from the dashboard.</p>
                             </div>
                             <div class="md:w-1/2">
-                                <input type="text" name="razorpay_key_id" value="{{ \App\Models\Setting::get('razorpay_key_id') }}"
+                                <input type="text" name="razorpay_key_id" value="<?php echo e(\App\Models\Setting::get('razorpay_key_id')); ?>"
                                        class="w-full h-12 border border-rule rounded-lg px-4 font-sans text-[14px] focus:ring-1 focus:ring-primary/30 outline-none transition-shadow" placeholder="rzp_live_...">
                             </div>
                         </div>
@@ -740,7 +743,7 @@
                                 <p class="text-[12px] text-ink3 font-sans leading-relaxed">Your Razorpay API Key Secret for server-side operations.</p>
                             </div>
                             <div class="md:w-1/2">
-                                <input type="password" name="razorpay_key_secret" value="{{ \App\Models\Setting::get('razorpay_key_secret') }}"
+                                <input type="password" name="razorpay_key_secret" value="<?php echo e(\App\Models\Setting::get('razorpay_key_secret')); ?>"
                                        class="w-full h-12 border border-rule rounded-lg px-4 font-sans text-[14px] focus:ring-1 focus:ring-primary/30 outline-none transition-shadow" placeholder="••••••••••••">
                             </div>
                         </div>
@@ -750,7 +753,7 @@
                                 <p class="text-[12px] text-ink3 font-sans leading-relaxed">Used to verify webhook signatures from Razorpay.</p>
                             </div>
                             <div class="md:w-1/2">
-                                <input type="password" name="razorpay_webhook_secret" value="{{ \App\Models\Setting::get('razorpay_webhook_secret') }}"
+                                <input type="password" name="razorpay_webhook_secret" value="<?php echo e(\App\Models\Setting::get('razorpay_webhook_secret')); ?>"
                                        class="w-full h-12 border border-rule rounded-lg px-4 font-sans text-[14px] focus:ring-1 focus:ring-primary/30 outline-none transition-shadow" placeholder="whsec_...">
                             </div>
                         </div>
@@ -765,7 +768,7 @@
                     <h3 class="font-poppins font-bold text-[11px] uppercase tracking-widest text-ink3 border-b border-rule pb-3">Enrollment & Platform Features</h3>
                     
                     <div class="space-y-8">
-                        @php $instructorApprovals = \App\Models\Setting::get('feature_instructor_approvals', '1'); @endphp
+                        <?php $instructorApprovals = \App\Models\Setting::get('feature_instructor_approvals', '1'); ?>
                         <div class="flex items-center justify-between">
                             <div class="space-y-1">
                                 <span class="text-[13px] font-bold text-ink font-poppins">Instructor Approvals</span>
@@ -773,12 +776,12 @@
                             </div>
                             <label class="relative inline-flex items-center cursor-pointer">
                                 <input type="hidden" name="feature_instructor_approvals" value="0">
-                                <input type="checkbox" name="feature_instructor_approvals" value="1" {{ $instructorApprovals ? 'checked' : '' }} class="sr-only peer">
+                                <input type="checkbox" name="feature_instructor_approvals" value="1" <?php echo e($instructorApprovals ? 'checked' : ''); ?> class="sr-only peer">
                                 <div class="w-11 h-6 bg-rule peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
                             </label>
                         </div>
 
-                         @php $gamification = \App\Models\Setting::get('feature_gamification', '0'); @endphp
+                         <?php $gamification = \App\Models\Setting::get('feature_gamification', '0'); ?>
                          <div class="flex items-center justify-between pt-6 border-t border-rule/50">
                             <div class="space-y-1">
                                 <span class="text-[13px] font-bold text-ink font-poppins">Course Gamification</span>
@@ -786,7 +789,7 @@
                             </div>
                             <label class="relative inline-flex items-center cursor-pointer">
                                 <input type="hidden" name="feature_gamification" value="0">
-                                <input type="checkbox" name="feature_gamification" value="1" {{ $gamification ? 'checked' : '' }} class="sr-only peer">
+                                <input type="checkbox" name="feature_gamification" value="1" <?php echo e($gamification ? 'checked' : ''); ?> class="sr-only peer">
                                 <div class="w-11 h-6 bg-rule peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
                             </label>
                         </div>
@@ -806,7 +809,7 @@
                             </div>
                             <label class="relative inline-flex items-center cursor-pointer">
                                 <input type="hidden" name="notify_welcome_email" value="0">
-                                <input type="checkbox" name="notify_welcome_email" value="1" {{ \App\Models\Setting::get('notify_welcome_email', '1') ? 'checked' : '' }} class="sr-only peer">
+                                <input type="checkbox" name="notify_welcome_email" value="1" <?php echo e(\App\Models\Setting::get('notify_welcome_email', '1') ? 'checked' : ''); ?> class="sr-only peer">
                                 <div class="w-11 h-6 bg-rule peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
                             </label>
                         </div>
@@ -817,7 +820,7 @@
                             </div>
                             <label class="relative inline-flex items-center cursor-pointer">
                                 <input type="hidden" name="notify_enrollment_confirmation" value="0">
-                                <input type="checkbox" name="notify_enrollment_confirmation" value="1" {{ \App\Models\Setting::get('notify_enrollment_confirmation', '1') ? 'checked' : '' }} class="sr-only peer">
+                                <input type="checkbox" name="notify_enrollment_confirmation" value="1" <?php echo e(\App\Models\Setting::get('notify_enrollment_confirmation', '1') ? 'checked' : ''); ?> class="sr-only peer">
                                 <div class="w-11 h-6 bg-rule peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
                             </label>
                         </div>
@@ -828,7 +831,7 @@
                             </div>
                             <label class="relative inline-flex items-center cursor-pointer">
                                 <input type="hidden" name="notify_course_completion" value="0">
-                                <input type="checkbox" name="notify_course_completion" value="1" {{ \App\Models\Setting::get('notify_course_completion', '1') ? 'checked' : '' }} class="sr-only peer">
+                                <input type="checkbox" name="notify_course_completion" value="1" <?php echo e(\App\Models\Setting::get('notify_course_completion', '1') ? 'checked' : ''); ?> class="sr-only peer">
                                 <div class="w-11 h-6 bg-rule peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
                             </label>
                         </div>
@@ -839,7 +842,7 @@
                             </div>
                             <label class="relative inline-flex items-center cursor-pointer">
                                 <input type="hidden" name="notify_certificate_issued" value="0">
-                                <input type="checkbox" name="notify_certificate_issued" value="1" {{ \App\Models\Setting::get('notify_certificate_issued', '1') ? 'checked' : '' }} class="sr-only peer">
+                                <input type="checkbox" name="notify_certificate_issued" value="1" <?php echo e(\App\Models\Setting::get('notify_certificate_issued', '1') ? 'checked' : ''); ?> class="sr-only peer">
                                 <div class="w-11 h-6 bg-rule peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
                             </label>
                         </div>
@@ -856,7 +859,7 @@
                             </div>
                             <label class="relative inline-flex items-center cursor-pointer">
                                 <input type="hidden" name="notify_instructor_new_enrollment" value="0">
-                                <input type="checkbox" name="notify_instructor_new_enrollment" value="1" {{ \App\Models\Setting::get('notify_instructor_new_enrollment', '1') ? 'checked' : '' }} class="sr-only peer">
+                                <input type="checkbox" name="notify_instructor_new_enrollment" value="1" <?php echo e(\App\Models\Setting::get('notify_instructor_new_enrollment', '1') ? 'checked' : ''); ?> class="sr-only peer">
                                 <div class="w-11 h-6 bg-rule peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
                             </label>
                         </div>
@@ -874,7 +877,7 @@
                         <div class="space-y-2">
                             <label class="block text-[13px] font-bold text-ink font-poppins">Total Students Counter</label>
                             <p class="text-[11px] text-ink3 font-sans leading-relaxed mb-2">Display text for student count (e.g. 14,000+)</p>
-                            <input type="text" name="stat_students" value="{{ \App\Models\Setting::get('stat_students', '14,000+') }}" 
+                            <input type="text" name="stat_students" value="<?php echo e(\App\Models\Setting::get('stat_students', '14,000+')); ?>" 
                                    class="w-full h-12 border border-rule rounded-lg px-4 font-sans text-[14px] focus:ring-1 focus:ring-primary/30 outline-none transition-shadow">
                         </div>
 
@@ -882,7 +885,7 @@
                         <div class="space-y-2">
                             <label class="block text-[13px] font-bold text-ink font-poppins">Total Courses Counter</label>
                             <p class="text-[11px] text-ink3 font-sans leading-relaxed mb-2">Display text for course count (e.g. 1,200+)</p>
-                            <input type="text" name="stat_courses" value="{{ \App\Models\Setting::get('stat_courses', '1,200+') }}" 
+                            <input type="text" name="stat_courses" value="<?php echo e(\App\Models\Setting::get('stat_courses', '1,200+')); ?>" 
                                    class="w-full h-12 border border-rule rounded-lg px-4 font-sans text-[14px] focus:ring-1 focus:ring-primary/30 outline-none transition-shadow">
                         </div>
 
@@ -890,7 +893,7 @@
                         <div class="space-y-2">
                             <label class="block text-[13px] font-bold text-ink font-poppins">Total Mentors Counter</label>
                             <p class="text-[11px] text-ink3 font-sans leading-relaxed mb-2">Display text for mentor count (e.g. 450+)</p>
-                            <input type="text" name="stat_mentors" value="{{ \App\Models\Setting::get('stat_mentors', '450+') }}" 
+                            <input type="text" name="stat_mentors" value="<?php echo e(\App\Models\Setting::get('stat_mentors', '450+')); ?>" 
                                    class="w-full h-12 border border-rule rounded-lg px-4 font-sans text-[14px] focus:ring-1 focus:ring-primary/30 outline-none transition-shadow">
                         </div>
 
@@ -898,7 +901,7 @@
                         <div class="space-y-2">
                             <label class="block text-[13px] font-bold text-ink font-poppins">Average Rating Counter</label>
                             <p class="text-[11px] text-ink3 font-sans leading-relaxed mb-2">Display text for rating (e.g. 4.8/5)</p>
-                            <input type="text" name="stat_rating" value="{{ \App\Models\Setting::get('stat_rating', '4.8/5') }}" 
+                            <input type="text" name="stat_rating" value="<?php echo e(\App\Models\Setting::get('stat_rating', '4.8/5')); ?>" 
                                    class="w-full h-12 border border-rule rounded-lg px-4 font-sans text-[14px] focus:ring-1 focus:ring-primary/30 outline-none transition-shadow">
                         </div>
                     </div>
@@ -907,7 +910,7 @@
 
             <!-- Footer -->
             <div class="px-10 py-6 bg-background-light/30 border-t border-rule flex items-center justify-end gap-6">
-                <div x-show="{{ session('success') ? 'true' : 'false' }}" x-transition class="text-[12px] text-success font-bold flex items-center gap-1.5 font-sans">
+                <div x-show="<?php echo e(session('success') ? 'true' : 'false'); ?>" x-transition class="text-[12px] text-success font-bold flex items-center gap-1.5 font-sans">
                     <span class="material-symbols-outlined text-[16px]">done</span> Saved
                 </div>
                 <button type="submit" class="px-10 py-3 bg-ink text-white rounded-lg font-poppins font-bold text-[12px] uppercase tracking-widest hover:bg-ink/90 transition-all shadow-lg shadow-black/5">
@@ -965,11 +968,11 @@
                 <span class="material-symbols-outlined">close</span>
             </button>
         </div>
-        <form method="POST" action="{{ route('admin.settings.test-email') }}" class="p-8 space-y-6">
-            @csrf
+        <form method="POST" action="<?php echo e(route('admin.settings.test-email')); ?>" class="p-8 space-y-6">
+            <?php echo csrf_field(); ?>
             <div class="space-y-2">
                 <label class="block text-[11px] font-bold uppercase tracking-widest text-ink2 font-poppins">Recipient Email Address</label>
-                <input type="email" name="test_email" value="{{ auth()->user()?->email }}" required
+                <input type="email" name="test_email" value="<?php echo e(auth()->user()?->email); ?>" required
                        class="w-full h-12 border border-rule rounded-xl px-4 font-sans text-[14px] focus:ring-1 focus:ring-primary/30 outline-none transition-shadow">
             </div>
             <p class="text-[12px] text-ink3 leading-relaxed font-sans">
@@ -986,4 +989,6 @@
         </form>
     </div>
 </div>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.admin', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\xampp\htdocs\learnflow\resources\views/admin/settings.blade.php ENDPATH**/ ?>

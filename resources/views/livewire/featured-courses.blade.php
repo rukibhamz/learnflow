@@ -9,7 +9,7 @@
                 <span class="material-symbols-outlined text-[32px] text-primary">construction</span>
             </div>
             <div class="flex flex-col gap-3 max-w-md">
-                <h2 class="text-2xl font-bold font-display text-ink">Featured Courses</h2>
+                <h2 class="text-2xl font-bold font-display text-ink">{{ \App\Models\Setting::get('maintenance_coming_soon_title', 'Coming Soon') }}</h2>
                 <p class="text-ink2 text-base leading-relaxed">
                     {{ \App\Models\Setting::get('maintenance_coming_soon_message', 'Our courses are coming soon. We\'re working hard to bring you something great — check back soon.') }}
                 </p>
