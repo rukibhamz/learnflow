@@ -161,6 +161,19 @@
                                 <div class="w-11 h-6 bg-rule peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
                             </label>
                         </div>
+
+                        <!-- Coming Soon Message -->
+                        <div class="flex flex-col md:flex-row md:items-start gap-6 pt-6 border-t border-rule/50">
+                            <div class="md:w-1/2 space-y-1">
+                                <label class="block text-[13px] font-bold text-ink font-poppins">Coming Soon Message</label>
+                                <p class="text-[12px] text-ink3 font-sans leading-relaxed">Shown to guests and students on course, mentor, and pricing pages during maintenance.</p>
+                            </div>
+                            <div class="md:w-1/2">
+                                <textarea name="maintenance_coming_soon_message" rows="3"
+                                    class="w-full border border-rule rounded-lg px-4 py-3 font-sans text-[14px] focus:ring-1 focus:ring-primary/30 outline-none transition-shadow resize-none"
+                                    placeholder="Our courses are coming soon. We're working hard to bring you something great — check back soon.">{{ \App\Models\Setting::get('maintenance_coming_soon_message', '') }}</textarea>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

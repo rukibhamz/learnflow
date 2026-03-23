@@ -1,4 +1,22 @@
 <div>
+    @php $maintenanceOn = config('settings.maintenance_mode') && !(auth()->check() && auth()->user()?->hasRole(['admin', 'instructor'])); @endphp
+
+    @if($maintenanceOn)
+    {{-- Coming Soon placeholder shown to guests/students during maintenance --}}
+    <section class="max-w-7xl mx-auto px-6 py-20" id="featured-courses">
+        <div class="flex flex-col items-center justify-center text-center py-16 gap-6 border border-dashed border-rule rounded-2xl bg-surface">
+            <div class="size-16 rounded-full bg-primary/10 flex items-center justify-center">
+                <span class="material-symbols-outlined text-[32px] text-primary">construction</span>
+            </div>
+            <div class="flex flex-col gap-3 max-w-md">
+                <h2 class="text-2xl font-bold font-display text-ink">Featured Courses</h2>
+                <p class="text-ink2 text-base leading-relaxed">
+                    {{ \App\Models\Setting::get('maintenance_coming_soon_message', 'Our courses are coming soon. We\'re working hard to bring you something great — check back soon.') }}
+                </p>
+            </div>
+        </div>
+    </section>
+    @else
     <!-- Categories Strip -->
     <section class="py-12 bg-bg overflow-hidden">
         <div class="max-w-7xl mx-auto px-6">
@@ -41,4 +59,5 @@
             @endforelse
         </div>
     </section>
+    @endif
 </div>

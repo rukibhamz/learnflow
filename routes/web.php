@@ -19,6 +19,16 @@ Route::get('/debug-db', function() {
     ];
 });
 
+// Maintenance mode debug route
+Route::get('/debug-maintenance', function() {
+    return [
+        'config_value' => config('settings.maintenance_mode'),
+        'db_value' => \App\Models\Setting::get('maintenance_mode'),
+        'is_truthy' => (bool) config('settings.maintenance_mode'),
+        'user' => auth()->check() ? ['id' => auth()->id(), 'roles' => auth()->user()->getRoleNames()] : 'guest',
+    ];
+});
+
 // Installer (must be available before app is installed)
 Route::middleware(['web'])->group(function () {
     Route::get('install', [InstallerController::class, 'welcome'])->name('install.welcome');
@@ -43,10 +53,10 @@ Route::middleware(['web'])->group(function () {
         $slides = \App\Models\HeroSlide::where('is_active', true)->orderBy('order')->get();
         return view('home', compact('slides'));
     })->name('home');
-    Route::get('courses', fn () => view('courses.index'))->name('courses.index');
-    Route::get('courses/{slug}', [CourseController::class, 'show'])->name('courses.show');
+    Route::get('courses', fn () => view('courses.index'))->name('courses.index')->middleware('maintenance');
+    Route::get('courses/{slug}', [CourseController::class, 'show'])->name('courses.show')->middleware('maintenance');
     Route::get('certificates/{uuid}/verify', [CertificateController::class, 'verify'])->name('certificates.verify');
-    Route::get('pricing', [SubscriptionController::class, 'pricing'])->name('pricing');
+    Route::get('pricing', [SubscriptionController::class, 'pricing'])->name('pricing')->middleware('maintenance');
 
     // Blog Routes
     Route::get('blog', [\App\Http\Controllers\BlogController::class, 'index'])->name('blog.index');
@@ -75,12 +85,12 @@ Route::middleware(['web'])->group(function () {
             'totalCourses' => \App\Models\Course::published()->count(),
             'totalStudents' => \App\Models\Enrollment::distinct('user_id')->count('user_id'),
         ]);
-    })->name('pages.mentors');
+    })->name('pages.mentors')->middleware('maintenance');
 
     Route::get('plans', function () {
         $plans = \App\Models\SubscriptionPlan::active()->get();
         return view('pages.pricing', ['plans' => $plans]);
-    })->name('pages.pricing');
+    })->name('pages.pricing')->middleware('maintenance');
 
     require __DIR__.'/auth.php';
 

@@ -19,6 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'not-suspended' => \App\Http\Middleware\EnsureNotSuspended::class,
             'enrolled' => \App\Http\Middleware\EnsureEnrolled::class,
             'content-protection' => \App\Http\Middleware\ContentProtection::class,
+            'maintenance' => \App\Http\Middleware\MaintenanceModeMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

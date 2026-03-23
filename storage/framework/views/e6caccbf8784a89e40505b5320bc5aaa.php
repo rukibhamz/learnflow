@@ -58,6 +58,21 @@ if (isset($__slots)) unset($__slots);
             </header>
         <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
+        
+        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(config('settings.maintenance_mode') && auth()->check() && auth()->user()?->hasRole(['admin', 'instructor'])): ?>
+        <div x-data="{ show: true }" x-show="show" x-cloak
+             class="bg-amber-50 border-b border-amber-200 px-4 py-2.5 flex items-center justify-between gap-4 text-sm">
+            <div class="flex items-center gap-2 text-amber-800">
+                <span class="material-symbols-outlined text-[18px] text-amber-600">construction</span>
+                <span class="font-semibold">Maintenance mode is active.</span>
+                <span class="text-amber-700">Visitors see a "Coming Soon" page. You can see this content because you're an admin.</span>
+            </div>
+            <button @click="show = false" class="text-amber-600 hover:text-amber-800 transition-colors shrink-0">
+                <span class="material-symbols-outlined text-[18px]">close</span>
+            </button>
+        </div>
+        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+
         <!-- Page Content -->
         <main class="flex-grow flex flex-col">
             <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(isset($slot)): ?>
