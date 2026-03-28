@@ -1,8 +1,6 @@
-@extends('layouts.app')
+<?php $__env->startSection('title', 'Learn Without Limits'); ?>
 
-@section('title', 'Learn Without Limits')
-
-@push('head')
+<?php $__env->startPush('head'); ?>
 <script>
     document.addEventListener('alpine:init', () => {
         Alpine.data('heroSlider', () => ({
@@ -42,12 +40,12 @@
         }));
     });
 </script>
-@endpush
+<?php $__env->stopPush(); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
     <script>
-        window._heroTotalSlides = {{ $slides->count() ?: 1 }};
-        window._heroAutoplaySpeed = {{ \App\Models\Setting::get('hero_autoplay_speed', 6000) }};
+        window._heroTotalSlides = <?php echo e($slides->count() ?: 1); ?>;
+        window._heroAutoplaySpeed = <?php echo e(\App\Models\Setting::get('hero_autoplay_speed', 6000)); ?>;
     </script>
     <!-- Hero Slider Section -->
     <section x-data="heroSlider" 
@@ -57,7 +55,7 @@
         
         <!-- Slider Track: CSS grid stacks all slides in the same cell -->
         <div class="grid w-full">
-            @forelse($slides as $index => $slide)                <div x-cloak x-show="activeSlide === {{ $index + 1 }}"
+            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__empty_1 = true; $__currentLoopData = $slides; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $slide): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>                <div x-cloak x-show="activeSlide === <?php echo e($index + 1); ?>"
                      x-transition:enter="transition-opacity ease-out duration-500"
                      x-transition:enter-start="opacity-0"
                      x-transition:enter-end="opacity-100"
@@ -71,16 +69,16 @@
                         <!-- Content Side -->
                         <div class="flex flex-col gap-8 order-2 lg:order-1">
                             <div class="flex flex-col gap-6">
-                                <span class="text-accent font-bold tracking-[0.2em] text-xs uppercase">{{ $slide->tag }}</span>
-                                <h1 class="text-5xl sm:text-6xl lg:text-7xl font-extrabold leading-tight text-ink">{!! $slide->title !!}</h1>
-                                <p class="text-lg sm:text-xl text-ink2 max-w-lg leading-relaxed font-body">{{ $slide->description }}</p>
+                                <span class="text-accent font-bold tracking-[0.2em] text-xs uppercase"><?php echo e($slide->tag); ?></span>
+                                <h1 class="text-5xl sm:text-6xl lg:text-7xl font-extrabold leading-tight text-ink"><?php echo $slide->title; ?></h1>
+                                <p class="text-lg sm:text-xl text-ink2 max-w-lg leading-relaxed font-body"><?php echo e($slide->description); ?></p>
                             </div>
                             <div class="flex flex-wrap gap-4 pt-2">
-                                <a href="{{ route('register') }}" class="bg-primary text-white px-8 py-4 text-sm sm:text-base font-bold flex items-center gap-2 rounded-lg hover:opacity-90 hover:-translate-y-1 transition-all shadow-lg shadow-primary/20">
+                                <a href="<?php echo e(route('register')); ?>" class="bg-primary text-white px-8 py-4 text-sm sm:text-base font-bold flex items-center gap-2 rounded-lg hover:opacity-90 hover:-translate-y-1 transition-all shadow-lg shadow-primary/20">
                                     Get Started
                                     <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
                                 </a>
-                                <a href="{{ route('courses.index') }}" class="border-2 border-rule text-ink px-8 py-4 text-sm sm:text-base font-bold rounded-lg hover:bg-ink hover:text-white hover:-translate-y-1 transition-all">
+                                <a href="<?php echo e(route('courses.index')); ?>" class="border-2 border-rule text-ink px-8 py-4 text-sm sm:text-base font-bold rounded-lg hover:bg-ink hover:text-white hover:-translate-y-1 transition-all">
                                     View Courses
                                 </a>
                             </div>
@@ -89,8 +87,8 @@
                         <!-- Image Side -->
                         <div class="relative order-1 lg:order-2">
                             <div class="aspect-[4/3] lg:aspect-square bg-background-light border border-rule overflow-hidden rounded-2xl shadow-2xl group cursor-zoom-in">
-                                <img src="{{ $slide->getFirstMediaUrl('background') ?: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=2671&auto=format&fit=crop' }}" 
-                                     alt="{{ $slide->tag }}" 
+                                <img src="<?php echo e($slide->getFirstMediaUrl('background') ?: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=2671&auto=format&fit=crop'); ?>" 
+                                     alt="<?php echo e($slide->tag); ?>" 
                                      class="w-full h-full object-cover transition-all duration-700" />
                             </div>
                             <div class="hidden sm:block absolute -bottom-8 -right-8 w-40 h-40 border-2 border-primary/10 -z-10 rounded-full animate-pulse"></div>
@@ -98,7 +96,7 @@
                         </div>
                     </div>
                 </div>
-            @empty
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                 <div style="grid-area:1/1" class="w-full">
                     <div class="w-full max-w-7xl mx-auto px-6 py-16 lg:py-32 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
                         <div class="flex flex-col gap-8 order-2 lg:order-1">
@@ -108,11 +106,11 @@
                                 <p class="text-lg sm:text-xl text-ink2 max-w-lg leading-relaxed font-body">Experience the future of education with our expert-led courses designed for your success.</p>
                             </div>
                             <div class="flex flex-wrap gap-4 pt-2">
-                                <a href="{{ route('register') }}" class="bg-primary text-white px-8 py-4 text-sm sm:text-base font-bold flex items-center gap-2 rounded-lg hover:opacity-90 hover:-translate-y-1 transition-all shadow-lg shadow-primary/20">
+                                <a href="<?php echo e(route('register')); ?>" class="bg-primary text-white px-8 py-4 text-sm sm:text-base font-bold flex items-center gap-2 rounded-lg hover:opacity-90 hover:-translate-y-1 transition-all shadow-lg shadow-primary/20">
                                     Get Started
                                     <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
                                 </a>
-                                <a href="{{ route('courses.index') }}" class="border-2 border-rule text-ink px-8 py-4 text-sm sm:text-base font-bold rounded-lg hover:bg-ink hover:text-white hover:-translate-y-1 transition-all">
+                                <a href="<?php echo e(route('courses.index')); ?>" class="border-2 border-rule text-ink px-8 py-4 text-sm sm:text-base font-bold rounded-lg hover:bg-ink hover:text-white hover:-translate-y-1 transition-all">
                                     View Courses
                                 </a>
                             </div>
@@ -128,10 +126,10 @@
                         </div>
                     </div>
                 </div>
-            @endforelse
+            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
-            {{-- Navigation Arrows: same grid cell as slides, overlays them --}}
-            @if($slides->count() > 1)
+            
+            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($slides->count() > 1): ?>
             <div style="grid-area:1/1;z-index:10;pointer-events:none" class="flex items-center justify-between px-4">
                 <button @click="prev(); resetAutoplay();" 
                         style="pointer-events:auto"
@@ -146,18 +144,18 @@
                     <span class="material-symbols-outlined text-[24px]">chevron_right</span>
                 </button>
             </div>
-            @endif
+            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
         </div>
-        @if($slides->count() > 1)
+        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($slides->count() > 1): ?>
         <div class="flex justify-center items-center gap-4 py-6">
-            @for($i = 1; $i <= $slides->count(); $i++)
-                <button @click="activeSlide = {{ $i }}; resetAutoplay();" 
+            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php for($i = 1; $i <= $slides->count(); $i++): ?>
+                <button @click="activeSlide = <?php echo e($i); ?>; resetAutoplay();" 
                         class="h-1.5 rounded-full transition-all duration-500"
-                        :class="activeSlide === {{ $i }} ? 'w-10 bg-primary' : 'w-4 bg-rule'"
-                        aria-label="Go to slide {{ $i }}"></button>
-            @endfor
+                        :class="activeSlide === <?php echo e($i); ?> ? 'w-10 bg-primary' : 'w-4 bg-rule'"
+                        aria-label="Go to slide <?php echo e($i); ?>"></button>
+            <?php endfor; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
         </div>
-        @endif
+        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
     </section>
 
@@ -165,20 +163,20 @@
     <section class="reveal border-y border-rule bg-surface shadow-sm relative z-10">
         <div class="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 divide-x divide-rule">
             <div class="py-12 px-8 flex flex-col gap-2 items-center group hover:bg-background-light/50 transition-colors">
-                <span class="text-4xl font-bold font-display text-primary group-hover:scale-110 transition-transform">{{ \App\Models\Setting::get('stat_students', '14,000+') }}</span>
+                <span class="text-4xl font-bold font-display text-primary group-hover:scale-110 transition-transform"><?php echo e(\App\Models\Setting::get('stat_students', '14,000+')); ?></span>
                 <span class="text-[11px] font-bold text-ink3 uppercase tracking-[0.2em] font-poppins">Students Joined</span>
             </div>
             <div class="py-12 px-8 flex flex-col gap-2 items-center group hover:bg-background-light/50 transition-colors">
-                <span class="text-4xl font-bold font-display text-accent group-hover:scale-110 transition-transform">{{ \App\Models\Setting::get('stat_courses', '1,200+') }}</span>
+                <span class="text-4xl font-bold font-display text-accent group-hover:scale-110 transition-transform"><?php echo e(\App\Models\Setting::get('stat_courses', '1,200+')); ?></span>
                 <span class="text-[11px] font-bold text-ink3 uppercase tracking-[0.2em] font-poppins">Courses Available</span>
             </div>
             <div class="py-12 px-8 flex flex-col gap-2 items-center group hover:bg-background-light/50 transition-colors">
-                <span class="text-4xl font-bold font-display text-primary group-hover:scale-110 transition-transform">{{ \App\Models\Setting::get('stat_mentors', '450+') }}</span>
+                <span class="text-4xl font-bold font-display text-primary group-hover:scale-110 transition-transform"><?php echo e(\App\Models\Setting::get('stat_mentors', '450+')); ?></span>
                 <span class="text-[11px] font-bold text-ink3 uppercase tracking-[0.2em] font-poppins">Expert Mentors</span>
             </div>
             <div class="py-12 px-8 flex flex-col gap-2 items-center group hover:bg-background-light/50 transition-colors">
                 <div class="flex items-center gap-2">
-                    <span class="text-4xl font-bold font-display text-accent group-hover:scale-110 transition-transform">{{ \App\Models\Setting::get('stat_rating', '4.8/5') }}</span>
+                    <span class="text-4xl font-bold font-display text-accent group-hover:scale-110 transition-transform"><?php echo e(\App\Models\Setting::get('stat_rating', '4.8/5')); ?></span>
                     <span class="material-symbols-outlined text-amber-400 text-[24px] fill-1">star</span>
                 </div>
                 <span class="text-[11px] font-bold text-ink3 uppercase tracking-[0.2em] font-poppins">Satisfaction Rate</span>
@@ -187,7 +185,27 @@
     </section>
  
     <div class="reveal">
-        <livewire:featured-courses />
+        <?php
+$__split = function ($name, $params = []) {
+    return [$name, $params];
+};
+[$__name, $__params] = $__split('featured-courses', []);
+
+$__key = null;
+
+$__key ??= \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::generateKey('lw-1242405341-0', $__key);
+
+$__html = app('livewire')->mount($__name, $__params, $__key);
+
+echo $__html;
+
+unset($__html);
+unset($__key);
+unset($__name);
+unset($__params);
+unset($__split);
+if (isset($__slots)) unset($__slots);
+?>
     </div>
 
     <!-- Newsletter CTA -->
@@ -195,7 +213,7 @@
         <div class="bg-ink p-12 lg:p-20 flex flex-col lg:flex-row items-center gap-12">
             <div class="flex-1 flex flex-col gap-6">
                 <h2 class="text-4xl lg:text-5xl font-bold font-display text-white leading-tight">Ready to start your journey?</h2>
-                <p class="text-white/80 text-lg">Join thousands of students who are already advancing their careers with {{ $siteName ?? config('app.name') }}.</p>
+                <p class="text-white/80 text-lg">Join thousands of students who are already advancing their careers with <?php echo e($siteName ?? config('app.name')); ?>.</p>
             </div>
             <div class="w-full lg:w-auto flex flex-col sm:flex-row gap-4">
                 <input class="bg-white/10 border border-white/20 rounded-card text-white px-6 py-4 w-full sm:w-80 placeholder:text-white/60 focus:ring-1 focus:ring-accent focus:border-accent" placeholder="Enter your email" type="email"/>
@@ -208,4 +226,6 @@
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\xampp\htdocs\learnflow\resources\views/home.blade.php ENDPATH**/ ?>

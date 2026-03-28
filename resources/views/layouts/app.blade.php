@@ -22,8 +22,6 @@
     @livewireStyles
     <style>[x-cloak]{display:none!important}</style>
     <style>
-        /* Hide all slider slides until Alpine initializes to prevent FOUC clumping */
-        [x-data] [x-show] { display: none; }
         /* Hide Material Symbols text until font loads to prevent icon name flash */
         .material-symbols-outlined { opacity: 0; transition: opacity 0.15s ease; }
         .fonts-loaded .material-symbols-outlined { opacity: 1; }
