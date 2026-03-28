@@ -204,49 +204,6 @@
         </div>
     </section>
 
-    <!-- Footer -->
-    <footer class="border-t border-rule bg-surface mt-20">
-        <div class="max-w-7xl mx-auto px-6 py-16">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
-                <div class="lg:col-span-1">
-                    <x-branding href="{{ url('/') }}" class="mb-4" variant="split" />
-                    <p class="text-sm text-ink2 max-w-xs">Experience the future of education with expert-led courses designed for your success.</p>
-                </div>
-                <div>
-                    <h4 class="font-display font-bold text-sm text-ink uppercase tracking-wider mb-4">Platform</h4>
-                    <ul class="space-y-2 text-sm text-ink2">
-                        <li><a href="{{ route('courses.index') }}" class="hover:text-accent transition-colors">Courses</a></li>
-                        <li><a href="{{ route('pages.mentors') }}" class="hover:text-accent transition-colors">Mentors</a></li>
-                        <li><a href="{{ route('pages.pricing') }}" class="hover:text-accent transition-colors">Pricing</a></li>
-                        <li><a href="{{ route('pages.resources') }}" class="hover:text-accent transition-colors">Resources</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="font-display font-bold text-sm text-ink uppercase tracking-wider mb-4">Company</h4>
-                    <ul class="space-y-2 text-sm text-ink2">
-                        <li><a href="{{ route('pages.about') }}" class="hover:text-accent transition-colors">About Us</a></li>
-                        <li><a href="{{ route('pages.about') }}" class="hover:text-accent transition-colors">Careers</a></li>
-                        <li><a href="{{ route('blog.index') }}" class="hover:text-accent transition-colors">Blog</a></li>
-                        <li><a href="{{ route('pages.contact') }}" class="hover:text-accent transition-colors">Contact</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="font-display font-bold text-sm text-ink uppercase tracking-wider mb-4">Support</h4>
-                    <ul class="space-y-2 text-sm text-ink2">
-                        <li><a href="{{ route('pages.help') }}" class="hover:text-accent transition-colors">Help Center</a></li>
-                        <li><a href="{{ route('pages.terms') }}" class="hover:text-accent transition-colors">Terms of Service</a></li>
-                        <li><a href="{{ route('pages.privacy') }}" class="hover:text-accent transition-colors">Privacy Policy</a></li>
-                        <li><a href="{{ route('pages.privacy') }}" class="hover:text-accent transition-colors">Cookie Policy</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="mt-12 pt-8 border-t border-rule flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-ink3">
-                <span>© {{ date('Y') }} {{ $siteName ?? config('app.name') }} LMS. All rights reserved.</span>
-                <span>English (US) · USD ($)</span>
-            </div>
-        </div>
-    </footer>
-
     <style>
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }

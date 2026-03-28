@@ -1,5 +1,3 @@
-
-
 <?php $__env->startSection('title', 'Learn Without Limits'); ?>
 
 <?php $__env->startPush('head'); ?>
@@ -223,68 +221,6 @@ if (isset($__slots)) unset($__slots);
             </div>
         </div>
     </section>
-
-    <!-- Footer -->
-    <footer class="border-t border-rule bg-surface mt-20">
-        <div class="max-w-7xl mx-auto px-6 py-16">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
-                <div class="lg:col-span-1">
-                    <?php if (isset($component)) { $__componentOriginal661589163ab40cca986dd99c9fa80b42 = $component; } ?>
-<?php if (isset($attributes)) { $__attributesOriginal661589163ab40cca986dd99c9fa80b42 = $attributes; } ?>
-<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'components.branding','data' => ['href' => ''.e(url('/')).'','class' => 'mb-4','variant' => 'split']] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
-<?php $component->withName('branding'); ?>
-<?php if ($component->shouldRender()): ?>
-<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
-<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
-<?php $attributes = $attributes->except(\Illuminate\View\AnonymousComponent::ignoredParameterNames()); ?>
-<?php endif; ?>
-<?php $component->withAttributes(['href' => ''.e(url('/')).'','class' => 'mb-4','variant' => 'split']); ?>
-<?php echo $__env->renderComponent(); ?>
-<?php endif; ?>
-<?php if (isset($__attributesOriginal661589163ab40cca986dd99c9fa80b42)): ?>
-<?php $attributes = $__attributesOriginal661589163ab40cca986dd99c9fa80b42; ?>
-<?php unset($__attributesOriginal661589163ab40cca986dd99c9fa80b42); ?>
-<?php endif; ?>
-<?php if (isset($__componentOriginal661589163ab40cca986dd99c9fa80b42)): ?>
-<?php $component = $__componentOriginal661589163ab40cca986dd99c9fa80b42; ?>
-<?php unset($__componentOriginal661589163ab40cca986dd99c9fa80b42); ?>
-<?php endif; ?>
-                    <p class="text-sm text-ink2 max-w-xs">Experience the future of education with expert-led courses designed for your success.</p>
-                </div>
-                <div>
-                    <h4 class="font-display font-bold text-sm text-ink uppercase tracking-wider mb-4">Platform</h4>
-                    <ul class="space-y-2 text-sm text-ink2">
-                        <li><a href="<?php echo e(route('courses.index')); ?>" class="hover:text-accent transition-colors">Courses</a></li>
-                        <li><a href="<?php echo e(route('pages.mentors')); ?>" class="hover:text-accent transition-colors">Mentors</a></li>
-                        <li><a href="<?php echo e(route('pages.pricing')); ?>" class="hover:text-accent transition-colors">Pricing</a></li>
-                        <li><a href="<?php echo e(route('pages.resources')); ?>" class="hover:text-accent transition-colors">Resources</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="font-display font-bold text-sm text-ink uppercase tracking-wider mb-4">Company</h4>
-                    <ul class="space-y-2 text-sm text-ink2">
-                        <li><a href="<?php echo e(route('pages.about')); ?>" class="hover:text-accent transition-colors">About Us</a></li>
-                        <li><a href="<?php echo e(route('pages.about')); ?>" class="hover:text-accent transition-colors">Careers</a></li>
-                        <li><a href="<?php echo e(route('blog.index')); ?>" class="hover:text-accent transition-colors">Blog</a></li>
-                        <li><a href="<?php echo e(route('pages.contact')); ?>" class="hover:text-accent transition-colors">Contact</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4 class="font-display font-bold text-sm text-ink uppercase tracking-wider mb-4">Support</h4>
-                    <ul class="space-y-2 text-sm text-ink2">
-                        <li><a href="<?php echo e(route('pages.help')); ?>" class="hover:text-accent transition-colors">Help Center</a></li>
-                        <li><a href="<?php echo e(route('pages.terms')); ?>" class="hover:text-accent transition-colors">Terms of Service</a></li>
-                        <li><a href="<?php echo e(route('pages.privacy')); ?>" class="hover:text-accent transition-colors">Privacy Policy</a></li>
-                        <li><a href="<?php echo e(route('pages.privacy')); ?>" class="hover:text-accent transition-colors">Cookie Policy</a></li>
-                    </ul>
-                </div>
-            </div>
-            <div class="mt-12 pt-8 border-t border-rule flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-ink3">
-                <span>© <?php echo e(date('Y')); ?> <?php echo e($siteName ?? config('app.name')); ?> LMS. All rights reserved.</span>
-                <span>English (US) · USD ($)</span>
-            </div>
-        </div>
-    </footer>
 
     <style>
         .no-scrollbar::-webkit-scrollbar { display: none; }

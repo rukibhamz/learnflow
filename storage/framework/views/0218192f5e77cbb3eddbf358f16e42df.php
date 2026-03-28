@@ -42,9 +42,9 @@
                 <h4 class="text-white text-sm font-bold uppercase tracking-wider mb-5">Platform</h4>
                 <ul class="space-y-3">
                     <li><a href="<?php echo e(route('courses.index')); ?>" class="text-sm hover:text-white transition-colors">Browse Courses</a></li>
-                    <li><a href="#" class="text-sm hover:text-white transition-colors">Pricing</a></li>
-                    <li><a href="#" class="text-sm hover:text-white transition-colors">Become an Instructor</a></li>
-                    <li><a href="#" class="text-sm hover:text-white transition-colors">Resources</a></li>
+                    <li><a href="<?php echo e(route('pages.mentors')); ?>" class="text-sm hover:text-white transition-colors">Mentors</a></li>
+                    <li><a href="<?php echo e(route('pages.pricing')); ?>" class="text-sm hover:text-white transition-colors">Pricing</a></li>
+                    <li><a href="<?php echo e(route('pages.resources')); ?>" class="text-sm hover:text-white transition-colors">Resources</a></li>
                 </ul>
             </div>
 
@@ -52,10 +52,10 @@
             <div>
                 <h4 class="text-white text-sm font-bold uppercase tracking-wider mb-5">Company</h4>
                 <ul class="space-y-3">
-                    <li><a href="#" class="text-sm hover:text-white transition-colors">About Us</a></li>
-                    <li><a href="#" class="text-sm hover:text-white transition-colors">Careers</a></li>
-                    <li><a href="#" class="text-sm hover:text-white transition-colors">Blog</a></li>
-                    <li><a href="#" class="text-sm hover:text-white transition-colors">Contact</a></li>
+                    <li><a href="<?php echo e(route('pages.about')); ?>" class="text-sm hover:text-white transition-colors">About Us</a></li>
+                    <li><a href="<?php echo e(route('blog.index')); ?>" class="text-sm hover:text-white transition-colors">Blog</a></li>
+                    <li><a href="<?php echo e(route('pages.contact')); ?>" class="text-sm hover:text-white transition-colors">Contact</a></li>
+                    <li><a href="<?php echo e(route('register')); ?>" class="text-sm hover:text-white transition-colors">Become an Instructor</a></li>
                 </ul>
             </div>
 
@@ -63,10 +63,10 @@
             <div>
                 <h4 class="text-white text-sm font-bold uppercase tracking-wider mb-5">Support</h4>
                 <ul class="space-y-3">
-                    <li><a href="#" class="text-sm hover:text-white transition-colors">Help Center</a></li>
-                    <li><a href="#" class="text-sm hover:text-white transition-colors">Terms of Service</a></li>
-                    <li><a href="#" class="text-sm hover:text-white transition-colors">Privacy Policy</a></li>
-                    <li><a href="#" class="text-sm hover:text-white transition-colors">Cookie Policy</a></li>
+                    <li><a href="<?php echo e(route('pages.help')); ?>" class="text-sm hover:text-white transition-colors">Help Center</a></li>
+                    <li><a href="<?php echo e(route('pages.terms')); ?>" class="text-sm hover:text-white transition-colors">Terms of Service</a></li>
+                    <li><a href="<?php echo e(route('pages.privacy')); ?>" class="text-sm hover:text-white transition-colors">Privacy Policy</a></li>
+                    <li><a href="<?php echo e(route('pages.contact')); ?>" class="text-sm hover:text-white transition-colors">Cookie Policy</a></li>
                 </ul>
             </div>
         </div>
@@ -75,9 +75,9 @@
         <div class="border-t border-slate-800 mt-12 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
             <p class="text-slate-500 text-sm">&copy; <?php echo e(date('Y')); ?> <?php echo e($siteName ?? config('app.name')); ?>. All rights reserved.</p>
             <div class="flex items-center gap-6">
-                <a href="#" class="text-slate-500 text-sm hover:text-white transition-colors">Terms</a>
-                <a href="#" class="text-slate-500 text-sm hover:text-white transition-colors">Privacy</a>
-                <a href="#" class="text-slate-500 text-sm hover:text-white transition-colors">Cookies</a>
+                <a href="<?php echo e(route('pages.terms')); ?>" class="text-slate-500 text-sm hover:text-white transition-colors">Terms</a>
+                <a href="<?php echo e(route('pages.privacy')); ?>" class="text-slate-500 text-sm hover:text-white transition-colors">Privacy</a>
+                <a href="<?php echo e(route('pages.contact')); ?>" class="text-slate-500 text-sm hover:text-white transition-colors">Cookies</a>
             </div>
         </div>
     </div>
