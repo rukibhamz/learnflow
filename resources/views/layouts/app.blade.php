@@ -21,6 +21,13 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
     <style>[x-cloak]{display:none!important}</style>
+    <style>
+        /* Hide all slider slides until Alpine initializes to prevent FOUC clumping */
+        [x-data] [x-show] { display: none; }
+        /* Hide Material Symbols text until font loads to prevent icon name flash */
+        .material-symbols-outlined { opacity: 0; transition: opacity 0.15s ease; }
+        .fonts-loaded .material-symbols-outlined { opacity: 1; }
+    </style>
     @include('partials.brand-styles')
 </head>
 <body class="min-h-screen bg-bg font-sans text-ink antialiased">
@@ -79,6 +86,11 @@
     </style>
     
     <script>
+        // Mark fonts as loaded to reveal Material Symbols icons
+        document.fonts.ready.then(() => {
+            document.documentElement.classList.add('fonts-loaded');
+        });
+
         document.addEventListener('DOMContentLoaded', () => {
             const reveals = document.querySelectorAll('.reveal');
             const observerOptions = { threshold: 0.15, rootMargin: '0px 0px -50px 0px' };
