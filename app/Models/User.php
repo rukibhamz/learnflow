@@ -150,9 +150,15 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail
 
     /**
      * Determine if the user has verified their email address.
+     * Admins and instructors are always considered verified.
      */
     public function hasVerifiedEmail(): bool
     {
+        // Admins and instructors are never blocked by email verification
+        if ($this->hasRole(['admin', 'instructor'])) {
+            return true;
+        }
+
         if (config('settings.mail_require_verification') === '0') {
             return true;
         }

@@ -11,15 +11,22 @@ class RedirectIfNotInstalled
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if (InstallerService::isInstalled()) {
-            return $next($request);
-        }
-
-        // Check if the current route is an installation route
+        // Check if the current route is an installation route — always allow through
         if ($request->is('install*') || $request->routeIs('install*')) {
             return $next($request);
         }
 
-        return redirect()->to(route('install.welcome'));
+        try {
+            $installed = InstallerService::isInstalled();
+        } catch (\Throwable) {
+            // DB unreachable — treat as not installed
+            $installed = false;
+        }
+
+        if ($installed) {
+            return $next($request);
+        }
+
+        return redirect()->to(url('install'));
     }
 }

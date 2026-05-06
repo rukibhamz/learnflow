@@ -122,6 +122,7 @@ class AppServiceProvider extends ServiceProvider
             $siteName = config('app.name', 'LearnFlow');
             $siteColor = '#1a42e0';
             $siteLogoUrl = null;
+            $siteFaviconUrl = null;
 
             try {
                 if (Schema::hasTable('settings')) {

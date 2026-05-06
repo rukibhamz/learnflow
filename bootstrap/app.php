@@ -12,6 +12,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->web(append: [
+            \App\Http\Middleware\RedirectIfNotInstalled::class,
+        ]);
+
         $middleware->alias([
             'admin' => \App\Http\Middleware\IsAdmin::class,
             'instructor' => \App\Http\Middleware\IsInstructor::class,
@@ -23,5 +27,16 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        // If the database is unavailable (dropped/missing), redirect to installer
+        $exceptions->render(function (\Illuminate\Database\QueryException $e, \Illuminate\Http\Request $request) {
+            // Error codes: 1049 = unknown database, 2002 = connection refused, 1045 = access denied
+            $dbErrorCodes = [1049, 2002, 1045, 2003];
+            if (in_array((int) $e->getCode(), $dbErrorCodes) || str_contains($e->getMessage(), 'Unknown database')) {
+                return redirect()->to(url('install'));
+            }
+        });
+
+        $exceptions->render(function (\PDOException $e, \Illuminate\Http\Request $request) {
+            return redirect()->to(url('install'));
+        });
     })->create();

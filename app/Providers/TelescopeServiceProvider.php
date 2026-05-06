@@ -14,6 +14,16 @@ class TelescopeServiceProvider extends TelescopeApplicationServiceProvider
             return;
         }
 
+        // Don't register Telescope if the database is unavailable
+        try {
+            \Illuminate\Support\Facades\DB::connection()->getPdo();
+            if (! \Illuminate\Support\Facades\Schema::hasTable('telescope_entries')) {
+                return;
+            }
+        } catch (\Throwable) {
+            return;
+        }
+
         parent::register();
     }
 
