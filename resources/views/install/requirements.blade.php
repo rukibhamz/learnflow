@@ -4,11 +4,6 @@
 @php
     $backHref = route('install.welcome');
     $continueHref = route('install.database');
-    \Illuminate\Support\Facades\Log::info('[INSTALL_DEBUG] requirements view rendering', [
-        'back_href' => $backHref,
-        'continue_href' => $continueHref,
-        'current_url' => request()->url(),
-    ]);
 @endphp
 
 @section('steps')
