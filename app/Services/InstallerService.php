@@ -55,12 +55,21 @@ class InstallerService
     {
         $path = storage_path('framework/' . self::INSTALLED_FILE);
 
-        if (! file_exists($path)) {
-            return false;
-        }
-
         try {
-            return \Illuminate\Support\Facades\Schema::hasTable('settings');
+            $hasCoreTables = \Illuminate\Support\Facades\Schema::hasTable('settings')
+                && \Illuminate\Support\Facades\Schema::hasTable('users')
+                && \Illuminate\Support\Facades\Schema::hasTable('migrations');
+
+            if (! $hasCoreTables) {
+                return false;
+            }
+
+            // Self-heal deployments where storage/framework/installed is missing.
+            if (! file_exists($path)) {
+                @file_put_contents($path, date('c'));
+            }
+
+            return true;
         } catch (\Throwable $e) {
             return false;
         }
