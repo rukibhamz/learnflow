@@ -3,6 +3,7 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use App\Services\InstallerService;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -31,8 +32,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->render(function (\Illuminate\Database\QueryException $e, \Illuminate\Http\Request $request) {
             // Error codes: 1049 = unknown database, 2002 = connection refused, 1045 = access denied
             $dbErrorCodes = [1049, 2002, 1045, 2003];
+            $shouldRedirectToInstall = ! InstallerService::isInstalled();
             if (
                 (in_array((int) $e->getCode(), $dbErrorCodes) || str_contains($e->getMessage(), 'Unknown database'))
+                && $shouldRedirectToInstall
                 && ! $request->is('install*')
             ) {
                 return redirect()->to(url('install'));
@@ -40,6 +43,10 @@ return Application::configure(basePath: dirname(__DIR__))
         });
 
         $exceptions->render(function (\PDOException $e, \Illuminate\Http\Request $request) {
+            if (InstallerService::isInstalled()) {
+                return null;
+            }
+
             if ($request->is('install*')) {
                 return null;
             }
