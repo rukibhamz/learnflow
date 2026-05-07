@@ -18,6 +18,8 @@
 /storage/*.key
 /storage/framework/installed
 /storage/framework/install_data.json
+/storage/framework/views/*.php
+/storage/framework/views/*.blade.php
 /storage/pail
 Homestead.json
 Homestead.yaml

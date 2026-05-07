@@ -31,12 +31,19 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->render(function (\Illuminate\Database\QueryException $e, \Illuminate\Http\Request $request) {
             // Error codes: 1049 = unknown database, 2002 = connection refused, 1045 = access denied
             $dbErrorCodes = [1049, 2002, 1045, 2003];
-            if (in_array((int) $e->getCode(), $dbErrorCodes) || str_contains($e->getMessage(), 'Unknown database')) {
+            if (
+                (in_array((int) $e->getCode(), $dbErrorCodes) || str_contains($e->getMessage(), 'Unknown database'))
+                && ! $request->is('install*')
+            ) {
                 return redirect()->to(url('install'));
             }
         });
 
         $exceptions->render(function (\PDOException $e, \Illuminate\Http\Request $request) {
+            if ($request->is('install*')) {
+                return null;
+            }
+
             return redirect()->to(url('install'));
         });
     })->create();

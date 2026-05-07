@@ -8,27 +8,6 @@ use App\Http\Controllers\StripeWebhookController;
 use App\Http\Controllers\SubscriptionController;
 use Illuminate\Support\Facades\Route;
 
-// Diagnostic route
-Route::get('/debug-db', function() {
-    return [
-        'default' => config('database.default'),
-        'sqlite' => config('database.connections.sqlite'),
-        'mysql' => config('database.connections.mysql'),
-        'env_connection' => env('DB_CONNECTION'),
-        'env_database' => env('DB_DATABASE'),
-    ];
-});
-
-// Maintenance mode debug route
-Route::get('/debug-maintenance', function() {
-    return [
-        'config_value' => config('settings.maintenance_mode'),
-        'db_value' => \App\Models\Setting::get('maintenance_mode'),
-        'is_truthy' => (bool) config('settings.maintenance_mode'),
-        'user' => auth()->check() ? ['id' => auth()->id(), 'roles' => auth()->user()->getRoleNames()] : 'guest',
-    ];
-});
-
 // Installer (must be available before app is installed)
 Route::middleware(['web'])->group(function () {
     Route::get('install', [InstallerController::class, 'welcome'])->name('install.welcome');
